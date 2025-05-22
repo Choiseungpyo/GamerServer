@@ -358,12 +358,18 @@
 "Assets/2.Scripts/Extra/EventManager.cs"
 "Assets/2.Scripts/Extra/IListener.cs"
 "Assets/2.Scripts/Extra/Singleton.cs"
+"Assets/2.Scripts/Lobby/Room.cs"
+"Assets/2.Scripts/Lobby/RoomManager.cs"
+"Assets/2.Scripts/Lobby/RoomUI.cs"
+"Assets/2.Scripts/Lobby/RoomUIManager.cs"
+"Assets/2.Scripts/Lobby/Team.cs"
 "Assets/2.Scripts/Play/EntityManager.cs"
 "Assets/2.Scripts/Play/Player.cs"
 "Assets/2.Scripts/Tcp/Packet.cs"
 "Assets/2.Scripts/Tcp/TcpManager.cs"
 "Assets/2.Scripts/Tcp/UnityMainThreadDispatcher.cs"
 "Assets/2.Scripts/UI/LobbyUIManager.cs"
+"Assets/LobbyUI.cs"
 -langversion:9.0
 
 /deterministic

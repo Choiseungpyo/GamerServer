@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
         set { id = value; }
     }
 
+
     void Start()
     {
         isMoveKeyPressed = new bool[4];

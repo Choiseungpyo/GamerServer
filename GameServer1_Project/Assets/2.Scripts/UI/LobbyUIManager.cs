@@ -3,23 +3,85 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyUIManager : MonoBehaviour
+/// <summary>
+/// 로비 UI를 담당하는 클래스
+/// </summary>
+public class LobbyUIManager : Singleton<LobbyUIManager>
 {
-    [SerializeField] private InputField nicknameInput;
-    [SerializeField] private Button nicknameBtn;
+    [SerializeField] Transform roomContents;
+    [SerializeField] GameObject roomUI_Prefab;
 
-    // Start is called before the first frame update
-    void Start()
+    Dictionary<int, RoomUI> roomUIs;
+
+    [SerializeField] Button EntryRandomBtn;
+    [SerializeField] Button CreateRoomBtn;
+
+    private void Start()
     {
-        nicknameBtn.onClick.AddListener(SetNickname);
+        EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
+        CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
+
+        roomUIs = new Dictionary<int, RoomUI>();
     }
 
-    public void SetNickname()
+    public void CreateRoom(Room roomData)
     {
-        if (string.IsNullOrEmpty(nicknameInput.text))
+        GameObject newRoomUI_Obj = Instantiate(roomUI_Prefab, roomContents.transform);
+        RoomUI newRoomUI = newRoomUI_Obj.GetComponent<RoomUI>();
+        if (!newRoomUI)
+        {
+            Debug.LogWarning(newRoomUI);
             return;
+        }
 
-        EventManager.Instance.PostNotification(EVENT_TYPE.SEND_USER_NICKNAME, this, nicknameInput.text);
+        newRoomUI.SetRoomUIData(roomData);
+        roomUIs.Add(roomUIs.Count + 1, newRoomUI);
     }
 
+    private void DeleteRoom(int roomNo)
+    {
+        roomUIs.Remove(roomNo);
+    }
+
+    private void EntryRandomRoom()
+    {
+        LobbyManager.Instance.EntryRandomRoom();
+    }
+
+    private void ShowCreateRoomUI()
+    {
+        PanelManager.Instance.SetPanelState(PanelType.ROOMOPTION, true);
+    }
+
+
+    // Variables
+    [SerializeField] Button exitBtn;
+
+
+    #region Functions
+    private void Exit()
+    {
+
+    }
+    #endregion
+
+
+    #region Chat
+    void AddMsg()
+    {
+        // 오브젝트 풀링으로 최대 20개 저장
+    }
+    #endregion
+
+    #region Users
+    void AddUser()
+    {
+
+    }
+
+    void DeleteUser()
+    {
+
+    }
+    #endregion
 }
