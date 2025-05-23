@@ -15,10 +15,6 @@ public enum Direction : int
 
 public class Player : MonoBehaviour
 {
-    private TcpClient client;
-    private NetworkStream stream;
-    private Thread receiveThread;
-
     int id;
 
     bool[] isMoveKeyPressed;
@@ -37,7 +33,7 @@ public class Player : MonoBehaviour
         for (int i = 0; i < isMoveKeyPressed.Length; i++)
             isMoveKeyPressed[i] = false;
 
-        StartCoroutine(SendData());
+        //StartCoroutine(SendData());
     }
 
     private void Update()

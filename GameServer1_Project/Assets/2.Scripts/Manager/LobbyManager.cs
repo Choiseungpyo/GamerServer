@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class LobbyManager : Singleton<LobbyManager>
 {
+    #region Variables
     Dictionary<int, Room> rooms;
-
-    RoomUI roomUI;
+    [SerializeField] int maxRoomNum;
+    #endregion
 
     private void Start()
     {
         rooms = new Dictionary<int, Room>();
-
     }
 
     private void Update()
@@ -21,30 +22,38 @@ public class LobbyManager : Singleton<LobbyManager>
         {
             RoomOption roomOption = new RoomOption("Come On Bro", MatchType.Solo, 0);
             CreateRoom(roomOption);
-            Debug.Log(rooms.Count);
+            
+
         }
     }
 
     // 랜덤 방 입장
     public void EntryRandomRoom()
     {
-        /*
-         * PeopleNum++
-         * 방 UI 활성화
-        */
-        int randomRoomNo = Random.Range(0, rooms.Count);
+        List<Room> joinableRooms =  GetJoinableRooms();
+        
+        // 입장할 수 없는 경우
+        if(joinableRooms.Count == 0)
+        {
+            // 모든 방이 꽉 찼습니다! 라고 문구 띄우기
+            return;
+        }
+
+        // 입장할 수 있는 경우
+        int randomRoomNo = Random.Range(0, joinableRooms.Count);
+
         rooms[randomRoomNo].CurrPeopleNum++;
 
-        RoomUIManager.Instance.SetVoidRoom(rooms[randomRoomNo]);
-       
+        RoomUIManager.Instance.SetRoom(rooms[randomRoomNo]);
+        // RoomUI 띄우기
     }
 
-    //public List<Room> GetJoinableRooms()
-    //{
-    //    return rooms.Values
-    //        .Where(room => room.state == RoomState.Waiting && room.currentPlayers < room.maxPlayers)
-    //        .ToList();
-    //}
+    public List<Room> GetJoinableRooms()
+    {
+        return rooms.Values
+            .Where(room => room.GetRoomState() == RoomState.WATING && room.CurrPeopleNum < room.MaxPeopleNum)
+            .ToList();
+    }
 
     /// <summary>
     /// 방 생성
@@ -52,6 +61,13 @@ public class LobbyManager : Singleton<LobbyManager>
     /// <param name="roomOption"></param>
     public void CreateRoom(RoomOption roomOption)
     {
+        if (rooms.Count >= maxRoomNum)
+        {
+            // 최대 방 개수를 도달해서 못만든다고 UI 띄우기
+            return;
+        }
+
+
         int no = rooms.Count + 1;
         Player player = EntityManager.Instance.GetPlayer(roomOption.playerId);
         if (!player)
@@ -63,8 +79,8 @@ public class LobbyManager : Singleton<LobbyManager>
         LobbyUIManager.Instance.CreateRoom(newRoom);
 
         // 호출한 객체가 현재 플레이어라면
-        if (EntityManager.Instance.IsCurrPlayer(roomOption.playerId))
-            PanelManager.Instance.ActivateOnly(PanelType.ROOM);
+        //if (EntityManager.Instance.IsCurrPlayer(roomOption.playerId))
+        //    PanelManager.Instance.ActivateOnly(PanelType.ROOM);
     }
 
     private void DeleteRoom(int roomNo)

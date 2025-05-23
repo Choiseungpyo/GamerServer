@@ -12,7 +12,7 @@ public class RoomUIManager : Singleton<RoomUIManager>
     Room room;
 
 
-    public void SetVoidRoom(Room room)
+    public void SetRoom(Room room)
     {
         this.room = room;
     }

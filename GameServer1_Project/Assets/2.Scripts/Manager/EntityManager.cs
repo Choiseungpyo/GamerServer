@@ -7,7 +7,14 @@ public class EntityManager : Singleton<EntityManager>, IListener
     [SerializeField] GameObject[] player_Prefabs;
 
     Dictionary<int, Player> players;
+    [SerializeField] int maxPlayerNum;
     int currPlyerId;
+
+    public int MaxPlayerNum
+    {
+        get { return maxPlayerNum; }
+        set { }
+    }
 
     private void Start()
     {
@@ -107,5 +114,4 @@ public class EntityManager : Singleton<EntityManager>, IListener
                 break;
         }
     }
-
 }
