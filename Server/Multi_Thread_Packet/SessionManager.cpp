@@ -7,7 +7,7 @@ SessionManager* SessionManager::instance = nullptr;
 
 SessionManager::~SessionManager()
 {
-	clientlist.clear();
+	clientMap.clear();
 
 	delete instance;
 }
@@ -28,12 +28,13 @@ SessionManager* SessionManager::GetInstance()
 */
 ClientSession * SessionManager::CreateClient(SOCKET sock)
 {
-	ClientSession* client = new ClientSession(sock);
-
-	cout << "create ClientSession.." << endl;
-	clientlist.push_back(ClientList::value_type(client));
-	return client;
-
+	auto it = clientMap.find(sock);
+	if (it != clientMap.end()) {
+		cout << "create ClientSession.." << endl;
+		clientMap[sock] = new ClientSession(sock);
+		return clientMap[sock];
+	}
+	std::cout << "Warning : Client Socket[" << sock << "] is already created. " << std::endl;
 }
 
 /*
@@ -41,22 +42,10 @@ ClientSession * SessionManager::CreateClient(SOCKET sock)
 인자값 : ClientSession * Client
 기능 : 접속이 끊기는 clientsession을 삭제함.
 */
-void SessionManager::DeleteClient(ClientSession * client)
+void SessionManager::DeleteClient(SOCKET sock, ClientSession* client)
 {
-	list<ClientSession*>::iterator iter;
-	for (iter = clientlist.begin(); iter != clientlist.end(); )
-	{
-		if(*iter == client)
-		{
-			client->Disconnect();
-			iter = clientlist.erase(iter);
-			cout << "client remove.." <<endl;
-		}
-		else
-		{
-			iter++;
-		}
-	}
+	client->Disconnect();
+	clientMap.erase(sock);
 }
 
 /*
@@ -95,11 +84,11 @@ void SessionManager::Broadcast(Packet* packet)
 {
 	EnterCriticalSection(&cs);
 
-	for (auto& client : clientlist)
+	for (auto& client : clientMap)
 	{
-		if (client->IsConnected())
+		if (client.second->IsConnected())
 		{
-			client->Send(packet);
+			client.second->Send(packet);
 		}
 	}
 
@@ -110,14 +99,14 @@ void SessionManager::BroadcastExceptOneself(Packet* packet, ClientSession* onese
 {
 	EnterCriticalSection(&cs);
 
-	for (auto& client : clientlist)
+	for (auto& client : clientMap)
 	{
-		if (oneself == client)
+		if (oneself == client.second)
 			continue;
 
-		if (client->IsConnected())
+		if (client.second->IsConnected())
 		{
-			client->Send(packet);
+			client.second->Send(packet);
 		}
 	}
 

@@ -36,6 +36,6 @@ private:
 	static LRESULT CALLBACK WndSockProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static BOOL CtrlHandler(DWORD fdwCtrlType);
 	static SOCKET GetListenSocket(short shPortNo, int nBacklog);
-	static char* Recv(ClientSession* client, SOCKET socket);
+	static char* Recv(SOCKET socket, ClientSession* client);
 	static bool PacketParsing(ClientSession* client, char* buf);
 };

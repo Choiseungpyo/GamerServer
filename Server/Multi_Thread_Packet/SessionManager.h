@@ -1,5 +1,5 @@
 #pragma once
-
+#include <unordered_map>
 /*
 클라이언트 관리자.
 클라이언트 증감이나 생성, 파괴등을 맡음.
@@ -16,7 +16,7 @@ class SessionManager
 public:
 	SessionManager() : mClientCount(0)
 	{
-		clientlist.clear();
+		clientMap.clear();
 		InitializeCriticalSection(&cs);
 	}
 	~SessionManager();
@@ -25,7 +25,7 @@ public:
 
 	ClientSession* CreateClient(SOCKET sock);
 
-	void DeleteClient(ClientSession* client);
+	void DeleteClient(SOCKET sock, ClientSession* client);
 
 	int IncreaseClientCount();
 	int DecreaseClientCount();
@@ -33,96 +33,54 @@ public:
 	void Broadcast(Packet* packet);
 	void BroadcastExceptOneself(Packet* packet, ClientSession* oneself);
 
-	//bool RegisterNickname(ClientSession* client, string nickname)
-	//{
-	//	// 이미 닉네임을 등록한 경우
-	//	if (client->GetNickname() != "")
-	//		return false;
-
-	//	for (auto client : clientlist)
-	//	{
-	//		auto curr_client_nickname = client->GetNickname();
-
-	//		// 이미 닉네임이 존재하는 경우
-	//		if (curr_client_nickname == nickname)
-	//			return false;
-	//	}
-
-	//	client->SetNickname(nickname);
-	//	return true;
-	//}
-
-	//void SendTo(Packet* packet, std::string nickname)
-	//{
-	//	EnterCriticalSection(&cs);
-
-	//	for (auto& client : clientlist)
-	//	{
-	//		if (!client->IsConnected())
-	//			continue;
-
-	//		if (!client->GetNickname()._Equal(nickname))
-	//			continue;
-
-	//		client->Send(packet);
-	//	}
-
-	//	LeaveCriticalSection(&cs);
-	//}
-
-	void SendTo(Packet* packet, int id)
+	void SendTo(Packet* packet, SOCKET targetSocket)
 	{
 		EnterCriticalSection(&cs);
+		
+		auto it = clientMap.find(targetSocket);
 
-		for (auto& client : clientlist)
-		{
-			if (!client->IsConnected())
-				continue;
-
-			if (client->GetId() != id)
-				continue;
-
+		// 키 값이 있는 경우
+		if (it != clientMap.end()) {
+			ClientSession* client = it->second;
 			client->Send(packet);
 		}
+		// 키 값이 없는 경우
+		else 
+			cout << "target socket : " << targetSocket << " 존재하지 않음";
+		
 
 		LeaveCriticalSection(&cs);
 	}
 
 	void SetClients_FDSET(fd_set& readfds)
 	{
-		for (auto clientSession : clientlist) {
-			FD_SET(clientSession->mSocket, &readfds);
+		for (const auto& pair : clientMap) {
+			ClientSession* clientSession = pair.second; 
+			if (clientSession) {
+				FD_SET(clientSession->mSocket, &readfds);
+			}
 		}
 	}
 
 	int GetClientSize() const { return mClientCount; }
 
-	/*ClientSession* GetClient(int index)
-	{
-		if (index < 0 || index >= mClientCount)
-			return NULL;
-		
-		ClientList::iterator it = clientlist.begin();
-
-		std::advance(it, index);
-
-		return *it;
-	}*/
 
 	ClientSession* GetClient(SOCKET sock)
 	{
-		for (auto client : clientlist)
-		{
-			if (client->GetSocket() == sock)
-				return client;
+		auto it = clientMap.find(sock);
+
+		// 키 값이 있는 경우
+		if (it != clientMap.end()) {
+			return it->second;
 		}
-		return NULL;
+		
+		cout << "socket : " << sock << " 존재하지 않음";
+		return nullptr;
 	}
 
 private:
 	static SessionManager* instance;
-	typedef list<ClientSession*> ClientList;
-	ClientList clientlist;
+	unordered_map<SOCKET, ClientSession*> clientMap;
 
 	int mClientCount;
 

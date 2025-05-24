@@ -7,7 +7,7 @@ HWND MTServerManager::g_hMsgWnd = NULL;
 MTServerManager* GMTServerManager = nullptr;
 SOCK_SET MTServerManager::socks;
 SOCKET MTServerManager::m_hsoListen = NULL;
-MTServerManager* MTServerManager::instance = NULL;
+MTServerManager* MTServerManager::instance = nullptr;
 SessionManager* MTServerManager::sessionManager = SessionManager::GetInstance();
 
 MTServerManager* MTServerManager::GetInstance()
@@ -74,7 +74,7 @@ MTServerManager::~MTServerManager()
 인자값 :
 기능 : client가 전송한 data를 수신함.
 */
-char* MTServerManager::Recv(ClientSession* client, SOCKET socket)
+char* MTServerManager::Recv(SOCKET sock, ClientSession* client)
 {
 	char buf[BUFSIZE * 4];
 
@@ -82,12 +82,12 @@ char* MTServerManager::Recv(ClientSession* client, SOCKET socket)
 
 	int re = 0;
 
-	re = recv(socket, buf, sizeof(buf), 0);
+	re = recv(sock, buf, sizeof(buf), 0);
 	if (re == SOCKET_ERROR || re == 0)
 	{
 		cout << "recv error.." << endl;
-		closesocket(socket);
-		sessionManager->DeleteClient(client);
+		closesocket(sock);
+		sessionManager->DeleteClient(sock, client);
 		return NULL;
 	}
 	buf[re] = '\0';
@@ -107,7 +107,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 	switch (packet->Type)
 	{
 	case C_PLAYER_MOVE:
-		client->SetPlayerMovement(packet);
+		//client->SetPlayerMovement(packet);
 		break;
 	}
 
@@ -171,22 +171,17 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 			int AddrLen = sizeof(clientAddr);
 			getpeername(sock, (SOCKADDR*)&clientAddr, &AddrLen);
 
-			//클라 세션 생성.
-			/*
-			객체 동적할당후 매니저클래스의 생성함수 불러와서 생성.
-			*/
 			ClientSession* client = sessionManager->CreateClient(sock);
 
-			//클라접속처리.
-			/*
-			클라객체 접속함수 호출.
-			실패시 접속 종료및 객체 삭제.
-			*/
-			if (client->OnConnect(&clientAddr) == false)
+			//클라 접속 처리.
+			if (client->OnConnect(&clientAddr))
+			{
+				// ID, 랜덤 이름 보내기
+			}
+			else
 			{
 				cout << "connect error..." << endl;
-				client->Disconnect();
-				sessionManager->DeleteClient(client);
+				sessionManager->DeleteClient(sock, client);
 			}
 		}
 		break;
@@ -199,16 +194,16 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 			if (!client)
 				return false;
 
-			char* buf = Recv(client, sock);
+			char* buf = Recv(sock, client);
 
 			if (!buf)
 			{
-				sessionManager->DeleteClient(client);
+				sessionManager->DeleteClient(sock, client);
 				return 0;
 			}
 			if (PacketParsing(client, buf) == false)
 			{
-				sessionManager->DeleteClient(client);
+				sessionManager->DeleteClient(sock, client);
 				return 0;
 			}
 		}

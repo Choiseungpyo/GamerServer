@@ -1,4 +1,6 @@
 #pragma once
+#include "User.h"
+
 //클라이언트 객체용 클래스
 /*
 연결용 함수
@@ -23,23 +25,6 @@ public:
 
 	void Disconnect();
 
-	//플레이어 움직임 설정 함수
-	void SetPlayerMovement(PACKET* pack);
-
-	// 플레이어를 스폰 한다.
-	void SpawnPlayers();
-	
-
-	std::string GetNickname() const
-	{
-		return nickname;
-	}
-
-	void SetNickname(std::string nickname)
-	{
-		this->nickname = nickname;
-	}
-
 	int GetId() const { return id; }
 
 	SOCKET GetSocket() const { return mSocket; }
@@ -54,8 +39,7 @@ private:
 	int id;
 	
 	Vector3 pos;
+	User* user;
 
-	std::string nickname;
-	
 	friend class SessionManager;
 };

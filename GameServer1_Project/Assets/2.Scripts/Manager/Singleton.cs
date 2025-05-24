@@ -37,12 +37,12 @@ public class Singleton<T> : MonoBehaviour where T : Component
         {
             Debug.Log($"{typeof(T)} set to Don't DestroyOnLoad Object");
             instance = this as T;
-            DontDestroyOnLoad(gameObject.transform.root.gameObject);
+            // DontDestroyOnLoad(gameObject.transform.root.gameObject);
         }
         else
         {
             Debug.Log($"{typeof(T)} object was destroyed");
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 }
