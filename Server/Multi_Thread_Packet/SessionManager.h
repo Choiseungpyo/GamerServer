@@ -5,8 +5,7 @@
 클라이언트 증감이나 생성, 파괴등을 맡음.
 접근 제한을 위해 CRITICAL_SECTION을 사용함.
 추후 변경 가능.
-클라이언트 관리를 위한 stl list 사용
-추후 stl map으로 변경 예정.
+클라이언트 관리를 위한 stl unorderer_map 사용
 */
 
 class ClientSession;
@@ -14,7 +13,7 @@ class ClientSession;
 class SessionManager
 {
 public:
-	SessionManager() : mClientCount(0)
+	SessionManager()
 	{
 		clientMap.clear();
 		InitializeCriticalSection(&cs);
@@ -23,17 +22,17 @@ public:
 
 	static SessionManager* GetInstance();
 
-	ClientSession* CreateClient(SOCKET sock);
+	static ClientSession* CreateClient(SOCKET sock);
 
-	void DeleteClient(SOCKET sock, ClientSession* client);
+	static void DeleteClient(SOCKET sock, ClientSession* client);
 
-	int IncreaseClientCount();
-	int DecreaseClientCount();
+	static int IncreaseClientCount();
+	static int DecreaseClientCount();
 
-	void Broadcast(Packet* packet);
-	void BroadcastExceptOneself(Packet* packet, ClientSession* oneself);
+	static void Broadcast(const Packet* packet);
+	static void BroadcastExceptOneself(const Packet* packet, ClientSession* oneself);
 
-	void SendTo(Packet* packet, SOCKET targetSocket)
+	static void SendTo(const Packet* packet, SOCKET targetSocket)
 	{
 		EnterCriticalSection(&cs);
 		
@@ -52,7 +51,7 @@ public:
 		LeaveCriticalSection(&cs);
 	}
 
-	void SetClients_FDSET(fd_set& readfds)
+	static void SetClients_FDSET(fd_set& readfds)
 	{
 		for (const auto& pair : clientMap) {
 			ClientSession* clientSession = pair.second; 
@@ -62,10 +61,10 @@ public:
 		}
 	}
 
-	int GetClientSize() const { return mClientCount; }
+	static int GetClientSize() { return mClientCount; }
 
 
-	ClientSession* GetClient(SOCKET sock)
+	static ClientSession* GetClient(SOCKET sock)
 	{
 		auto it = clientMap.find(sock);
 
@@ -80,10 +79,10 @@ public:
 
 private:
 	static SessionManager* instance;
-	unordered_map<SOCKET, ClientSession*> clientMap;
+	static unordered_map<SOCKET, ClientSession*> clientMap;
 
-	int mClientCount;
+	static int mClientCount;
 
 
-	CRITICAL_SECTION cs;
+	static CRITICAL_SECTION cs;
 };

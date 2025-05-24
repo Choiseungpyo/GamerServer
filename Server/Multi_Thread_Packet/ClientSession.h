@@ -16,18 +16,31 @@ class ClientSession
 {
 public:
 	ClientSession(SOCKET sock);
-	~ClientSession() {}
+	
+	~ClientSession();
 
 	bool	OnConnect(SOCKADDR_IN* addr);
 	bool	IsConnected() const { return mConnected; }
 
-	bool Send(Packet * pack);
+	bool Send(const Packet * pack);
 
 	void Disconnect();
 
 	int GetId() const { return id; }
 
 	SOCKET GetSocket() const { return mSocket; }
+	User* GetUser() const {return user; }
+
+	// 패킷 파싱시 하는 함수들
+	void EntryLobby() 
+	{
+		user->SetState(LOBBY);
+	}
+
+	void MoveTitle() 
+	{
+		user->SetState(TITLE);
+	}
 
 private:
 	SessionManager* sessionManager;
@@ -38,7 +51,6 @@ private:
 	
 	int id;
 	
-	Vector3 pos;
 	User* user;
 
 	friend class SessionManager;

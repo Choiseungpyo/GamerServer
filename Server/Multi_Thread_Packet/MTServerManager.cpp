@@ -2,6 +2,7 @@
 #include "MTServerManager.h"
 #include "ClientSession.h"
 #include "SessionManager.h"
+#include "LobbyManager.h"
 
 HWND MTServerManager::g_hMsgWnd = NULL;
 MTServerManager* GMTServerManager = nullptr;
@@ -106,6 +107,33 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 
 	switch (packet->Type)
 	{
+		case C_S_ENTRY_LOBBY: // 로비 입장 버튼 누른 경우
+			client->EntryLobby();
+			break;
+
+		case C_S_LOGOUT: // 게임 종료 버튼 누른 경우
+			SessionManager::DeleteClient(client->GetSocket(), client);
+			break;
+
+			// 방 목록에서 특정 방 클릭시 입장하는 경우
+		case C_S_ENTRY_ROOM:
+			LobbyManager::EntryRoom(packet, client);
+			break;
+
+			// 방 생성 버튼을 누른 경우
+		case C_S_CREATE_ROOM:
+			LobbyManager::CreateRoom(packet, client);
+			break;
+
+			// 랜덤 입장 버튼을 누른 경우
+		case C_S_ENTRY_RANDOMROOM:
+			LobbyManager::EntryRandomRoom(client);
+			break;
+
+		case C_S_MOVE_TITLE: // Exit 버튼 누른 경우
+			client->MoveTitle();
+			break;
+
 	case C_PLAYER_MOVE:
 		//client->SetPlayerMovement(packet);
 		break;
@@ -190,7 +218,7 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 		{
 			SOCKET sock = (SOCKET)wParam;
 			ClientSession* client = sessionManager->GetClient(sock);
-			
+
 			if (!client)
 				return false;
 

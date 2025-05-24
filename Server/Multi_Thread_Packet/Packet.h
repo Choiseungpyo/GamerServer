@@ -134,7 +134,7 @@ typedef struct PACKET_S_C_ENTRY_ROOM : PACKET
 		roomNo = 0;
 	}
 
-}Packet_c_s_entry_room;
+}Packet_s_c_entry_room;
 #pragma pack(pop)
 
 
@@ -142,26 +142,10 @@ typedef struct PACKET_S_C_ENTRY_ROOM : PACKET
 typedef struct PACKET_C_S_CREATE_ROOM : PACKET
 {
 	int id;
-	int roomNo;
-
-	PACKET_C_S_CREATE_ROOM() {	//패킷 초기화
-		Type = C_S_CREATE_ROOM;
-		Length = sizeof(*this);
-		id = 0;
-		roomNo = 0;
-	}
-
-}Packet_c_s_create_room;
-#pragma pack(pop)
-
-#pragma pack(push,1)
-typedef struct PACKET_S_C_CREATE_ROOM : PACKET
-{
-	int id;
 	char roomName[ROOM_NAME_SIZE];
 	MatchType matchType;
 
-	PACKET_S_C_CREATE_ROOM() {	//패킷 초기화
+	PACKET_C_S_CREATE_ROOM() {	//패킷 초기화
 		Type = C_S_CREATE_ROOM;
 		Length = sizeof(*this);
 		id = 0;
@@ -172,6 +156,24 @@ typedef struct PACKET_S_C_CREATE_ROOM : PACKET
 }Packet_c_s_create_room;
 #pragma pack(pop)
 
+typedef struct PACKET_S_C_CREATE_ROOM : PACKET
+{
+	int id;
+	int roomNo;
+	char roomName[ROOM_NAME_SIZE];
+	MatchType matchType;
+
+	PACKET_S_C_CREATE_ROOM() {	//패킷 초기화
+		Type = C_S_CREATE_ROOM;
+		Length = sizeof(*this);
+		id = 0;
+		roomNo = 0;
+		memset(roomName, 0, sizeof(*this));
+		matchType = SOLO;
+	}
+
+}Packet_s_c_create_room;
+#pragma pack(pop)
 
 #pragma pack(push,1)
 typedef struct PACKET_S_C_SPAWN : PACKET
@@ -198,7 +200,7 @@ typedef struct PACKET_C_S_MOVE : PACKET
 		Directions = 0;
 	}
 
-}Packet_c_s_  move;
+}Packet_c_s_move;
 #pragma pack(pop)
 
 

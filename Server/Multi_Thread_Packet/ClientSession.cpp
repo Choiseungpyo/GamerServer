@@ -6,6 +6,14 @@
 ClientSession::ClientSession(SOCKET sock) : mSocket(sock), mConnected(false), id(0), sessionManager(SessionManager::GetInstance())
 {
 	memset(&mClientAddr, 0, sizeof(SOCKADDR_IN));
+	 
+}
+
+ClientSession::~ClientSession()
+{
+	if (user)
+		delete user;
+	delete sessionManager;
 }
 
 /*
@@ -44,7 +52,7 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 인자값 : Packet * pack
 기능 : 전달받은 Packet을 client에 전송함.
 */
-bool ClientSession::Send(Packet * pack)
+bool ClientSession::Send(const Packet * pack)
 {
 	if (!IsConnected())
 		return false;

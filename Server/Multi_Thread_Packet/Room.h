@@ -1,7 +1,9 @@
 #pragma once
+#include <unordered_map>
 #include "Game.h"
 #include <unordered_set>
 
+class ClientSession;
 class User;
 
 enum TeamType {
@@ -52,60 +54,32 @@ struct RoomOption
 class Room
 {
 	// int : id값
-	unordered_map<int, const ClientSession*> clientMap; 
+	unordered_map<int, const ClientSession*> clientMap;
 	unordered_map<int, RoomUserInfo> roomUserInfoMap;
 	unordered_set<int> redTeamIds;
 	unordered_set<int> blueTeamIds;
-	
+
 	int no;
 	string name;
 	RoomState state;
 	MatchType matchType;
-	    
+
 	Game game;
 
 
 public:
-	Room(int no, RoomOption roomOption) 
-		:no(no), name(roomOption.roomName), state(WAITING), matchType(roomOption.matchType)
-	{}
-	
+	Room(int no, const RoomOption& roomOption);
+	~Room();
+
 	void SetNo(int no) { this->no = no; }
-	
+
 	void SetName(const string& name) { this->name = name; }
-	
-	void AddUser(const ClientSession* client)
-	{
-		clientMap[client->GetSocket()] = client;
-		int clientId = client->GetId();
 
-		TeamType teamType = JoinAvailableTeam(client->GetId());
-		roomUserInfoMap[clientId] = RoomUserInfo(teamType);
-	}
+	void AddUser(const ClientSession* client);
 
-	TeamType JoinAvailableTeam(int clientId)
-	{
-		if (redTeamIds.size() >= (int)matchType) {
-			blueTeamIds.insert(clientId);
-			return BLUE;
-		}
-	
-		redTeamIds.insert(clientId);
-		return RED;
-	}
+	TeamType JoinAvailableTeam(int clientId);
 
-	bool CanJoinRoom()
-	{
-		// 게임 중일 경우
-		if (state == PLAYING)
-			return false;
-
-		// 최대 인원에 도달했을 경우
-		if (clientMap.size() >= (int)matchType)
-			return false;
-
-		return true;
-	}
+	bool CanJoinRoom();
 
 };
 

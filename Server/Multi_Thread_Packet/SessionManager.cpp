@@ -80,7 +80,7 @@ int SessionManager::DecreaseClientCount()
 	return mClientCount;
 }
 
-void SessionManager::Broadcast(Packet* packet)
+void SessionManager::Broadcast(const Packet* packet)
 {
 	EnterCriticalSection(&cs);
 
@@ -95,7 +95,7 @@ void SessionManager::Broadcast(Packet* packet)
 	LeaveCriticalSection(&cs);
 }
 
-void SessionManager::BroadcastExceptOneself(Packet* packet, ClientSession* oneself)
+void SessionManager::BroadcastExceptOneself(const Packet* packet, ClientSession* oneself)
 {
 	EnterCriticalSection(&cs);
 
