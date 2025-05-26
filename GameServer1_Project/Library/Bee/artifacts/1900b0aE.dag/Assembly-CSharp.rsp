@@ -363,6 +363,7 @@
 "Assets/2.Scripts/Manager/PanelManager.cs"
 "Assets/2.Scripts/Manager/Singleton.cs"
 "Assets/2.Scripts/Manager/SoundManager.cs"
+"Assets/2.Scripts/Manager/UIManager.cs"
 "Assets/2.Scripts/ObjectPool/ObjectPoolBase.cs"
 "Assets/2.Scripts/ObjectPool/PoolableObject.cs"
 "Assets/2.Scripts/Play/Player.cs"

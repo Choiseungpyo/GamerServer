@@ -22,7 +22,7 @@ typedef enum PTYPE
 
 	// 방 생성 버튼을 누른 경우
 	C_S_CREATE_ROOM, 
-	S_C_CREATE_ROOM,
+	S_C_CREATE_ROOM, 
 
 	// 랜덤 입장 버튼을 누른 경우
 	C_S_ENTRY_RANDOMROOM,
@@ -121,17 +121,12 @@ typedef struct PACKET_C_S_ENTRY_ROOM : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_S_C_ENTRY_ROOM : PACKET
+typedef struct PACKET_S_C_ENTRY_ROOM : PACKET_C_S_ENTRY_ROOM
 {
-	int id;
-	int roomNo;
 	TeamType teamType;
-
-	PACKET_S_C_ENTRY_ROOM() {	//패킷 초기화
-		Type = S_C_ENTRY_ROOM;
-		Length = sizeof(*this);
-		id = 0;
-		roomNo = 0;
+	PACKET_S_C_ENTRY_ROOM() : PACKET_C_S_ENTRY_ROOM()
+	{
+		teamType = RED;  // 적절한 초기값으로 대입. 예시로 NONE 사용.
 	}
 
 }Packet_s_c_entry_room;

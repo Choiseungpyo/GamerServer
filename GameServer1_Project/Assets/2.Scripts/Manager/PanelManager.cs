@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PanelType
+public enum PanelType : int
 {
-    LOBBY=0,
-    ROOMOPTION=1,
-    ROOM=2
+    TITLE=0,
+    LOBBY,
+    ROOMOPTION,
+    ROOM
 }
 
 public class PanelManager : Singleton<PanelManager>
@@ -15,32 +16,10 @@ public class PanelManager : Singleton<PanelManager>
 
     private void Start()
     {
-        HideAllPanel();
-        ActivateOnly(PanelType.LOBBY);
+        Activate(PanelType.TITLE);
     }
 
-    private void HideAllPanel()
-    {
-        for (int i = 0; i < panels.Count; i++)
-            SetPanelState((PanelType)i, false);
-    }
-
-    public void SetPanelState(PanelType panelType, bool value)
-    {
-        GameObject panel = panels[(int)panelType];
-        if (panel)
-            panel.SetActive(value);
-        else
-            Debug.LogWarning(panelType);
-    }
-
-    public void ActivateOnly(PanelType panelType)
-    {
-        foreach (var panel in panels)
-            panel.SetActive(panel == panels[(int)panelType]);
-    }
-
-    public void ActivateOnly(params PanelType[] panelTypes)
+    public void Activate(params PanelType[] panelTypes)
     {
         foreach (var panel in panels)
         {

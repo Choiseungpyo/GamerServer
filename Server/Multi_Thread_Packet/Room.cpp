@@ -5,6 +5,8 @@ Room::Room(int no, const RoomOption& roomOption)
 	:no(no), name(roomOption.roomName), state(WAITING), matchType(roomOption.matchType)
 {}
 
+Room::~Room() {}
+
 
 void Room::AddUser(const ClientSession* client)
 {

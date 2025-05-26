@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum TeamType
+public enum TeamType : int
 {
     RED,
     BLUE

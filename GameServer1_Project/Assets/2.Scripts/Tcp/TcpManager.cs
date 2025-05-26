@@ -2,6 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
+using UnityEditor.Sprites;
 using UnityEngine;
 
 public class TcpManager : Singleton<TcpManager>, IListener
@@ -85,36 +86,76 @@ public class TcpManager : Singleton<TcpManager>, IListener
                     Buffer.BlockCopy(bodyBytes, 0, fullPacket, headerSize, bodySize);
 
                     // 5단계: 패킷 타입에 따라 역직렬화
-                    switch (type)
-                    {
-                        case (int)PTYPE.S_ID:
-                            {
-                                PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
-                                id = packet.Id;
-                            }
-                            break;
-
-                        case (int)PTYPE.S_PLAYER_SPAWN:
-                            {
-                                PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
-                                EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PLAYER, this, packet);
-                            }
-                            break;
-
-                        case (int)PTYPE.S_PLAYER_MOVE:
-                            {
-                                PACKET_S_MOVE packet = BytesToStruct<PACKET_S_MOVE>(fullPacket);
-                                EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this, packet);
-                            }
-                            break;
-
-                    }
+                  
                 }
             }
         }
         //catch (Exception ex)
         {
             //AppendMessage("수신 중 오류: " + ex.Message);
+        }
+    }
+
+    private void PacketParsing(PTYPE type, byte[] fullPacket)
+    {
+        switch (type)
+        {
+            case PTYPE.NONE:
+                break;
+
+            // Title
+            case PTYPE.S_C_ID:
+                {
+                    PACKET_S_C_ID packet = BytesToStruct<PACKET_S_C_ID>(fullPacket);
+                    id = packet.Id;
+                    EntityManager.Instance.CurrUserId = packet.Id;
+                }
+                break;
+
+            // Lobby
+            // 방 목록에서 특정 방 클릭시 입장
+            case PTYPE.S_C_ENTRY_ROOM:
+                {
+                    PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
+                    
+                }
+                break;
+
+            // 방 생성
+            case PTYPE.S_C_CREATE_ROOM:
+                break;
+
+            // 랜덤 입장
+            case PTYPE.S_C_ENTRY_RANDOMROOM:
+                break;
+
+            // 타이틀로 이동
+            case PTYPE.S_C_MOVE_TITLE:
+                break;
+
+            // Room
+            case PTYPE.S_PLAYER_SPAWN:
+                {
+                    PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
+                    EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PLAYER, this, packet);
+                }
+                break;
+            case PTYPE.C_PLAYER_MOVE:
+                {
+                    //PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
+                    //id = packet.Id;
+                 
+                }
+                break;
+            case PTYPE.S_PLAYER_MOVE:
+                {
+                    PACKET_S_MOVE packet = BytesToStruct<PACKET_S_MOVE>(fullPacket);
+                    EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this, packet);
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -198,23 +239,35 @@ public class TcpManager : Singleton<TcpManager>, IListener
         return directionsByte;
     }
 
+    public void Send<T>(T packet) where T : struct, IPacket
+    {
+        uint size = (uint)Marshal.SizeOf<T>();
+        var type = typeof(T);
+        var lengthProp = type.GetProperty(nameof(IPacket.Length));
+        lengthProp?.SetValue(packet, size);
+
+        byte[] bytes = StructToBytes(packet);
+        stream.Write(bytes, 0, bytes.Length);
+        stream.Flush();
+    }
+
     public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)
     {
         switch(EventType)
         {
             case EVENT_TYPE.SEND_PLAYER_MOVEMENT:
                 {
-                    byte data = GetByteFromBoolArray((bool[])Param);
-                    Debug.Log("이벤트 수신 : PlayerMovement");
-                    PACKET_C_MOVE packet = new PACKET_C_MOVE
-                    {
-                        Type = (int)PTYPE.C_PLAYER_MOVE,
-                        Directions = data
-                    };
-                    packet.Length = (uint)Marshal.SizeOf(typeof(PACKET_C_MOVE));
-                    byte[] bytes = StructToBytes(packet);
-                    stream.Write(bytes, 0, bytes.Length);
-                    stream.Flush();
+                    //byte data = GetByteFromBoolArray((bool[])Param);
+                    //Debug.Log("이벤트 수신 : PlayerMovement");
+                    //PACKET_C_MOVE packet = new PACKET_C_MOVE
+                    //{
+                    //    Type = (int)PTYPE.C_PLAYER_MOVE,
+                    //    Directions = data
+                    //};
+                    //packet.Length = (uint)Marshal.SizeOf(typeof(PACKET_C_MOVE));
+                    //byte[] bytes = StructToBytes(packet);
+                    //stream.Write(bytes, 0, bytes.Length);
+                    //stream.Flush();
                 }
                 break;
             case EVENT_TYPE.SEND_USER_NICKNAME:

@@ -33,6 +33,6 @@ public:
 	/// </summary>
 	static void EntryRandomRoom(const ClientSession* client);
 
-	static void EntryRoom(const Packet* pack, const ClientSession* client);
+	static void EntryRoom(const Packet* packet, const ClientSession* client);
 };
 

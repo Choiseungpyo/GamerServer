@@ -8,7 +8,13 @@ public class EntityManager : Singleton<EntityManager>, IListener
 
     Dictionary<int, Player> players;
     [SerializeField] int maxPlayerNum;
-    int currPlyerId;
+    int currUserId;
+
+    public int CurrUserId
+    {
+        get { return currUserId; }
+        set { currUserId = value; }
+    }
 
     public int MaxPlayerNum
     {
@@ -22,7 +28,7 @@ public class EntityManager : Singleton<EntityManager>, IListener
         EventManager.Instance.AddListener(EVENT_TYPE.ADD_PLAYER, this);
         EventManager.Instance.AddListener(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this);
 
-        currPlyerId = TcpManager.Instance.Id;
+        currUserId = TcpManager.Instance.Id;
 
         GameObject playerObj = Instantiate(player_Prefabs[0]);
 
@@ -68,7 +74,7 @@ public class EntityManager : Singleton<EntityManager>, IListener
 
     public bool IsCurrPlayer(int id)
     {
-        return currPlyerId == id;
+        return currUserId == id;
     }
 
     private void SetPlayerPos(int id, Vector3 pos)

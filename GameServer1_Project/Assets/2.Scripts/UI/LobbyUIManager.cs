@@ -87,7 +87,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
 
     private void ShowCreateRoomUI()
     {
-        PanelManager.Instance.SetPanelState(PanelType.ROOMOPTION, true);
+        PanelManager.Instance.Activate(PanelType.LOBBY, PanelType.ROOMOPTION);
     }
 
     private void Exit()

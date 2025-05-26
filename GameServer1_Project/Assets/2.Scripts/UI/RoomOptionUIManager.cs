@@ -128,6 +128,6 @@ public class RoomOptionUIManager : Singleton<RoomOptionUIManager>
 
     private void Cancle()
     {
-        PanelManager.Instance.SetPanelState(PanelType.ROOMOPTION, false);
+        PanelManager.Instance.Activate(PanelType.LOBBY);
     }
 }

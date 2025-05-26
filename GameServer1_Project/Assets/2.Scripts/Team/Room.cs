@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum RoomState
+public enum RoomState : int
 {
     WATING,
     PLAYING
 }
 
-public enum MatchType
+public enum MatchType : int
 {
     Solo=1,
     Duo=2,
