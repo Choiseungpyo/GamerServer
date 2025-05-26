@@ -16,29 +16,14 @@ class User
 	int currRoomNum; // -1 : 방에 들어가지 않음
 
 public:
-	User()
-		:name(""), state(TITLE), currRoomNum(-1)
-	{
+	User();
 
-	}
+	~User();
 
-	~User()
-	{
-	}
-
-	void SetName(const string& name)
-	{
-		this->name = name;
-	}
+	void SetName(const string& name);
 	
-	void SetState(UserState state)
-	{
-		this->state = state;
-	}
+	void SetState(UserState state);
 
-	void SetRoomNum(int roomNum)
-	{
-		currRoomNum = roomNum;
-	}
+	void SetRoomNum(int roomNum);
 };
 

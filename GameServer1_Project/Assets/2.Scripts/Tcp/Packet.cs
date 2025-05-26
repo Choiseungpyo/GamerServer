@@ -26,6 +26,7 @@ public enum PTYPE :int
     C_S_LOGOUT, // 게임 종료 버튼 누른 경우
 
     // Lobby
+    S_C_ENTRY_LOBBY, // 유저 프로필 전달
     // 방 목록에서 특정 방 클릭시 입장하는 경우
     C_S_ENTRY_ROOM,
     S_C_ENTRY_ROOM,
@@ -55,7 +56,7 @@ public interface IPacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_C_ID : IPacket
+public struct PACKET_ID : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
@@ -63,7 +64,7 @@ public struct PACKET_S_C_ID : IPacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-public struct PACKET_C_S_ENTRY_LOBBY : IPacket
+public struct PACKET_S_C_ENTRY_LOBBY : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }

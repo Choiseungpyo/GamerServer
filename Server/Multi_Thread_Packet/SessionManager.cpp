@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-
-
 SessionManager* SessionManager::instance = nullptr;
-
+unordered_map<SOCKET, ClientSession*> SessionManager::clientMap;
+int SessionManager::mClientCount = 0;
+CRITICAL_SECTION SessionManager::cs;
 
 SessionManager::~SessionManager()
 {
@@ -29,12 +29,18 @@ SessionManager* SessionManager::GetInstance()
 ClientSession * SessionManager::CreateClient(SOCKET sock)
 {
 	auto it = clientMap.find(sock);
-	if (it != clientMap.end()) {
-		cout << "create ClientSession.." << endl;
-		clientMap[sock] = new ClientSession(sock);
-		return clientMap[sock];
+
+	// 소켓이 없다면
+	if (it == clientMap.end()) {
+		std::cout << "create ClientSession.." << std::endl;
+		ClientSession* newClient = new ClientSession(sock);
+		clientMap[sock] = newClient;
+		return newClient;
 	}
-	std::cout << "Warning : Client Socket[" << sock << "] is already created. " << std::endl;
+
+	// 이미 존재하는 소켓이라면
+	std::cout << "Warning : Client Socket[" << sock << "] is already created." << std::endl;
+	return it->second;  // 이미 있는 클라이언트
 }
 
 /*
@@ -111,4 +117,49 @@ void SessionManager::BroadcastExceptOneself(const Packet* packet, ClientSession*
 	}
 
 	LeaveCriticalSection(&cs);
+}
+
+void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
+{
+	EnterCriticalSection(&cs);
+
+	auto it = clientMap.find(targetSocket);
+
+	// 키 값이 있는 경우
+	if (it != clientMap.end()) {
+		ClientSession* client = it->second;
+		client->Send(packet);
+	}
+	// 키 값이 없는 경우
+	else
+		cout << "target socket : " << targetSocket << " 존재하지 않음";
+
+
+	LeaveCriticalSection(&cs);
+}
+
+void SessionManager::SetClients_FDSET(fd_set& readfds)
+{
+	for (const auto& pair : clientMap) {
+		ClientSession* clientSession = pair.second;
+		if (clientSession) {
+			FD_SET(clientSession->mSocket, &readfds);
+		}
+	}
+}
+
+int SessionManager::GetClientSize() { return mClientCount; }
+
+
+ClientSession* SessionManager::GetClient(SOCKET sock)
+{
+	auto it = clientMap.find(sock);
+
+	// 키 값이 있는 경우
+	if (it != clientMap.end()) {
+		return it->second;
+	}
+
+	cout << "socket : " << sock << " 존재하지 않음";
+	return nullptr;
 }

@@ -21,7 +21,7 @@ public class TcpManager : Singleton<TcpManager>, IListener
 
     void Start()
     {
-        id = 0;
+        id = -1;
 
         EventManager.Instance.AddListener(EVENT_TYPE.SEND_PLAYER_MOVEMENT, this);
         EventManager.Instance.AddListener(EVENT_TYPE.SEND_USER_NICKNAME, this);
@@ -70,7 +70,7 @@ public class TcpManager : Singleton<TcpManager>, IListener
                 int bodySize = (int)(length - headerSize);
                 if (bodySize > 0)
                 {
-                    Debug.Log(bodySize);
+                    //Debug.Log(bodySize);
                     byte[] bodyBytes = new byte[bodySize];
                     int totalRead = 0;
                     while (totalRead < bodySize)
@@ -86,7 +86,7 @@ public class TcpManager : Singleton<TcpManager>, IListener
                     Buffer.BlockCopy(bodyBytes, 0, fullPacket, headerSize, bodySize);
 
                     // 5단계: 패킷 타입에 따라 역직렬화
-                  
+                    PacketParsing((PTYPE)type, fullPacket);
                 }
             }
         }
@@ -106,9 +106,20 @@ public class TcpManager : Singleton<TcpManager>, IListener
             // Title
             case PTYPE.S_C_ID:
                 {
-                    PACKET_S_C_ID packet = BytesToStruct<PACKET_S_C_ID>(fullPacket);
+                    PACKET_ID packet = BytesToStruct<PACKET_ID>(fullPacket);
+                    // 이미 id이 할당된 경우 => 다른 플레이어
+                    if (id != -1)
+                        return;
                     id = packet.Id;
                     EntityManager.Instance.CurrUserId = packet.Id;
+                }
+                break;
+
+            case PTYPE.S_C_ENTRY_LOBBY:
+                {
+                    PACKET_S_C_ENTRY_LOBBY packet = BytesToStruct<PACKET_S_C_ENTRY_LOBBY>(fullPacket);
+
+                    PanelManager.Instance.Activate(PanelType.LOBBY);
                 }
                 break;
 
@@ -239,7 +250,71 @@ public class TcpManager : Singleton<TcpManager>, IListener
         return directionsByte;
     }
 
-    public void Send<T>(T packet) where T : struct, IPacket
+    public void SendToServer(PTYPE pType, object param = null)
+    {
+        switch (pType)
+        {
+
+            case PTYPE.C_S_CREATE_ROOM:
+                {
+                    var packet = new PACKET_C_S_CREATE_ROOM();
+
+                    // 방 이름, 매치 타입
+                    packet.Length = (uint)Marshal.SizeOf<PACKET_C_S_CREATE_ROOM>();
+
+                    if (param is Tuple<string, MatchType> data)
+                    {
+                        packet.Id = id;
+                        packet.RoomName = data.Item1;
+                        packet.MatchType = data.Item2;
+                    }
+
+                    Send(packet);
+                }
+                break;
+
+            case PTYPE.C_S_ENTRY_ROOM:
+                {
+                    var packet = new PACKET_C_S_ENTRY_ROOM();
+
+                    // 방 번호
+                    packet.Length = (uint)Marshal.SizeOf<PACKET_C_S_ENTRY_ROOM>();
+
+                    if (param is int data)
+                    {
+                        packet.Id = id;
+                        packet.RoomNo = data;
+                    }
+
+                    Send(packet);
+                }
+                break;
+
+            // ID 값만 전달하는 경우
+            case PTYPE.C_S_ENTRY_LOBBY:
+            case PTYPE.C_S_ENTRY_RANDOMROOM:
+            case PTYPE.C_S_LOGOUT:
+            case PTYPE.C_S_MOVE_TITLE:
+                {
+                    var packet = new PACKET_ID();
+
+                    // 방 번호
+                    packet.Length = (uint)Marshal.SizeOf<PACKET_ID>();
+                    packet.Type = pType;
+                    packet.Id = id;
+
+                    Send(packet);
+                }
+                break;
+
+            default:
+                Debug.LogWarning($"pType : {pType}  param:{param}");
+                break;
+        }
+       
+    }
+
+    private void Send<T>(T packet) where T : struct, IPacket
     {
         uint size = (uint)Marshal.SizeOf<T>();
         var type = typeof(T);

@@ -184,7 +184,11 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 		case FD_ACCEPT:
 		{
 			SOCKET hsoListen = (SOCKET)wParam;
-			SOCKET sock = accept(hsoListen, NULL, NULL);
+
+			SOCKADDR_IN clientAddr;
+			int addrlen = sizeof(clientAddr);
+
+			SOCKET sock = accept(hsoListen, (SOCKADDR*)&clientAddr, &addrlen);
 			if (sock == INVALID_SOCKET)
 			{
 				cout << "accept failed, code : " << WSAGetLastError() << endl;
@@ -194,17 +198,13 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 			WSAAsyncSelect(sock, hWnd, WM_ASYNC_SOCKET, FD_READ | FD_CLOSE);
 			s_pSocks->insert(sock);
 
-			//++
-			SOCKADDR_IN clientAddr;
-			int AddrLen = sizeof(clientAddr);
-			getpeername(sock, (SOCKADDR*)&clientAddr, &AddrLen);
-
 			ClientSession* client = sessionManager->CreateClient(sock);
-
-			//클라 접속 처리.
+			
+			// 클라이언트 접속 처리.
 			if (client->OnConnect(&clientAddr))
 			{
-				// ID, 랜덤 이름 보내기
+				// S_C_ID, 랜덤 이름 보내기
+				client->Send(S_C_ID);
 			}
 			else
 			{
@@ -294,7 +294,7 @@ bool MTServerManager::InitServer()
 	g_hMsgWnd = hWnd;
 	cout << " ==> Creating hidden window success!!!" << endl;
 
-	m_hsoListen = GetListenSocket(9001);
+	m_hsoListen = GetListenSocket(PORT);
 	if (m_hsoListen == INVALID_SOCKET)
 	{
 		WSACleanup();

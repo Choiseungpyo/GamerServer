@@ -378,6 +378,7 @@
 "Assets/2.Scripts/UI/RoomInfoUI/RoomInfoUIPool.cs"
 "Assets/2.Scripts/UI/RoomOptionUIManager.cs"
 "Assets/2.Scripts/UI/RoomUIManager.cs"
+"Assets/2.Scripts/UI/Title.cs"
 "Assets/2.Scripts/UI/Txt/Txt.cs"
 "Assets/2.Scripts/UI/Txt/TxtPool.cs"
 "Assets/2.Scripts/UI/UserIcon.cs"

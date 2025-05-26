@@ -3,6 +3,7 @@
 #include "MTServerManager.h"
 #include "SessionManager.h"
 
+
 ClientSession::ClientSession(SOCKET sock) : mSocket(sock), mConnected(false), id(0), sessionManager(SessionManager::GetInstance())
 {
 	memset(&mClientAddr, 0, sizeof(SOCKADDR_IN));
@@ -90,4 +91,16 @@ void ClientSession::Disconnect()
 	closesocket(mSocket);
 	
 	mConnected = false;
+}
+
+void ClientSession::EntryLobby()
+{
+	user = new User();
+	user->SetState(LOBBY);
+	Send(S_C_ENTRY_LOBBY);
+}
+
+void ClientSession::MoveTitle()
+{
+	user->SetState(TITLE);
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum PanelType : int
@@ -21,11 +22,15 @@ public class PanelManager : Singleton<PanelManager>
 
     public void Activate(params PanelType[] panelTypes)
     {
-        foreach (var panel in panels)
+        for (int i = 0; i < panels.Count(); i++)
         {
-            // 활성화할 대상 배열에 포함되어 있으면 true, 아니면 false
-            bool shouldActivate = System.Array.IndexOf(panelTypes, panel) >= 0;
-            panel.SetActive(shouldActivate);
+            int index = i; // 캡처용 지역 변수
+            bool value = panelTypes.Contains((PanelType)index);
+
+            TcpManager.Instance.RegisterJop(() =>
+            {
+                panels[index].SetActive(value);
+            });
         }
     }
 }

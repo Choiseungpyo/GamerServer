@@ -9,12 +9,12 @@ typedef enum PTYPE
 	// A_B_COMMAND : A -> B 로 COMMAND 패킷 전달
 	NONE,
 	// Title
-	S_C_ID, // 클라 고유 ID 전달
+	S_C_ID, // 클라 고유 S_C_ID 전달
 	C_S_ENTRY_LOBBY, // 로비 입장 버튼 누른 경우
 	C_S_LOGOUT, // 게임 종료 버튼 누른 경우
 
 	// Lobby
-	S_C_USER_PROFILE, // 유저 프로필 전달
+	S_C_ENTRY_LOBBY, // 유저 프로필 전달
 
 	// 방 목록에서 특정 방 클릭시 입장하는 경우
 	C_S_ENTRY_ROOM, 
@@ -72,19 +72,19 @@ typedef struct PACKET_S_C_ID : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_C_S_ENTRY_LOBBY : PACKET
+typedef struct PACKET_S_C_ENTRY_LOBBY : PACKET
 {
 	int id;
 	char name[NAME_SIZE];
 
-	PACKET_C_S_ENTRY_LOBBY() {	//패킷 초기화
-		Type = C_S_ENTRY_LOBBY;
+	PACKET_S_C_ENTRY_LOBBY() {	//패킷 초기화
+		Type = S_C_ENTRY_LOBBY;
 		Length = sizeof(*this);
 		id = 0;
 		memset(name, 0, sizeof(name));
 	}
 
-}Packet_c_s_entry_lobby;
+}Packet_s_c_entry_lobby;
 #pragma pack(pop)
 
 

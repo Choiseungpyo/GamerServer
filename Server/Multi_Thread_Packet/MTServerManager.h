@@ -8,8 +8,10 @@ extern 부분을 나중에 싱글턴으로 변경예정.
 #include "Winsock2.h"
 #include "set"
 
+#define PORT 8080
 
 #define WM_ASYNC_SOCKET	WM_USER + 500
+
 typedef std::set<SOCKET> SOCK_SET;
 
 
