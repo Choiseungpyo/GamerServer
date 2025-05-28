@@ -134,7 +134,6 @@ void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
 	else
 		cout << "target socket : " << targetSocket << " 존재하지 않음";
 
-
 	LeaveCriticalSection(&cs);
 }
 

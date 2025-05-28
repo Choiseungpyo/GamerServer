@@ -67,6 +67,20 @@ void  LobbyManager::CreateRoom(const Packet* packet, const ClientSession* client
 	roomMap[roomMap.size()] = newRoom;
 
 	newRoom->AddUser(client);
+
+	std::vector<char> buffer;
+	Packet_RoomUsersHeader header;
+	header.roomId = 1001;
+	header.userCount = userList.size();
+	header.Length += userList.size() * sizeof(UserInfo);
+
+	buffer.resize(header.Length);
+	memcpy(buffer.data(), &header, sizeof(header));
+
+	for (int i = 0; i < userList.size(); ++i) {
+		memcpy(buffer.data() + sizeof(header) + i * sizeof(UserInfo), &userList[i], sizeof(UserInfo));
+	}
+	send(clientSocket, buffer.data(), buffer.size(), 0);
 }
 
 /// <summary>

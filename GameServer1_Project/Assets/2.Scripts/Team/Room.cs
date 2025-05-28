@@ -61,12 +61,12 @@ public class Room
     #endregion
 
 
-    public Room(MatchType matchType, int no, string roomName, int maxPeopleNum, Player player)
+    public Room(MatchType matchType, int no, string roomName, Player player)
     {
         this.matchType = matchType;
         this.no = no;
         this.roomName = roomName;
-        this.maxPeopleNum = maxPeopleNum;
+        this.maxPeopleNum = (int)matchType * 2;
 
         currPeopleNum = 1;
         state = RoomState.WATING;
@@ -80,7 +80,6 @@ public class Room
 
         for (int i=0; i<teams.Length; i++)
             teams[i].MaxPeopleNum = (int)matchType;
-
     }
 
     public void SetRoomState(RoomState roomState)

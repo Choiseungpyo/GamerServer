@@ -22,6 +22,13 @@ enum MatchType {
 	SQUAD = 4
 };
 
+struct RoomUserData {
+	int userId;
+	char usreNickname[20];
+	TeamType teamType;
+	unsigned char isReady;
+};
+
 struct RoomUserInfo {
 	TeamType teamType;
 	bool isReady;
@@ -80,6 +87,27 @@ public:
 	TeamType JoinAvailableTeam(int clientId);
 
 	bool CanJoinRoom();
+
+	void tmp()
+	{
+		std::vector<RoomUserData> result;
+
+		for (auto& client : clientMap) {
+			RoomUserInfo& info = roomUserInfoMap[client.first];
+			User* user = client.second->GetUser();
+
+			if (user == nullptr) continue;
+
+			RoomUserData userData;
+			userData.userId = user->;
+			strncpy(dto.nickname, user->nickname.c_str(), sizeof(dto.nickname) - 1);
+			dto.isReady = info.isReady;
+			dto.isHost = info.isHost;
+			dto.team = static_cast<int>(info.team);
+
+			result.push_back(dto);
+		}
+	}
 
 };
 

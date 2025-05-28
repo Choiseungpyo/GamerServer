@@ -134,6 +134,10 @@ public class TcpManager : Singleton<TcpManager>, IListener
 
             // 방 생성
             case PTYPE.S_C_CREATE_ROOM:
+                {
+                    PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket); ;
+                    LobbyUIManager.Instance.CreateRoom(packet);
+                }
                 break;
 
             // 랜덤 입장

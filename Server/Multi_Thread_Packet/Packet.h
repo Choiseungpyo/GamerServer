@@ -32,6 +32,7 @@ typedef enum PTYPE
 	S_C_MOVE_TITLE, // Exit 버튼 누른 경우
 	
 	// Room
+	S_C_GET_ROOM_USERS_INFO,
 
 	S_PLAYER_SPAWN,
 	C_PLAYER_MOVE,
@@ -169,6 +170,32 @@ typedef struct PACKET_S_C_CREATE_ROOM : PACKET
 
 }Packet_s_c_create_room;
 #pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct USER_INFO
+{
+	int userId;
+	char nickname[16];
+	unsigned char isReady;
+	unsigned char isHost;
+}UserInfo;
+#pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
+{
+	int roomId;
+	unsigned char userCount;
+
+	PACKET_S_C_ROOM_USERS_INFO_HEADER() {
+		Type = S_C_GET_ROOM_USERS_INFO;
+		Length = sizeof(PACKET_S_C_ROOM_USERS_INFO_HEADER);  // 이후 동적으로 더함
+		roomId = 0;
+		userCount = 0;
+	}
+}Packet_RoomUsersHeader;
+#pragma pack(pop)
+
 
 #pragma pack(push,1)
 typedef struct PACKET_S_C_SPAWN : PACKET

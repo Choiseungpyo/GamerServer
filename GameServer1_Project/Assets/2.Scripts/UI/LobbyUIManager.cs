@@ -16,7 +16,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     [SerializeField] Transform roomContents;
     [SerializeField] GameObject roomUI_Prefab;
 
-    Dictionary<int, RoomInfoUI> roomUIs;
+    Dictionary<int, LobbyRoomItemUI> roomUIs;
 
     [SerializeField] Button EntryRandomBtn;
     [SerializeField] Button CreateRoomBtn;
@@ -44,7 +44,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
         CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
 
-        roomUIs = new Dictionary<int, RoomInfoUI>();
+        roomUIs = new Dictionary<int, LobbyRoomItemUI>();
     }
 
     private void Update()
@@ -61,18 +61,18 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     }
 
     #region Room
-    public void CreateRoom(Room roomData)
+    public void CreateRoom(PACKET_S_C_CREATE_ROOM packet)
     {
         GameObject newRoomInfoUI_Obj = Instantiate(roomUI_Prefab, roomContents.transform);
-        RoomInfoUI newRoomUIFo = newRoomInfoUI_Obj.GetComponent<RoomInfoUI>();
+        LobbyRoomItemUI newRoomUIFo = newRoomInfoUI_Obj.GetComponent<LobbyRoomItemUI>();
         if (!newRoomUIFo)
         {
             Debug.LogWarning(newRoomUIFo);
             return;
         }
 
-        newRoomUIFo.SetRoomUIData(roomData);
-        roomUIs.Add(roomUIs.Count + 1, newRoomUIFo);
+        newRoomUIFo.InitRoomUIData(packet);
+        roomUIs.Add(packet.RoomNo, newRoomUIFo);
     }
 
     private void DeleteRoom(int roomNo)
@@ -82,14 +82,26 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
 
     private void EntryRandomRoom()
     {
-        LobbyManager.Instance.EntryRandomRoom();
+        TcpManager.Instance.SendToServer(PTYPE.C_S_ENTRY_RANDOMROOM);
     }
 
+    public void EntryRandomRoom(PACKET_S_C_ENTRY_ROOM packet)
+    {
+        // PanelManager. 룸 UI 활성화
+        // RoomManager.instance.AddUser
+    }
+
+    /// <summary>
+    /// 방 생성 UI를 활성화하기
+    /// </summary>
     private void ShowCreateRoomUI()
     {
         PanelManager.Instance.Activate(PanelType.LOBBY, PanelType.ROOMOPTION);
     }
 
+    /// <summary>
+    /// 타이틀로 이동버튼 클릭시
+    /// </summary>
     private void Exit()
     {
         // 타이틀로 이동

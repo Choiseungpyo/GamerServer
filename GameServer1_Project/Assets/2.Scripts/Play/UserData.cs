@@ -4,5 +4,7 @@ using UnityEngine;
 
 public class UserData
 {
+    int id;
     string name;
+
 }
