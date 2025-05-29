@@ -1,4 +1,5 @@
 #pragma once
+#include <shared_mutex>
 #include <unordered_map>
 /*
 클라이언트 관리자.
@@ -16,7 +17,6 @@ public:
 	SessionManager()
 	{
 		clientMap.clear();
-		InitializeCriticalSection(&cs);
 	}
 	~SessionManager();
 
@@ -49,5 +49,5 @@ private:
 	static int mClientCount;
 
 
-	static CRITICAL_SECTION cs;
+	static shared_mutex mutex;
 };

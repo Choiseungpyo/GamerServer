@@ -15,7 +15,7 @@ class SessionManager;
 class ClientSession
 {
 public:
-	ClientSession(SOCKET sock);
+	ClientSession(SOCKET sock, int id);
 	
 	~ClientSession();
 
@@ -29,6 +29,13 @@ public:
 	SOCKET GetSocket() const { return mSocket; }
 	User* GetUser() const {return user; }
 
+	// 클라로 전송
+	void Send_Id()
+	{
+		PACKET_S_C_ID pack;
+		pack.id = user->GetId();
+		Send(&pack);
+	}
 
 	// 패킷 파싱시 하는 함수들
 	void EntryLobby();

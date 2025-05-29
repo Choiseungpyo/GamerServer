@@ -13,26 +13,48 @@ typedef enum PTYPE
 	C_S_ENTRY_LOBBY, // 로비 입장 버튼 누른 경우
 	C_S_LOGOUT, // 게임 종료 버튼 누른 경우
 
-	// Lobby
+#pragma region  Lobby
 	S_C_ENTRY_LOBBY, // 유저 프로필 전달
 
 	// 방 목록에서 특정 방 클릭시 입장하는 경우
-	C_S_ENTRY_ROOM, 
-	S_C_ENTRY_ROOM, 
+	C_S_ENTRY_ROOM,
+	S_C_ENTRY_ROOM,
 
 	// 방 생성 버튼을 누른 경우
-	C_S_CREATE_ROOM, 
-	S_C_CREATE_ROOM, 
+	C_S_CREATE_ROOM,
+	S_C_CREATE_ROOM,
 
 	// 랜덤 입장 버튼을 누른 경우
 	C_S_ENTRY_RANDOMROOM,
 	S_C_ENTRY_RANDOMROOM,
 
-	C_S_MOVE_TITLE, // Exit 버튼 누른 경우
-	S_C_MOVE_TITLE, // Exit 버튼 누른 경우
-	
-	// Room
-	S_C_GET_ROOM_USERS_INFO,
+	// Exit 버튼 누른 경우
+	C_S_MOVE_TITLE,
+	S_C_MOVE_TITLE,
+#pragma endregion
+
+#pragma region  Room
+
+	// 준비 완료 버튼을 누른경우
+	C_S_READY_BTN,
+	S_C_READY_BTN,
+
+	//게임 시작 버튼을 누른경우
+	C_S_GAMETSTART_BTN,
+	S_C_GAMETSTART_BTN,
+
+	// 팀 변경 버튼을 누른 경우
+	C_S_TEAM_CHANGE,
+	S_C_TEAM_CHANGE,
+
+	// 방 옵션 변경을 누른 경우
+	C_S_CHANGE_ROOM_OPTION,
+	S_C_CHANGE_ROOM_OPTION,
+
+	// 로비로 나가기 버튼을 누른 경우
+	C_S_MOVE_LOBBY,
+	S_C_MOVE_LOBBY,
+#pragma endregion
 
 	S_PLAYER_SPAWN,
 	C_PLAYER_MOVE,
@@ -92,13 +114,11 @@ typedef struct PACKET_S_C_ENTRY_LOBBY : PACKET
 #pragma pack(push,1)
 typedef struct PACKET_BOOL : PACKET
 {
-	int id;
 	unsigned char isTrue;
 
 	PACKET_BOOL() {	//패킷 초기화
 		Type = NONE;
 		Length = sizeof(*this);
-		id = 0;
 		isTrue = false;
 	}
 
@@ -119,18 +139,6 @@ typedef struct PACKET_C_S_ENTRY_ROOM : PACKET
 	}
 
 }Packet_c_s_entry_room;
-#pragma pack(pop)
-
-#pragma pack(push,1)
-typedef struct PACKET_S_C_ENTRY_ROOM : PACKET_C_S_ENTRY_ROOM
-{
-	TeamType teamType;
-	PACKET_S_C_ENTRY_ROOM() : PACKET_C_S_ENTRY_ROOM()
-	{
-		teamType = RED;  // 적절한 초기값으로 대입. 예시로 NONE 사용.
-	}
-
-}Packet_s_c_entry_room;
 #pragma pack(pop)
 
 
@@ -172,30 +180,74 @@ typedef struct PACKET_S_C_CREATE_ROOM : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct USER_INFO
+typedef struct PACKET_ROOM_USER_INFO
 {
 	int userId;
-	char nickname[16];
-	unsigned char isReady;
-	unsigned char isHost;
+	char userName[16];
+	ReadyState readyState;
+	TeamType teamType;
+
+	PACKET_ROOM_USER_INFO()
+	{
+		userId = 0;
+		memset(userName, 0, sizeof(*this));
+		readyState = UNREADY;
+		teamType = RED;
+	}
 }UserInfo;
 #pragma pack(pop)
 
+// 유저가 입장할 떄 방에 있는 유저들의 정보를 얻기 위함
 #pragma pack(push,1)
 typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
 {
-	int roomId;
-	unsigned char userCount;
+	int hostId;
+	char roomName[20];
+	MatchType matchType;
+	int userCount;
 
 	PACKET_S_C_ROOM_USERS_INFO_HEADER() {
-		Type = S_C_GET_ROOM_USERS_INFO;
+		Type = S_C_ENTRY_ROOM;
 		Length = sizeof(PACKET_S_C_ROOM_USERS_INFO_HEADER);  // 이후 동적으로 더함
-		roomId = 0;
+		hostId = 0;
+		memset(roomName, 0, sizeof(*this));
+		matchType = SOLO;
 		userCount = 0;
 	}
 }Packet_RoomUsersHeader;
 #pragma pack(pop)
 
+#pragma pack(push,1)
+typedef struct PACKET_S_C_READY_BTN : PACKET
+{
+	ReadyState readyState;
+	TeamType teamType;
+	int orderOfTeam;
+
+	PACKET_S_C_READY_BTN()
+	{
+		readyState = UNREADY;
+		teamType = RED;
+		orderOfTeam = 0;
+	}
+}Packet_s_c_ready_btn;
+#pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct PACKET_S_C_CHANGE_ROOM_OPTION : PACKET
+{
+	int roomNo;
+	char roomName[20];
+	TeamType TeamType;
+
+	PACKET_S_C_CHANGE_ROOM_OPTION()
+	{
+		roomNo = 0;
+		memset(roomName, 0, sizeof(*this));
+		TeamType = RED;
+	}
+}Packet_s_c_change_room_option;
+#pragma pack(pop)
 
 #pragma pack(push,1)
 typedef struct PACKET_S_C_SPAWN : PACKET

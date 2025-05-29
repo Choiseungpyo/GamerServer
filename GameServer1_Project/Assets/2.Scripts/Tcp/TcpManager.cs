@@ -2,8 +2,9 @@ using System;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
-using UnityEditor.Sprites;
+using System.Linq;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TcpManager : Singleton<TcpManager>, IListener
 {
@@ -12,6 +13,8 @@ public class TcpManager : Singleton<TcpManager>, IListener
     private Thread receiveThread;
 
     private int id;
+
+    [SerializeField] private InRoomUI inRoomUI;
 
     public int Id
     {
@@ -23,8 +26,6 @@ public class TcpManager : Singleton<TcpManager>, IListener
     {
         id = -1;
 
-        EventManager.Instance.AddListener(EVENT_TYPE.SEND_PLAYER_MOVEMENT, this);
-        EventManager.Instance.AddListener(EVENT_TYPE.SEND_USER_NICKNAME, this);
         ConnectToServer("127.0.0.1", 8080);
     }
 
@@ -127,28 +128,58 @@ public class TcpManager : Singleton<TcpManager>, IListener
             // 방 목록에서 특정 방 클릭시 입장
             case PTYPE.S_C_ENTRY_ROOM:
                 {
-                    PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
-                    
+                    Packet_S_C_ROOM_USERS_INFO_HEADER header = new();
+                    List<PACKET_S_C_ROOM_USER_INFO> usersInfo = new();
+                    GetUserInfo(ref header, usersInfo, fullPacket);
+
+                    PanelManager.Instance.Activate(PanelType.ROOM);
+                    inRoomUI.SetInRoomUI(header, usersInfo);
                 }
                 break;
 
             // 방 생성
             case PTYPE.S_C_CREATE_ROOM:
                 {
-                    PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket); ;
+                    PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
                     LobbyUIManager.Instance.CreateRoom(packet);
                 }
                 break;
 
             // 랜덤 입장
             case PTYPE.S_C_ENTRY_RANDOMROOM:
+                {
+                    Packet_S_C_ROOM_USERS_INFO_HEADER header = new();
+                    List<PACKET_S_C_ROOM_USER_INFO> usersInfo = new();
+                    GetUserInfo(ref header, usersInfo, fullPacket);
+
+                    PanelManager.Instance.Activate(PanelType.ROOM);
+                    inRoomUI.SetInRoomUI(header, usersInfo);
+                }
                 break;
 
             // 타이틀로 이동
             case PTYPE.S_C_MOVE_TITLE:
+                {
+                   // PACKET_ID packet
+                }
                 break;
 
             // Room
+            case PTYPE.S_C_READY_BTN:
+                {
+                    PACKET_S_C_READY_BTN packet = BytesToStruct<PACKET_S_C_READY_BTN>(fullPacket);
+                    inRoomUI.SetUserReadyState(packet);
+                }
+                break;
+
+            case PTYPE.S_C_GAMETSTART_BTN:
+                {
+                    //PAEK packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
+                    //LobbyUIManager.Instance.CreateRoom(packet);
+                }
+                break;
+
+            // 게임
             case PTYPE.S_PLAYER_SPAWN:
                 {
                     PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
@@ -294,18 +325,23 @@ public class TcpManager : Singleton<TcpManager>, IListener
                 }
                 break;
 
-            // ID 값만 전달하는 경우
+            // Bool 값만 전달하는 경우
             case PTYPE.C_S_ENTRY_LOBBY:
-            case PTYPE.C_S_ENTRY_RANDOMROOM:
             case PTYPE.C_S_LOGOUT:
+            case PTYPE.C_S_ENTRY_RANDOMROOM:
             case PTYPE.C_S_MOVE_TITLE:
+            case PTYPE.C_S_READY_BTN:
+            case PTYPE.C_S_GAMETSTART_BTN:
+            case PTYPE.C_S_TEAM_CHANGE:
+            case PTYPE.C_S_CHANGE_ROOM_OPTION:
+            case PTYPE.C_S_MOVE_LOBBY:
                 {
-                    var packet = new PACKET_ID();
+                    var packet = new PACKET_BOOL();
 
                     // 방 번호
-                    packet.Length = (uint)Marshal.SizeOf<PACKET_ID>();
+                    packet.Length = (uint)Marshal.SizeOf<PACKET_BOOL>();
                     packet.Type = pType;
-                    packet.Id = id;
+                    packet.isTrue = true;
 
                     Send(packet);
                 }
@@ -328,6 +364,26 @@ public class TcpManager : Singleton<TcpManager>, IListener
         byte[] bytes = StructToBytes(packet);
         stream.Write(bytes, 0, bytes.Length);
         stream.Flush();
+    }
+
+    private void GetUserInfo(ref Packet_S_C_ROOM_USERS_INFO_HEADER header, List<PACKET_S_C_ROOM_USER_INFO> usersInfo, byte[] fullPacket)
+    {
+        int offset = 0;
+
+        // 헤더 파싱 (ref로 전달된 변수에 값 설정)
+        header = BytesToStruct<Packet_S_C_ROOM_USERS_INFO_HEADER>(
+            fullPacket.Take(Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>()).ToArray());
+        offset += Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>();
+
+        // 유저들 파싱
+        for (int i = 0; i < header.UserCount; i++)
+        {
+            byte[] slice = fullPacket.Skip(offset).Take(Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>()).ToArray();
+            PACKET_S_C_ROOM_USER_INFO user = BytesToStruct<PACKET_S_C_ROOM_USER_INFO>(slice);
+            offset += Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>();
+
+            usersInfo.Add(user); // 매개변수로 받은 리스트에 추가
+        }
     }
 
     public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)

@@ -60,27 +60,27 @@ LobbyManager* LobbyManager::GetInstance()
 /// <param name="roomOption">방 옵션</param>
 void  LobbyManager::CreateRoom(const Packet* packet, const ClientSession* client)
 {
-	Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
-	RoomOption roomOption(pack->roomName, pack->matchType);
+	//Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
+	//RoomOption roomOption(pack->roomName, pack->matchType);
 
-	Room* newRoom = new Room(roomMap.size(), roomOption);
-	roomMap[roomMap.size()] = newRoom;
+	//Room* newRoom = new Room(roomMap.size(), roomOption);
+	//roomMap[roomMap.size()] = newRoom;
 
-	newRoom->AddUser(client);
+	//newRoom->AddUser(client);
 
-	std::vector<char> buffer;
-	Packet_RoomUsersHeader header;
-	header.roomId = 1001;
-	header.userCount = userList.size();
-	header.Length += userList.size() * sizeof(UserInfo);
+	//std::vector<char> buffer;
+	//Packet_RoomUsersHeader header;
+	//header.roomId = 1001;
+	//header.userCount = userList.size();
+	//header.Length += userList.size() * sizeof(UserInfo);
 
-	buffer.resize(header.Length);
-	memcpy(buffer.data(), &header, sizeof(header));
+	//buffer.resize(header.Length);
+	//memcpy(buffer.data(), &header, sizeof(header));
 
-	for (int i = 0; i < userList.size(); ++i) {
-		memcpy(buffer.data() + sizeof(header) + i * sizeof(UserInfo), &userList[i], sizeof(UserInfo));
-	}
-	send(clientSocket, buffer.data(), buffer.size(), 0);
+	//for (int i = 0; i < userList.size(); ++i) {
+	//	memcpy(buffer.data() + sizeof(header) + i * sizeof(UserInfo), &userList[i], sizeof(UserInfo));
+	//}
+	//send(clientSocket, buffer.data(), buffer.size(), 0);
 }
 
 /// <summary>
@@ -111,4 +111,28 @@ void LobbyManager::EntryRoom(const Packet* packet, const ClientSession* client)
 	// 없는 방 번호인 경우
 	else
 		cout << "The Room Num(" << pack->roomNo << ") does not exist.";
+}
+
+void LobbyManager::SetReadyState(const ClientSession* client)
+{
+	// 뮤텍스 설정하기
+
+	User* user = client->GetUser();
+	roomMap[user->GetRoomNum()]->ChangeReadyState(user->GetId());
+}
+
+void LobbyManager::SetTeamType(const ClientSession* client)
+{
+	// 뮤텍스 설정하기
+
+	User* user = client->GetUser();
+	roomMap[user->GetRoomNum()]->ChangeTeamType(user->GetId());
+}
+
+void LobbyManager::SetRoomOption(const ClientSession* client, PACKET_S_C_CHANGE_ROOM_OPTION pack)
+{
+	// 뮤텍스 설정하기
+
+	User* user = client->GetUser();
+	//roomMap[pack.roomNo]->SetRoomOption(pack);
 }

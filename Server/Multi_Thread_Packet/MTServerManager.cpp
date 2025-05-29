@@ -134,9 +134,28 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			client->MoveTitle();
 			break;
 
-	case C_PLAYER_MOVE:
-		//client->SetPlayerMovement(packet);
-		break;
+		case C_S_READY_BTN:
+			LobbyManager::SetReadyState(client);
+			break;
+
+		case C_S_GAMETSTART_BTN:
+			cout << "Game Start!\n";
+			break;
+
+		case C_S_TEAM_CHANGE:
+			LobbyManager::SetTeamType(client);
+			break;
+
+		case C_S_CHANGE_ROOM_OPTION:
+			//LobbyManager::SetRoomOption(client, pack);
+			break;
+
+		case C_S_MOVE_LOBBY:
+			break;
+
+		case C_PLAYER_MOVE:
+			//client->SetPlayerMovement(packet);
+			break;
 	}
 
 	if (!client->IsConnected())
@@ -204,7 +223,7 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 			if (client->OnConnect(&clientAddr))
 			{
 				// S_C_ID, 랜덤 이름 보내기
-				client->Send(S_C_ID);
+				client->Send_Id();
 			}
 			else
 			{

@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static LobbyRoomItemUI;
 
 /// <summary>
 /// 로비에서의 방 정보 UI
 /// </summary>
 public class LobbyRoomItemUI : PoolableObject
 {
-    enum Type
+    public enum RoomInfoType
     {
         NO = 0,
         ROOMNAME = 1,
@@ -16,13 +17,22 @@ public class LobbyRoomItemUI : PoolableObject
         STATE = 3
     }
 
-    TMP_Text[] roomDataTxts;
+    [System.Serializable]
+    public struct RoomTxtData
+    {
+        public RoomInfoType type;
+        public TMP_Text txt;
+    }
+
+    [SerializeField] List<RoomTxtData> roomTxtDatas;
+    Dictionary<RoomInfoType, TMP_Text> roomTxtDict = new();
+
+
 
     private void Awake()
     {
-        roomDataTxts = new TMP_Text[transform.childCount];
-        for (int i = 0; i < transform.childCount; i++)
-            roomDataTxts[i] = transform.GetChild(i).GetComponent<TMP_Text>();
+        foreach (var v in roomTxtDatas)
+            roomTxtDict[v.type] = v.txt;
     }
 
     /// <summary>
@@ -31,10 +41,10 @@ public class LobbyRoomItemUI : PoolableObject
     /// <param name="packet"></param>
     public void InitRoomUIData(PACKET_S_C_CREATE_ROOM packet)
     {
-        roomDataTxts[(int)Type.NO].text = packet.RoomNo.ToString();
-        roomDataTxts[(int)Type.ROOMNAME].text = packet.RoomName.ToString();
-        roomDataTxts[(int)Type.PEOPLENUM].text = "1/" + ((int)packet.MatchType * 2).ToString();
-        roomDataTxts[(int)Type.STATE].text = RoomState.WATING.ToString();
+        roomTxtDict[RoomInfoType.NO].text = packet.RoomNo.ToString();
+        roomTxtDict[RoomInfoType.ROOMNAME].text = packet.RoomName.ToString();
+        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)packet.MatchType * 2).ToString();
+        roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
     }
 
     /// <summary>
@@ -51,18 +61,18 @@ public class LobbyRoomItemUI : PoolableObject
 
     private void InitRoomUIData()
     {
-        for (int i = 0; i < transform.childCount; i++)
-            roomDataTxts[i].text = "";
+        foreach (var v in roomTxtDatas)
+            v.txt.text = "";
     }
 
     protected override void OnSpawn()
     {
-        InitRoomUIData();
+       
     }
 
     protected override void OnDespawn()
     {
-
+        InitRoomUIData();
     }
 
 

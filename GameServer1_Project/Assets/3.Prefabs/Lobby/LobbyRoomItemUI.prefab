@@ -548,9 +548,9 @@ GameObject:
   - component: {fileID: 6118375108552059318}
   - component: {fileID: 5114681918262613737}
   - component: {fileID: 7861348102311807747}
-  - component: {fileID: 3516857600600428663}
+  - component: {fileID: 8096915454426201842}
   m_Layer: 5
-  m_Name: RoomInfoUI
+  m_Name: LobbyRoomItemUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -673,7 +673,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3516857600600428663
+--- !u!114 &8096915454426201842
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -682,6 +682,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7121769065009552887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe5bbacbb8a7876459b1859934a2663e, type: 3}
+  m_Script: {fileID: 11500000, guid: e1cc688c26675364a85c2762f92efb38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomTxtDatas:
+  - type: 0
+    txt: {fileID: 3557285006946662886}
+  - type: 1
+    txt: {fileID: 7636329480589166831}
+  - type: 2
+    txt: {fileID: 8336956848650934271}
+  - type: 3
+    txt: {fileID: 6550617715339772481}

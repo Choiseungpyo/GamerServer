@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "Game.h"
 #include <unordered_set>
+#include "Packet.h"
 
 class ClientSession;
 class User;
@@ -22,27 +23,36 @@ enum MatchType {
 	SQUAD = 4
 };
 
+enum ReadyState {
+	UNREADY,
+	READY
+};
+
 struct RoomUserData {
 	int userId;
-	char usreNickname[20];
+	char userName[20];
 	TeamType teamType;
 	unsigned char isReady;
+	unsigned char isHost;
 };
 
 struct RoomUserInfo {
 	TeamType teamType;
-	bool isReady;
+	ReadyState readyState;
+	bool isHost;
 
 	RoomUserInfo()
 	{
 		this->teamType = RED;
-		isReady = false;
+		readyState = UNREADY;
+		isHost = true;
 	}
 
 	RoomUserInfo(TeamType teamType)
 	{
 		this->teamType = teamType;
-		isReady = false;
+		readyState = UNREADY;
+		isHost = false;
 	}
 };
 
@@ -82,32 +92,34 @@ public:
 
 	void SetName(const string& name) { this->name = name; }
 
+	void ChangeReadyState(int userId)
+	{
+		if (roomUserInfoMap[userId].readyState == UNREADY)
+			roomUserInfoMap[userId].readyState = READY;
+		else
+			roomUserInfoMap[userId].readyState = UNREADY;
+	}
+
+	void ChangeTeamType(int userId)
+	{
+		if (roomUserInfoMap[userId].teamType == RED)
+			roomUserInfoMap[userId].teamType = BLUE;
+		else
+			roomUserInfoMap[userId].teamType = RED;
+	}
+
+
 	void AddUser(const ClientSession* client);
 
 	TeamType JoinAvailableTeam(int clientId);
 
 	bool CanJoinRoom();
 
-	void tmp()
-	{
-		std::vector<RoomUserData> result;
 
-		for (auto& client : clientMap) {
-			RoomUserInfo& info = roomUserInfoMap[client.first];
-			User* user = client.second->GetUser();
+	void Send_InRoom_UsersData();
 
-			if (user == nullptr) continue;
 
-			RoomUserData userData;
-			userData.userId = user->;
-			strncpy(dto.nickname, user->nickname.c_str(), sizeof(dto.nickname) - 1);
-			dto.isReady = info.isReady;
-			dto.isHost = info.isHost;
-			dto.team = static_cast<int>(info.team);
 
-			result.push_back(dto);
-		}
-	}
 
 };
 

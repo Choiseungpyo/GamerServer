@@ -4,10 +4,10 @@
 #include "SessionManager.h"
 
 
-ClientSession::ClientSession(SOCKET sock) : mSocket(sock), mConnected(false), id(0), sessionManager(SessionManager::GetInstance())
+ClientSession::ClientSession(SOCKET sock, int id) : mSocket(sock), mConnected(false), sessionManager(SessionManager::GetInstance())
 {
 	memset(&mClientAddr, 0, sizeof(SOCKADDR_IN));
-	 
+	user = new User(id);
 }
 
 ClientSession::~ClientSession()
@@ -33,7 +33,6 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 	cout << "client Connected : IP = " << inet_ntoa(mClientAddr.sin_addr) << ",  Port = " << ntohs(mClientAddr.sin_port) << endl;
 
 	mConnected = true;
-	id = sessionManager->IncreaseClientCount() - 1;
 
 	return true;
 }
@@ -95,9 +94,8 @@ void ClientSession::Disconnect()
 
 void ClientSession::EntryLobby()
 {
-	user = new User();
 	user->SetState(LOBBY);
-	Send(S_C_ENTRY_LOBBY);
+	//Send(S_C_ENTRY_LOBBY);
 }
 
 void ClientSession::MoveTitle()

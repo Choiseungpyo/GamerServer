@@ -16,7 +16,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     [SerializeField] Transform roomContents;
     [SerializeField] GameObject roomUI_Prefab;
 
-    Dictionary<int, LobbyRoomItemUI> roomUIs;
+    Dictionary<int, LobbyRoomItemUI> roomUIs = new();
 
     [SerializeField] Button EntryRandomBtn;
     [SerializeField] Button CreateRoomBtn;
@@ -39,12 +39,10 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     #endregion
 
 
-    private void Start()
+    private void Awake()
     {
         EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
         CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
-
-        roomUIs = new Dictionary<int, LobbyRoomItemUI>();
     }
 
     private void Update()
@@ -85,7 +83,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         TcpManager.Instance.SendToServer(PTYPE.C_S_ENTRY_RANDOMROOM);
     }
 
-    public void EntryRandomRoom(PACKET_S_C_ENTRY_ROOM packet)
+    public void EntryRandomRoom(Packet_S_C_ROOM_USERS_INFO_HEADER packet)
     {
         // PanelManager. 룸 UI 활성화
         // RoomManager.instance.AddUser
@@ -108,6 +106,11 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         SceneManager.LoadScene("Title");
     }
     #endregion
+
+    public void EntryRoom()
+    {
+
+    }
 
     // userId가 필요한 경우
     private void AddItem<T>(int userId, Transform parent, Func<int, T> getter, Action<T, string> setter, string data)

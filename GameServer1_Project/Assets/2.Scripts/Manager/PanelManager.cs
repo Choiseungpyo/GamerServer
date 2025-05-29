@@ -13,7 +13,15 @@ public enum PanelType : int
 
 public class PanelManager : Singleton<PanelManager>
 {
-    [SerializeField] List<GameObject> panels;
+    [System.Serializable]
+    public struct PanelData
+    {
+        public PanelType type;
+        public GameObject panel;
+    }
+
+    [SerializeField] List<PanelData> panels;
+    Dictionary<PanelType, GameObject> panelDict = new();
 
     private void Start()
     {
@@ -22,15 +30,28 @@ public class PanelManager : Singleton<PanelManager>
 
     public void Activate(params PanelType[] panelTypes)
     {
-        for (int i = 0; i < panels.Count(); i++)
+        foreach (var v in panelDict)
         {
-            int index = i; // 캡처용 지역 변수
-            bool value = panelTypes.Contains((PanelType)index);
+            var panelType = v.Key;
+            var panelObject = v.Value;
+            bool isActive = panelTypes.Contains(panelType);
 
             TcpManager.Instance.RegisterJop(() =>
             {
-                panels[index].SetActive(value);
+                panelObject.SetActive(isActive);
             });
         }
     }
+
+    public bool IsActive(PanelType panelType)
+    {
+        if (panelDict.TryGetValue(panelType, out var panel))
+        {
+            return panel.activeSelf;
+        }
+
+        Debug.LogWarning($"[UI] PanelType '{panelType}' not found in panelDict.");
+        return false; // 또는 기본값
+    }
+
 }

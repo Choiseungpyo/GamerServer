@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "User.h"
 
-User::User()
-	:name(""), state(TITLE), currRoomNum(-1)
+User::User(int id)
+	:id(id), state(TITLE), currRoomNum(-1)
 {
-
+	name = "User" + id;
 }
 
 User::~User()

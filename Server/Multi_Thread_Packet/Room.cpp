@@ -2,7 +2,7 @@
 #include "Room.h"
 
 Room::Room(int no, const RoomOption& roomOption)
-	:no(no), name(roomOption.roomName), state(WAITING), matchType(roomOption.matchType)
+	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType)
 {}
 
 Room::~Room() {}
@@ -10,16 +10,16 @@ Room::~Room() {}
 
 void Room::AddUser(const ClientSession* client)
 {
-	int clientId = client->GetId();
 	User* user = client->GetUser();
 
+	int clientId = user->GetId();
 	
 	clientMap[client->GetSocket()] = client;
-	TeamType teamType = JoinAvailableTeam(client->GetId());
+	TeamType teamType = JoinAvailableTeam(clientId);
 	roomUserInfoMap[clientId] = RoomUserInfo(teamType);
 	user->SetState(ROOM);
 
-	cout << "User" << client->GetId() << "has entered the room.";
+	cout << "User" << clientId << "has entered the room.";
 }
 
 TeamType Room::JoinAvailableTeam(int clientId)
@@ -45,3 +45,26 @@ bool Room::CanJoinRoom()
 
 	return true;
 }
+
+void Room::Send_InRoom_UsersData()
+{
+	std::vector<RoomUserData> result;
+
+	for (auto& client : clientMap) {
+		RoomUserInfo& info = roomUserInfoMap[client.first];
+		User* user = client.second->GetUser();
+
+		if (user == nullptr) continue;
+
+		RoomUserData roomUserData;
+		roomUserData.userId = user->GetId();
+		//strcpy(roomUserData.userName, user->GetName().c_str());
+		roomUserData.isReady = info.readyState;
+		roomUserData.isHost = info.isHost;
+		roomUserData.teamType = info.teamType;
+
+		result.push_back(roomUserData);
+	}
+}
+
+

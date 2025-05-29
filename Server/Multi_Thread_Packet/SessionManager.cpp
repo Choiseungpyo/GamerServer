@@ -3,7 +3,7 @@
 SessionManager* SessionManager::instance = nullptr;
 unordered_map<SOCKET, ClientSession*> SessionManager::clientMap;
 int SessionManager::mClientCount = 0;
-CRITICAL_SECTION SessionManager::cs;
+shared_mutex SessionManager::mutex;
 
 SessionManager::~SessionManager()
 {
@@ -28,12 +28,13 @@ SessionManager* SessionManager::GetInstance()
 */
 ClientSession * SessionManager::CreateClient(SOCKET sock)
 {
+	unique_lock<shared_mutex> lock(mutex);
 	auto it = clientMap.find(sock);
 
 	// 소켓이 없다면
 	if (it == clientMap.end()) {
 		std::cout << "create ClientSession.." << std::endl;
-		ClientSession* newClient = new ClientSession(sock);
+		ClientSession* newClient = new ClientSession(sock, clientMap.size());
 		clientMap[sock] = newClient;
 		return newClient;
 	}
@@ -50,6 +51,7 @@ ClientSession * SessionManager::CreateClient(SOCKET sock)
 */
 void SessionManager::DeleteClient(SOCKET sock, ClientSession* client)
 {
+	unique_lock<shared_mutex> lock(mutex);
 	client->Disconnect();
 	clientMap.erase(sock);
 }
@@ -62,10 +64,9 @@ void SessionManager::DeleteClient(SOCKET sock, ClientSession* client)
 */
 int SessionManager::IncreaseClientCount()
 {
-	EnterCriticalSection(&cs);
+	unique_lock<shared_mutex> lock(mutex);
 	mClientCount++;
 	cout << "client count increase.." << endl;
-	LeaveCriticalSection(&cs);
 
 	return mClientCount;
 }
@@ -78,17 +79,16 @@ int SessionManager::IncreaseClientCount()
 */
 int SessionManager::DecreaseClientCount()
 {
-	EnterCriticalSection(&cs);
+	unique_lock<shared_mutex> lock(mutex);
 	mClientCount--;
 	cout << "client count decrease.." << endl;
-	LeaveCriticalSection(&cs);
 
 	return mClientCount;
 }
 
 void SessionManager::Broadcast(const Packet* packet)
 {
-	EnterCriticalSection(&cs);
+	shared_lock<shared_mutex> lock(mutex);
 
 	for (auto& client : clientMap)
 	{
@@ -98,12 +98,11 @@ void SessionManager::Broadcast(const Packet* packet)
 		}
 	}
 
-	LeaveCriticalSection(&cs);
 }
 
 void SessionManager::BroadcastExceptOneself(const Packet* packet, ClientSession* oneself)
 {
-	EnterCriticalSection(&cs);
+	shared_lock<shared_mutex> lock(mutex);
 
 	for (auto& client : clientMap)
 	{
@@ -116,12 +115,11 @@ void SessionManager::BroadcastExceptOneself(const Packet* packet, ClientSession*
 		}
 	}
 
-	LeaveCriticalSection(&cs);
 }
 
 void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
 {
-	EnterCriticalSection(&cs);
+	shared_lock<shared_mutex> lock(mutex);
 
 	auto it = clientMap.find(targetSocket);
 
@@ -133,25 +131,15 @@ void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
 	// 키 값이 없는 경우
 	else
 		cout << "target socket : " << targetSocket << " 존재하지 않음";
-
-	LeaveCriticalSection(&cs);
 }
 
-void SessionManager::SetClients_FDSET(fd_set& readfds)
-{
-	for (const auto& pair : clientMap) {
-		ClientSession* clientSession = pair.second;
-		if (clientSession) {
-			FD_SET(clientSession->mSocket, &readfds);
-		}
-	}
-}
 
 int SessionManager::GetClientSize() { return mClientCount; }
 
 
 ClientSession* SessionManager::GetClient(SOCKET sock)
 {
+	shared_lock<shared_mutex> lock(mutex);
 	auto it = clientMap.find(sock);
 
 	// 키 값이 있는 경우

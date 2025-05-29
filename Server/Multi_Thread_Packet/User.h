@@ -17,7 +17,7 @@ class User
 	int currRoomNum; // -1 : 방에 들어가지 않음
 
 public:
-	User();
+	User(int id);
 
 	~User();
 
@@ -32,9 +32,5 @@ public:
 
 	int GetRoomNum() const { return currRoomNum; }  
 	void SetRoomNum(int roomNum);
-
-	
-
-	void SetName(const string& name);
 };
 

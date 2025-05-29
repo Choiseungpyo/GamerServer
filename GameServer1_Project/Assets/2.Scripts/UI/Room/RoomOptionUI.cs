@@ -27,18 +27,21 @@ public class RoomOptionUI : MonoBehaviour
     [SerializeField] TMP_Dropdown matchTypeDropdown;
 
     [SerializeField] Button cancleBtn;
-    [SerializeField] Button createBtn;
+    [SerializeField] Button okBtn;
+    [SerializeField] TMP_Text okTxt;
 
-    List<string> roomNames;
-    List<string> matchTypes;
+    List<string> roomNames = new();
+    List<string> matchTypes = new();
 
     string roomName;
     MatchType matchType;
 
-    private void Start()
+    bool isCreateBtn;
+
+    private void Awake()
     {
         cancleBtn.onClick.AddListener(Cancle);
-        createBtn.onClick.AddListener(Create);
+        okBtn.onClick.AddListener(Create);
 
         InitRoomNames();
         InitMatchTypes();
@@ -52,15 +55,28 @@ public class RoomOptionUI : MonoBehaviour
         {
             OnDropdownChanged(matchTypeDropdown, index);
         });
+    }
 
+    private void OnEnable()
+    {
+        SetOkBtnTxt();
+    }
+
+    private void SetOkBtnTxt()
+    {
+        isCreateBtn = PanelManager.Instance.IsActive(PanelType.LOBBY);
+        // Lobby 에서는 생성
+        if (isCreateBtn)
+            okTxt.text = "Create";
+        // In Room 에서는 확인
+        else
+            okTxt.text = "Ok";
     }
 
     private void InitRoomNames()
     {
         roomNameDropdown.ClearOptions();
 
-        roomNames = new List<string>();
-        roomNames.Clear();
         roomNames.Add("Come on, bro. Prove it.");
         roomNames.Add("Only one walks out alive");
         roomNames.Add("No mercy, no surrender.");
@@ -76,8 +92,6 @@ public class RoomOptionUI : MonoBehaviour
     {
         matchTypeDropdown.ClearOptions();
 
-        matchTypes = new List<string>();
-        matchTypes.Clear();
         foreach (var matchType in (MatchType[])System.Enum.GetValues(typeof(MatchType)))
             matchTypes.Add(matchType.ToString());
 
@@ -121,12 +135,25 @@ public class RoomOptionUI : MonoBehaviour
     /// </summary>
     private void Create()
     {
-        RoomOption roomOption = new RoomOption(roomName, matchType);  // 현재 플레이어
-        TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, roomOption);
+        // Lobby에서 방 생성시
+        if(isCreateBtn)
+        {
+            RoomOption roomOption = new RoomOption(roomName, matchType);  // 현재 플레이어
+            TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, roomOption);
+        }
+        // In Game에서 방 옵션 설정시
+        else
+        {
+
+        }
     }
 
     private void Cancle()
     {
-        PanelManager.Instance.Activate(PanelType.LOBBY);
+        if (isCreateBtn)
+            PanelManager.Instance.Activate(PanelType.LOBBY);
+        else
+            PanelManager.Instance.Activate(PanelType.ROOM);
+
     }
 }
