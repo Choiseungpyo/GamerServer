@@ -21,14 +21,14 @@ public class InRoomUserUI : PoolableObject
     {
         iconImg.sprite = UserIcon.Instance.GetSprite(userName);
         userNameTxt.text = userName;
-        SetUserState(readyState);
+        SetUserReadyState(readyState);
     }
 
-    public void SetUserState(ReadyState readyState)
+    public void SetUserReadyState(ReadyState readyState)
     {
         readyStateTxt.text = readyState.ToString();
     }
-
+    
     protected override void OnSpawn()
     {
         iconImg.sprite = null;

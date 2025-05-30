@@ -68,20 +68,20 @@ public class Player : MonoBehaviour
             isMoveKeyPressed[(int)dir] = false;
     }
 
-    IEnumerator SendData()
-    {
-        while (true)
-        {
-            for (int i = 0; i < isMoveKeyPressed.Length; i++)
-            {
-                if (!isMoveKeyPressed[i])
-                    continue;
+    //IEnumerator SendData()
+    //{
+    //    while (true)
+    //    {
+    //        for (int i = 0; i < isMoveKeyPressed.Length; i++)
+    //        {
+    //            if (!isMoveKeyPressed[i])
+    //                continue;
 
-                Debug.Log("이벤트 등록 : PlayerMovement");
-                EventManager.Instance.PostNotification(EVENT_TYPE.SEND_PLAYER_MOVEMENT, this, isMoveKeyPressed);
-                break;
-            }
-            yield return new WaitForSeconds(0.05f);
-        }
-    }
+    //            Debug.Log("이벤트 등록 : PlayerMovement");
+    //            EventManager.Instance.PostNotification(EVENT_TYPE.SEND_PLAYER_MOVEMENT, this, isMoveKeyPressed);
+    //            break;
+    //        }
+    //        yield return new WaitForSeconds(0.05f);
+    //    }
+    //}
 }

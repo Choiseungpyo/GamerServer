@@ -16,7 +16,8 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     [SerializeField] Transform roomContents;
     [SerializeField] GameObject roomUI_Prefab;
 
-    Dictionary<int, LobbyRoomItemUI> roomUIs = new();
+    // <RoomNo, LobbyRoomItemUI>
+    Dictionary<int, LobbyRoomItemUI> lobbyRoomItemUIDict = new();
 
     [SerializeField] Button EntryRandomBtn;
     [SerializeField] Button CreateRoomBtn;
@@ -27,8 +28,8 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
 
     #region Chat
     //UserNamePool userNamePool;
-    [SerializeField] TxtPool chatPool;
-    [SerializeField] Transform chatContent_Tr;
+    [SerializeField] private TxtPool chatPool;
+    [SerializeField] private Transform chatContent_Tr;
     #endregion
 
     #region UserNames
@@ -39,8 +40,10 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     #endregion
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
         CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
     }
@@ -70,12 +73,12 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         }
 
         newRoomUIFo.InitRoomUIData(packet);
-        roomUIs.Add(packet.RoomNo, newRoomUIFo);
+        lobbyRoomItemUIDict.Add(packet.RoomNo, newRoomUIFo);
     }
 
     private void DeleteRoom(int roomNo)
     {
-        roomUIs.Remove(roomNo);
+        lobbyRoomItemUIDict.Remove(roomNo);
     }
 
     private void EntryRandomRoom()
@@ -110,6 +113,17 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     public void EntryRoom()
     {
 
+    }
+
+    public void SetRoomOption(PACKET_S_C_CHANGE_ROOM_OPTION pack)
+    {
+        if(!lobbyRoomItemUIDict.TryGetValue(pack.RoomNo, out LobbyRoomItemUI value))
+        {
+            Debug.LogWarning(pack.RoomNo);
+            return;
+        }
+
+        value.ChangeRoomUIData(pack);
     }
 
     // userId가 필요한 경우

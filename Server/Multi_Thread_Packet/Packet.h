@@ -1,8 +1,5 @@
 #pragma once
-#include "Room.h"
-
-const int NAME_SIZE = 64;
-const int ROOM_NAME_SIZE = 64;
+#include "stdafx.h"
 
 typedef enum PTYPE
 {
@@ -153,7 +150,7 @@ typedef struct PACKET_C_S_CREATE_ROOM : PACKET
 		Type = C_S_CREATE_ROOM;
 		Length = sizeof(*this);
 		id = 0;
-		memset(roomName, 0, sizeof(*this));
+		memset(roomName, 0, sizeof(roomName));
 		matchType = SOLO;
 	}
 
@@ -172,7 +169,7 @@ typedef struct PACKET_S_C_CREATE_ROOM : PACKET
 		Length = sizeof(*this);
 		id = 0;
 		roomNo = 0;
-		memset(roomName, 0, sizeof(*this));
+		memset(roomName, 0, sizeof(roomName));
 		matchType = SOLO;
 	}
 
@@ -183,18 +180,29 @@ typedef struct PACKET_S_C_CREATE_ROOM : PACKET
 typedef struct PACKET_ROOM_USER_INFO
 {
 	int userId;
-	char userName[16];
+	char userName[NAME_SIZE];
 	ReadyState readyState;
 	TeamType teamType;
+	int userOrderOfTeam;
 
 	PACKET_ROOM_USER_INFO()
 	{
 		userId = 0;
-		memset(userName, 0, sizeof(*this));
+		memset(userName, 0, sizeof(userName));
 		readyState = UNREADY;
 		teamType = RED;
+		userOrderOfTeam = 0;
 	}
-}UserInfo;
+
+	PACKET_ROOM_USER_INFO(const string& userName)
+	{
+		userId = 0;
+		strncpy_s(this->userName, sizeof(this->userName), userName.c_str(), _TRUNCATE);
+		readyState = UNREADY;
+		teamType = RED;
+		userOrderOfTeam = 0;
+	}
+}Packet_room_user_info;
 #pragma pack(pop)
 
 // 유저가 입장할 떄 방에 있는 유저들의 정보를 얻기 위함
@@ -202,7 +210,8 @@ typedef struct PACKET_ROOM_USER_INFO
 typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
 {
 	int hostId;
-	char roomName[20];
+	int roomNo;
+	char roomName[ROOM_NAME_SIZE];
 	MatchType matchType;
 	int userCount;
 
@@ -210,7 +219,8 @@ typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
 		Type = S_C_ENTRY_ROOM;
 		Length = sizeof(PACKET_S_C_ROOM_USERS_INFO_HEADER);  // 이후 동적으로 더함
 		hostId = 0;
-		memset(roomName, 0, sizeof(*this));
+		roomNo = 0;
+		memset(roomName, 0, sizeof(roomName));
 		matchType = SOLO;
 		userCount = 0;
 	}
@@ -226,6 +236,8 @@ typedef struct PACKET_S_C_READY_BTN : PACKET
 
 	PACKET_S_C_READY_BTN()
 	{
+		Type = S_C_READY_BTN;
+		Length = sizeof(*this);
 		readyState = UNREADY;
 		teamType = RED;
 		orderOfTeam = 0;
@@ -234,20 +246,41 @@ typedef struct PACKET_S_C_READY_BTN : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_S_C_CHANGE_ROOM_OPTION : PACKET
+typedef struct PACKET_CHANGE_ROOM_OPTION : PACKET
 {
 	int roomNo;
 	char roomName[20];
-	TeamType TeamType;
+	MatchType matchType;
 
-	PACKET_S_C_CHANGE_ROOM_OPTION()
+	PACKET_CHANGE_ROOM_OPTION()
 	{
+		Type = S_C_CHANGE_ROOM_OPTION;
+		Length = sizeof(*this);
 		roomNo = 0;
-		memset(roomName, 0, sizeof(*this));
-		TeamType = RED;
+		memset(roomName, 0, sizeof(roomName));
+		matchType = SOLO;
 	}
-}Packet_s_c_change_room_option;
+}PACKET_CHANGE_ROOM_OPTION;
 #pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct PACKET_S_C_TEAM_CHANGE : PACKET
+{
+	int prvOrderOfTeam;
+	int currOrderOfTeam;
+	TeamType currTeamType;
+
+	PACKET_S_C_TEAM_CHANGE()
+	{
+		Type = S_C_TEAM_CHANGE;
+		Length = sizeof(*this);
+		prvOrderOfTeam = 0;
+		currOrderOfTeam = 0;
+		currTeamType = RED;
+	}
+}Packet_s_c_team_change;
+#pragma pack(pop)
+
 
 #pragma pack(push,1)
 typedef struct PACKET_S_C_SPAWN : PACKET

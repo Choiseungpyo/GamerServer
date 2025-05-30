@@ -1,32 +1,7 @@
 #pragma once
-#include <unordered_map>
-#include "Game.h"
-#include <unordered_set>
-#include "Packet.h"
+#include "stdafx.h"
 
-class ClientSession;
-class User;
 
-enum TeamType {
-	RED,
-	BLUE
-};
-
-enum RoomState {
-	WAITING,
-	PLAYING
-};
-
-enum MatchType {
-	SOLO = 1,
-	DUO = 2,
-	SQUAD = 4
-};
-
-enum ReadyState {
-	UNREADY,
-	READY
-};
 
 struct RoomUserData {
 	int userId;
@@ -40,12 +15,14 @@ struct RoomUserInfo {
 	TeamType teamType;
 	ReadyState readyState;
 	bool isHost;
+	int userOrderOfTeam;
 
 	RoomUserInfo()
 	{
 		this->teamType = RED;
 		readyState = UNREADY;
 		isHost = true;
+		userOrderOfTeam = 0;
 	}
 
 	RoomUserInfo(TeamType teamType)
@@ -53,6 +30,7 @@ struct RoomUserInfo {
 		this->teamType = teamType;
 		readyState = UNREADY;
 		isHost = false;
+		userOrderOfTeam = 0;
 	}
 };
 
@@ -92,22 +70,11 @@ public:
 
 	void SetName(const string& name) { this->name = name; }
 
-	void ChangeReadyState(int userId)
-	{
-		if (roomUserInfoMap[userId].readyState == UNREADY)
-			roomUserInfoMap[userId].readyState = READY;
-		else
-			roomUserInfoMap[userId].readyState = UNREADY;
-	}
+	void ChangeReadyState(int userId);
 
-	void ChangeTeamType(int userId)
-	{
-		if (roomUserInfoMap[userId].teamType == RED)
-			roomUserInfoMap[userId].teamType = BLUE;
-		else
-			roomUserInfoMap[userId].teamType = RED;
-	}
+	void ChangeTeamType(int userId);
 
+	void ChangeRoomUserInfo(PACKET_CHANGE_ROOM_OPTION* pack);
 
 	void AddUser(const ClientSession* client);
 
@@ -117,9 +84,5 @@ public:
 
 
 	void Send_InRoom_UsersData();
-
-
-
-
 };
 

@@ -1,8 +1,4 @@
 #include "stdafx.h"
-#include "ClientSession.h"
-#include "MTServerManager.h"
-#include "SessionManager.h"
-
 
 ClientSession::ClientSession(SOCKET sock, int id) : mSocket(sock), mConnected(false), sessionManager(SessionManager::GetInstance())
 {
@@ -95,10 +91,25 @@ void ClientSession::Disconnect()
 void ClientSession::EntryLobby()
 {
 	user->SetState(LOBBY);
-	//Send(S_C_ENTRY_LOBBY);
+	PACKET_S_C_ENTRY_LOBBY pack;
+	pack.Type = S_C_ENTRY_LOBBY;
+	pack.id = user->GetId();
+
+	string tmp = "User"+pack.id;
+
+	strncpy_s(pack.name, tmp.c_str(), sizeof(pack.name));
+	pack.name[sizeof(pack.name) - 1] = '\0';  // ³Î º¸Àå
+	Send(&pack);
 }
 
 void ClientSession::MoveTitle()
 {
 	user->SetState(TITLE);
+}
+
+void ClientSession::Send_Id()
+{
+	PACKET_S_C_ID pack;
+	pack.id = user->GetId();
+	Send(&pack);
 }

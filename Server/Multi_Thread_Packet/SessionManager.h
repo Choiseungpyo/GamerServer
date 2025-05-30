@@ -1,6 +1,5 @@
 #pragma once
-#include <shared_mutex>
-#include <unordered_map>
+
 /*
 클라이언트 관리자.
 클라이언트 증감이나 생성, 파괴등을 맡음.
@@ -33,8 +32,6 @@ public:
 	static void BroadcastExceptOneself(const Packet* packet, ClientSession* oneself);
 
 	static void SendTo(const Packet* packet, SOCKET targetSocket);
-
-	static void SetClients_FDSET(fd_set& readfds);
 
 	static int GetClientSize();
 

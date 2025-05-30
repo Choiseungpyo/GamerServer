@@ -6,8 +6,8 @@ using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class TcpManager : Singleton<TcpManager>, IListener
-{
+public class TcpManager : Singleton<TcpManager>
+{ 
     private TcpClient client;
     private NetworkStream stream;
     private Thread receiveThread;
@@ -159,16 +159,14 @@ public class TcpManager : Singleton<TcpManager>, IListener
 
             // 타이틀로 이동
             case PTYPE.S_C_MOVE_TITLE:
-                {
-                   // PACKET_ID packet
-                }
+                PanelManager.Instance.Activate(PanelType.TITLE);
                 break;
 
             // Room
             case PTYPE.S_C_READY_BTN:
                 {
                     PACKET_S_C_READY_BTN packet = BytesToStruct<PACKET_S_C_READY_BTN>(fullPacket);
-                    inRoomUI.SetUserReadyState(packet);
+                    inRoomUI.Ready(packet);
                 }
                 break;
 
@@ -179,26 +177,53 @@ public class TcpManager : Singleton<TcpManager>, IListener
                 }
                 break;
 
+            case PTYPE.S_C_TEAM_CHANGE:
+                {
+                    PACKET_S_C_TEAM_CHANGE pack = BytesToStruct<PACKET_S_C_TEAM_CHANGE>(fullPacket);
+                    inRoomUI.TeamChange(pack);
+                }
+                break;
+
+            case PTYPE.S_C_CHANGE_ROOM_OPTION:
+                {
+                    PACKET_S_C_CHANGE_ROOM_OPTION packet = BytesToStruct<PACKET_S_C_CHANGE_ROOM_OPTION>(fullPacket);
+
+                    // 현재 클라가 로비인 경우
+                    if (PanelManager.Instance.CurrentPanel == PanelType.LOBBY)
+                        LobbyUIManager.Instance.SetRoomOption(packet);
+                    else if (PanelManager.Instance.CurrentPanel == PanelType.ROOM)
+                    {
+                        inRoomUI.RoomOption(packet);
+                    }
+                }
+                break;
+
+            case PTYPE.S_C_MOVE_LOBBY:
+                PanelManager.Instance.Activate(PanelType.LOBBY);
+                break;
+
+
+
             // 게임
-            case PTYPE.S_PLAYER_SPAWN:
-                {
-                    PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
-                    EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PLAYER, this, packet);
-                }
-                break;
-            case PTYPE.C_PLAYER_MOVE:
-                {
-                    //PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
-                    //id = packet.Id;
+            //case PTYPE.S_PLAYER_SPAWN:
+            //    {
+            //        PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
+            //        EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PLAYER, this, packet);
+            //    }
+            //    break;
+            //case PTYPE.C_PLAYER_MOVE:
+            //    {
+            //        //PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
+            //        //id = packet.Id;
                  
-                }
-                break;
-            case PTYPE.S_PLAYER_MOVE:
-                {
-                    PACKET_S_MOVE packet = BytesToStruct<PACKET_S_MOVE>(fullPacket);
-                    EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this, packet);
-                }
-                break;
+            //    }
+            //    break;
+            //case PTYPE.S_PLAYER_MOVE:
+            //    {
+            //        PACKET_S_MOVE packet = BytesToStruct<PACKET_S_MOVE>(fullPacket);
+            //        EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this, packet);
+            //    }
+            //    break;
 
             default:
                 break;
@@ -296,8 +321,8 @@ public class TcpManager : Singleton<TcpManager>, IListener
 
                     // 방 이름, 매치 타입
                     packet.Length = (uint)Marshal.SizeOf<PACKET_C_S_CREATE_ROOM>();
-
-                    if (param is Tuple<string, MatchType> data)
+                    packet.Type = pType;
+                    if (param is ValueTuple<string, MatchType> data)
                     {
                         packet.Id = id;
                         packet.RoomName = data.Item1;
@@ -314,6 +339,7 @@ public class TcpManager : Singleton<TcpManager>, IListener
 
                     // 방 번호
                     packet.Length = (uint)Marshal.SizeOf<PACKET_C_S_ENTRY_ROOM>();
+                    packet.Type = pType;
 
                     if (param is int data)
                     {
@@ -336,12 +362,11 @@ public class TcpManager : Singleton<TcpManager>, IListener
             case PTYPE.C_S_CHANGE_ROOM_OPTION:
             case PTYPE.C_S_MOVE_LOBBY:
                 {
-                    var packet = new PACKET_BOOL();
+                    var packet = new PACKET();
 
                     // 방 번호
-                    packet.Length = (uint)Marshal.SizeOf<PACKET_BOOL>();
+                    packet.Length = (uint)Marshal.SizeOf<PACKET>();
                     packet.Type = pType;
-                    packet.isTrue = true;
 
                     Send(packet);
                 }
@@ -383,37 +408,6 @@ public class TcpManager : Singleton<TcpManager>, IListener
             offset += Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>();
 
             usersInfo.Add(user); // 매개변수로 받은 리스트에 추가
-        }
-    }
-
-    public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)
-    {
-        switch(EventType)
-        {
-            case EVENT_TYPE.SEND_PLAYER_MOVEMENT:
-                {
-                    //byte data = GetByteFromBoolArray((bool[])Param);
-                    //Debug.Log("이벤트 수신 : PlayerMovement");
-                    //PACKET_C_MOVE packet = new PACKET_C_MOVE
-                    //{
-                    //    Type = (int)PTYPE.C_PLAYER_MOVE,
-                    //    Directions = data
-                    //};
-                    //packet.Length = (uint)Marshal.SizeOf(typeof(PACKET_C_MOVE));
-                    //byte[] bytes = StructToBytes(packet);
-                    //stream.Write(bytes, 0, bytes.Length);
-                    //stream.Flush();
-                }
-                break;
-            case EVENT_TYPE.SEND_USER_NICKNAME:
-                {
-                    string data = (string)Param;
-
-                }
-                break;
-
-            default:
-                break;
         }
     }
 }

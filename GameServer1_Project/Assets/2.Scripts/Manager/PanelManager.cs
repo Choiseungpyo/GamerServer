@@ -20,8 +20,24 @@ public class PanelManager : Singleton<PanelManager>
         public GameObject panel;
     }
 
-    [SerializeField] List<PanelData> panels;
-    Dictionary<PanelType, GameObject> panelDict = new();
+    [SerializeField] private List<PanelData> panelDatas;
+    private Dictionary<PanelType, GameObject> panelDict = new();
+
+    private PanelType currPanel;
+
+    public PanelType CurrentPanel
+    {
+        get { return currPanel; }
+        set { currPanel = value; }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        foreach (var panel in panelDatas)
+            panelDict.Add(panel.type, panel.panel);
+    }
 
     private void Start()
     {
@@ -38,20 +54,31 @@ public class PanelManager : Singleton<PanelManager>
 
             TcpManager.Instance.RegisterJop(() =>
             {
-                panelObject.SetActive(isActive);
+                // 활성해야할 경우 && 해당 패널이 비활성화 되어있는 경우
+                if(isActive && !panelObject.activeSelf)
+                {
+                    panelObject.SetActive(isActive);
+                }
+                // 비활성해야할 경우 && 해당 패널이 활성화 되어있는 경우
+                else if(!isActive && panelObject.activeSelf)
+                {
+                    panelObject.SetActive(isActive);
+                }
+                
             });
         }
     }
 
     public bool IsActive(PanelType panelType)
     {
-        if (panelDict.TryGetValue(panelType, out var panel))
+        if (!panelDict.TryGetValue(panelType, out var panel))
         {
-            return panel.activeSelf;
+            Debug.LogWarning(panelType);
+            return false; // 또는 기본값
+           
         }
 
-        Debug.LogWarning($"[UI] PanelType '{panelType}' not found in panelDict.");
-        return false; // 또는 기본값
+        return panel.activeSelf;
     }
 
 }

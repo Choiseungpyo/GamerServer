@@ -5,19 +5,33 @@ using UnityEngine.UI;
 
 public class Title : MonoBehaviour
 {
-    public enum BtnType : int
+    public enum BtnType
     {
-        LOBBY = 0,
+        LOBBY,
         LOGOUT
     }
 
-    [SerializeField] Button[] btns;
-
-    // Start is called before the first frame update
-    void Start()
+    [System.Serializable]
+    public struct BtnData
     {
-        btns[(int)BtnType.LOBBY].onClick.AddListener(MoveLobby);
-        btns[(int)BtnType.LOGOUT].onClick.AddListener(Logout);
+        public BtnType type;
+        public Button btn;
+    }
+
+    [SerializeField] private List<BtnData> btnDatas;
+
+    private Dictionary<BtnType, Button> btnDict = new();
+
+
+    private void Awake()
+    {
+        foreach (var btn in btnDatas)
+        {
+            btnDict[btn.type] = btn.btn;
+        }
+
+        btnDict[BtnType.LOBBY].onClick.AddListener(MoveLobby);
+        btnDict[BtnType.LOGOUT].onClick.AddListener(Logout);
     }
 
     private void MoveLobby()

@@ -1,5 +1,5 @@
 #pragma once
-#include "User.h"
+class User;
 
 //클라이언트 객체용 클래스
 /*
@@ -30,12 +30,7 @@ public:
 	User* GetUser() const {return user; }
 
 	// 클라로 전송
-	void Send_Id()
-	{
-		PACKET_S_C_ID pack;
-		pack.id = user->GetId();
-		Send(&pack);
-	}
+	void Send_Id();
 
 	// 패킷 파싱시 하는 함수들
 	void EntryLobby();

@@ -39,11 +39,11 @@ public class LobbyRoomItemUI : PoolableObject
     /// 방 생성시 호출하는 함수
     /// </summary>
     /// <param name="packet"></param>
-    public void InitRoomUIData(PACKET_S_C_CREATE_ROOM packet)
+    public void InitRoomUIData(PACKET_S_C_CREATE_ROOM pack)
     {
-        roomTxtDict[RoomInfoType.NO].text = packet.RoomNo.ToString();
-        roomTxtDict[RoomInfoType.ROOMNAME].text = packet.RoomName.ToString();
-        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)packet.MatchType * 2).ToString();
+        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
+        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
         roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
     }
 
@@ -51,12 +51,12 @@ public class LobbyRoomItemUI : PoolableObject
     /// 방 정보를 변경시 호출하는 함수
     /// </summary>
     /// <param name="packet"></param>
-    public void SetRoomUIData()
+    public void ChangeRoomUIData(PACKET_S_C_CHANGE_ROOM_OPTION pack)
     {
-        //roomDataTxts[(int)Type.NO].text = packet.RoomNo.ToString();
-        //roomDataTxts[(int)Type.ROOMNAME].text = packet.RoomName.ToString();
-        //roomDataTxts[(int)Type.PEOPLENUM].text = packet.CurrPeopleNum.ToString() + "/" + room.MaxPeopleNum.ToString();
-        //roomDataTxts[(int)Type.STATE].text = room.GetRoomState().ToString();
+        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
+        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
+        roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
     }
 
     private void InitRoomUIData()

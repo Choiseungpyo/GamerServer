@@ -66,6 +66,6 @@ public:
 
 	static void SetReadyState(const ClientSession* client);
 	static void SetTeamType(const ClientSession* client);
-	static void SetRoomOption(const ClientSession* client, PACKET_S_C_CHANGE_ROOM_OPTION pack);
+	static void SetRoomOption(const PACKET* packet, const ClientSession* client);
 };
 

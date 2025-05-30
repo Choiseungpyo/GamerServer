@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "LobbyManager.h"
-
 
 // int : Room No
 unordered_map<int, Room*> LobbyManager::roomMap; // 모든 방 정보
@@ -26,7 +24,7 @@ Room* LobbyManager::GetJoinableRandomRoom()
 		joinableRoomNums.push_back(room.first);
 	}
 
-	joiableRoomMaxnum = joinableRoomNums.size();
+	joiableRoomMaxnum = (int)joinableRoomNums.size();
 
 	if (joiableRoomMaxnum <= 0)
 		return nullptr;
@@ -60,27 +58,31 @@ LobbyManager* LobbyManager::GetInstance()
 /// <param name="roomOption">방 옵션</param>
 void  LobbyManager::CreateRoom(const Packet* packet, const ClientSession* client)
 {
-	//Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
-	//RoomOption roomOption(pack->roomName, pack->matchType);
+	Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
+	RoomOption roomOption(pack->roomName, pack->matchType);
 
-	//Room* newRoom = new Room(roomMap.size(), roomOption);
-	//roomMap[roomMap.size()] = newRoom;
+	Room* newRoom = new Room(roomMap.size(), roomOption);
+	roomMap[roomMap.size()] = newRoom;
 
-	//newRoom->AddUser(client);
+	newRoom->AddUser(client);
+	User* user = client->GetUser();
+	
 
-	//std::vector<char> buffer;
-	//Packet_RoomUsersHeader header;
-	//header.roomId = 1001;
-	//header.userCount = userList.size();
-	//header.Length += userList.size() * sizeof(UserInfo);
+	std::vector<char> buffer;
+	Packet_RoomUsersHeader header;
+	header.hostId = user->GetId();
+	header.userCount = roomMap.size();
+	strncpy_s(header.roomName, sizeof(header.roomName), pack->roomName, _TRUNCATE);
 
-	//buffer.resize(header.Length);
-	//memcpy(buffer.data(), &header, sizeof(header));
+	header.Length += sizeof(PACKET_ROOM_USER_INFO);
 
-	//for (int i = 0; i < userList.size(); ++i) {
-	//	memcpy(buffer.data() + sizeof(header) + i * sizeof(UserInfo), &userList[i], sizeof(UserInfo));
-	//}
-	//send(clientSocket, buffer.data(), buffer.size(), 0);
+	buffer.resize(header.Length);
+	memcpy(buffer.data(), &header, sizeof(header));
+
+	PACKET_ROOM_USER_INFO packet_room_user_info(user->GetName());
+	memcpy(buffer.data() + sizeof(header), &packet_room_user_info, sizeof(PACKET_ROOM_USER_INFO));
+
+	send(client->GetSocket(), buffer.data(), buffer.size(), 0);
 }
 
 /// <summary>
@@ -101,7 +103,7 @@ void  LobbyManager::EntryRandomRoom(const ClientSession* client)
 void LobbyManager::EntryRoom(const Packet* packet, const ClientSession* client)
 {
 	Packet_c_s_entry_room* pack = (Packet_c_s_entry_room*)packet;
-	
+
 	auto it = roomMap.find(pack->roomNo);
 
 	// 실제 있는 방 번호인 경우
@@ -111,6 +113,28 @@ void LobbyManager::EntryRoom(const Packet* packet, const ClientSession* client)
 	// 없는 방 번호인 경우
 	else
 		cout << "The Room Num(" << pack->roomNo << ") does not exist.";
+
+	//Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
+//RoomOption roomOption(pack->roomName, pack->matchType);
+
+//Room* newRoom = new Room(roomMap.size(), roomOption);
+//roomMap[roomMap.size()] = newRoom;
+
+//newRoom->AddUser(client);
+
+//std::vector<char> buffer;
+//Packet_RoomUsersHeader header;
+//header.roomId = 1001;
+//header.userCount = userList.size();
+//header.Length += userList.size() * sizeof(UserInfo);
+
+//buffer.resize(header.Length);
+//memcpy(buffer.data(), &header, sizeof(header));
+
+//for (int i = 0; i < userList.size(); ++i) {
+//	memcpy(buffer.data() + sizeof(header) + i * sizeof(UserInfo), &userList[i], sizeof(UserInfo));
+//}
+//send(clientSocket, buffer.data(), buffer.size(), 0);
 }
 
 void LobbyManager::SetReadyState(const ClientSession* client)
@@ -129,10 +153,11 @@ void LobbyManager::SetTeamType(const ClientSession* client)
 	roomMap[user->GetRoomNum()]->ChangeTeamType(user->GetId());
 }
 
-void LobbyManager::SetRoomOption(const ClientSession* client, PACKET_S_C_CHANGE_ROOM_OPTION pack)
+void LobbyManager::SetRoomOption(const PACKET* packet, const ClientSession* client)
 {
+	PACKET_CHANGE_ROOM_OPTION* pack = (PACKET_CHANGE_ROOM_OPTION*)packet;
 	// 뮤텍스 설정하기
 
 	User* user = client->GetUser();
-	//roomMap[pack.roomNo]->SetRoomOption(pack);
+	roomMap[pack->roomNo]->ChangeRoomUserInfo(pack);
 }

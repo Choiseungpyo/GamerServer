@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EntityManager : Singleton<EntityManager>, IListener
+public class EntityManager : Singleton<EntityManager>
 {
     [SerializeField] GameObject[] player_Prefabs;
 
-    Dictionary<int, Player> players;
+    Dictionary<int, Player> players = new();
     [SerializeField] int maxPlayerNum;
     int currUserId;
 
@@ -24,10 +24,6 @@ public class EntityManager : Singleton<EntityManager>, IListener
 
     private void Start()
     {
-        players = new Dictionary<int, Player>();
-        EventManager.Instance.AddListener(EVENT_TYPE.ADD_PLAYER, this);
-        EventManager.Instance.AddListener(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this);
-
         currUserId = TcpManager.Instance.Id;
 
         GameObject playerObj = Instantiate(player_Prefabs[0]);
@@ -87,37 +83,37 @@ public class EntityManager : Singleton<EntityManager>, IListener
         players[id].transform.position = pos;
     }
 
-    public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)
-    {
-        Vector3 tmp_pos;
+    //public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)
+    //{
+    //    Vector3 tmp_pos;
 
-        switch (EventType)
-        {
-            case EVENT_TYPE.ADD_PLAYER:
-                {
-                    PACKET_S_SPAWN packet = (PACKET_S_SPAWN)Param;
-                    TcpManager.Instance.RegisterJop(() =>
-                    {
-                        tmp_pos.x = packet.Position.X;
-                        tmp_pos.y = packet.Position.Y;
-                        tmp_pos.z = packet.Position.Z;
-                        AddPlayer(packet.Id, tmp_pos);
-                    });
-                }
-                break;
+    //    switch (EventType)
+    //    {
+    //        case EVENT_TYPE.ADD_PLAYER:
+    //            {
+    //                PACKET_S_SPAWN packet = (PACKET_S_SPAWN)Param;
+    //                TcpManager.Instance.RegisterJop(() =>
+    //                {
+    //                    tmp_pos.x = packet.Position.X;
+    //                    tmp_pos.y = packet.Position.Y;
+    //                    tmp_pos.z = packet.Position.Z;
+    //                    AddPlayer(packet.Id, tmp_pos);
+    //                });
+    //            }
+    //            break;
 
-            case EVENT_TYPE.APPLY_PLAYER_MOVEMENT:
-                {
-                    PACKET_S_MOVE packet = (PACKET_S_MOVE)Param;
-                    TcpManager.Instance.RegisterJop(() =>
-                    {
-                        tmp_pos.x = packet.Position.X;
-                        tmp_pos.y = packet.Position.Y;
-                        tmp_pos.z = packet.Position.Z;
-                        SetPlayerPos(packet.Id, tmp_pos);
-                    });
-                }
-                break;
-        }
-    }
+    //        case EVENT_TYPE.APPLY_PLAYER_MOVEMENT:
+    //            {
+    //                PACKET_S_MOVE packet = (PACKET_S_MOVE)Param;
+    //                TcpManager.Instance.RegisterJop(() =>
+    //                {
+    //                    tmp_pos.x = packet.Position.X;
+    //                    tmp_pos.y = packet.Position.Y;
+    //                    tmp_pos.z = packet.Position.Z;
+    //                    SetPlayerPos(packet.Id, tmp_pos);
+    //                });
+    //            }
+    //            break;
+    //    }
+    //}
 }

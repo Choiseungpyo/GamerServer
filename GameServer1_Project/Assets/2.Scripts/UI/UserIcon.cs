@@ -35,7 +35,7 @@ public class UserIcon : Singleton<UserIcon>
 {
     Dictionary<IconType, Sprite> icons;
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
         LoadAllAnimalIcons();
@@ -54,11 +54,13 @@ public class UserIcon : Singleton<UserIcon>
 
     public Sprite GetSprite(string iconType)
     {
-        if (System.Enum.TryParse(iconType, out IconType type))
-            return icons.TryGetValue(type, out var sprite) ? sprite : null;
+        if (!System.Enum.TryParse(iconType, out IconType type))
+        {
+            Debug.LogWarning(iconType);
+            return null;
+        }
 
-        Debug.LogWarning(iconType);
-        return null;
+        return icons.TryGetValue(type, out var sprite) ? sprite : null;
     }
 
     

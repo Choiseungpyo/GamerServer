@@ -79,20 +79,18 @@ public interface IPacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct PACKET : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PACKET_ID : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
     public int Id;
-}
-
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_BOOL : IPacket
-{
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
-
-    public bool isTrue;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
@@ -128,21 +126,25 @@ public struct PACKET_S_C_ROOM_USER_INFO
     public int userOrderOfTeam;
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 public struct Packet_S_C_ROOM_USERS_INFO_HEADER : IPacket
 { 
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
     public int HostId;
     public int RoomNo;
-    public int RoomName;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+    public string RoomName;
     public MatchType MatchType;
     public int UserCount;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_C_READY_BTN
+public struct PACKET_S_C_READY_BTN : IPacket
 {
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+
     public ReadyState readyState;
     public TeamType teamType;
     public int OrderOfTeam;
@@ -167,6 +169,29 @@ public struct PACKET_S_C_CREATE_ROOM : IPacket
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
     public int Id;
+
+    public int RoomNo;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.NAME_SIZE)]
+    public string RoomName;
+    public MatchType MatchType;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct PACKET_S_C_TEAM_CHANGE : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+
+    public int PrvOrderOfTeam;
+    public int CurrOrderOfTeam;
+    public TeamType CurrTeamType;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+public struct PACKET_S_C_CHANGE_ROOM_OPTION : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
 
     public int RoomNo;
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.NAME_SIZE)]

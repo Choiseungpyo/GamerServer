@@ -147,7 +147,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			break;
 
 		case C_S_CHANGE_ROOM_OPTION:
-			//LobbyManager::SetRoomOption(client, pack);
+			LobbyManager::SetRoomOption(packet, client);
 			break;
 
 		case C_S_MOVE_LOBBY:

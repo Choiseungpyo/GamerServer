@@ -138,8 +138,7 @@ public class RoomOptionUI : MonoBehaviour
         // Lobby에서 방 생성시
         if(isCreateBtn)
         {
-            RoomOption roomOption = new RoomOption(roomName, matchType);  // 현재 플레이어
-            TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, roomOption);
+            TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, (roomName, matchType));
         }
         // In Game에서 방 옵션 설정시
         else

@@ -14,10 +14,12 @@ void Room::AddUser(const ClientSession* client)
 
 	int clientId = user->GetId();
 	
-	clientMap[client->GetSocket()] = client;
+	clientMap[clientId] = client;
 	TeamType teamType = JoinAvailableTeam(clientId);
 	roomUserInfoMap[clientId] = RoomUserInfo(teamType);
 	user->SetState(ROOM);
+
+	// 팀의 몇번째에 위치하는지 계산해서 RoomUserInfo에 저장하는 것 필요
 
 	cout << "User" << clientId << "has entered the room.";
 }
@@ -65,6 +67,29 @@ void Room::Send_InRoom_UsersData()
 
 		result.push_back(roomUserData);
 	}
+}
+
+void Room::ChangeReadyState(int userId)
+{
+	if (roomUserInfoMap[userId].readyState == UNREADY)
+		roomUserInfoMap[userId].readyState = READY;
+	else
+		roomUserInfoMap[userId].readyState = UNREADY;
+}
+
+void Room::ChangeTeamType(int userId)
+{
+	if (roomUserInfoMap[userId].teamType == RED)
+		roomUserInfoMap[userId].teamType = BLUE;
+	else
+		roomUserInfoMap[userId].teamType = RED;
+}
+
+void Room::ChangeRoomUserInfo(PACKET_CHANGE_ROOM_OPTION* pack)
+{
+	no = pack->roomNo;
+	name = pack->roomName;
+	matchType = pack->matchType;
 }
 
 

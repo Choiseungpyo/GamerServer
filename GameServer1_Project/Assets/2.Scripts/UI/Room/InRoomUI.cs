@@ -18,11 +18,21 @@ public class InRoomUI : MonoBehaviour
     }
 
     // <SlotNum, INRoomUserUI>
-    Dictionary<int, InRoomUserUI> redUsersUIDict;
-    Dictionary<int, InRoomUserUI> blueUsersUIDict;
+    Dictionary<int, InRoomUserUI> redUsersUIDict = new();
+    Dictionary<int, InRoomUserUI> blueUsersUIDict = new();
 
-    private InRoomUserUIPool inRoomUserUIPool;
+    [SerializeField] private InRoomUserUIPool inRoomUserUIPool;
 
+    [System.Serializable]
+    public struct OrderTransform
+    {
+        public int order;
+        public Transform transform;
+    }
+    [SerializeField] private List<OrderTransform> redTeamTrDatas;
+    [SerializeField] private List<OrderTransform> blueTeamTrDatas;
+    Dictionary<int, Transform> redTeamTrDict = new();
+    Dictionary<int, Transform> blueTeamTrDict = new();
 
     #endregion
 
@@ -81,24 +91,18 @@ public class InRoomUI : MonoBehaviour
     public void SetInRoomUI(Packet_S_C_ROOM_USERS_INFO_HEADER pack, List<PACKET_S_C_ROOM_USER_INFO> roomUsersInfo)
     {
         // 방 정보
-        roomInfoDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
-        roomInfoDict[RoomInfoType.NAME].text = pack.RoomName.ToString();
-        roomInfoDict[RoomInfoType.MATCHTYPE].text = pack.MatchType.ToString();
+        SetRoomOption(pack);
 
-        SetUsersInfo(roomUsersInfo);
+        SetUserInfo(roomUsersInfo);
 
         SetReadyBtnText(pack.HostId);
     }
 
-    public void SetUserReadyState(PACKET_S_C_READY_BTN pack)
-    {
-        if (redUsersUIDict.TryGetValue(pack.OrderOfTeam, out InRoomUserUI inRoomUserUI))
-        {
-            inRoomUserUI.SetUserState(pack.readyState);
-        }
-    }
-
-    public void SetUsersInfo(List<PACKET_S_C_ROOM_USER_INFO> roomUsersInfo)
+    /// <summary>
+    /// 유저가 방 입장시 다른 유저들의 UI 정보 설정
+    /// </summary>
+    /// <param name="roomUsersInfo"></param>
+    public void SetUserInfo(List<PACKET_S_C_ROOM_USER_INFO> roomUsersInfo)
     {
         foreach (var userInfo in roomUsersInfo)
         { 
@@ -106,25 +110,41 @@ public class InRoomUI : MonoBehaviour
             var newInRoomUserUI = inRoomUserUIPool.Get();
             newInRoomUserUI.SetInRoomUserUI(userInfo.UserName, userInfo.readyState);
 
-            // Dict에 저장
+            // Dict 저장
             if (userInfo.teamType == TeamType.RED)
             {
-                redUsersUIDict.Add(redUsersUIDict.Count, newInRoomUserUI);
+                redUsersUIDict.Add(userInfo.userOrderOfTeam, newInRoomUserUI);
+                newInRoomUserUI.transform.SetParent(redTeamTrDict[userInfo.userOrderOfTeam]);
             }
             else
             {
-                blueUsersUIDict.Add(blueUsersUIDict.Count, newInRoomUserUI);
+                blueUsersUIDict.Add(userInfo.userOrderOfTeam, newInRoomUserUI);
+                newInRoomUserUI.transform.SetParent(blueTeamTrDict[userInfo.userOrderOfTeam]);
             }
         }
     }
 
+    public void SetRoomOption(Packet_S_C_ROOM_USERS_INFO_HEADER pack)
+    {
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            roomInfoDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+            roomInfoDict[RoomInfoType.NAME].text = pack.RoomName.ToString();
+            roomInfoDict[RoomInfoType.MATCHTYPE].text = pack.MatchType.ToString();
+        });
+      
+    }
+
     private void SetReadyBtnText(int hostId)
     {
-        // 현재 클라이언트가 호스트인 경우
-        if (hostId == TcpManager.Instance.Id)
-            readyStateBtnTxt.text = "Ready";
-        else
-            readyStateBtnTxt.text = "Start";
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            // 현재 클라이언트가 호스트인 경우
+            if (hostId == TcpManager.Instance.Id)
+                readyStateBtnTxt.text = "Ready";
+            else
+                readyStateBtnTxt.text = "Start";
+        });
     }
 
 
@@ -143,10 +163,13 @@ public class InRoomUI : MonoBehaviour
         // 버튼 이벤트 연결 예시
         btnDict[BtnType.READY].onClick.AddListener(Ready);
         btnDict[BtnType.TEAM_CHANGE].onClick.AddListener(TeamChange);
-        btnDict[BtnType.OPTION].onClick.AddListener(Option);
+        btnDict[BtnType.OPTION].onClick.AddListener(OnClickSetRoomOptions);
         btnDict[BtnType.EXIT].onClick.AddListener(Exit);
     }
 
+    /// <summary>
+    /// 클라 : 레디 상태 변경
+    /// </summary>
     private void Ready()
     {
         // 현재 클라이언트가 호스트가 아닌 경우
@@ -156,20 +179,98 @@ public class InRoomUI : MonoBehaviour
             TcpManager.Instance.SendToServer(PTYPE.C_S_GAMETSTART_BTN);
     }
 
+    /// <summary>
+    /// 서버 : 레디 상태 변경
+    /// </summary>
+    /// <param name="pack"></param>
+    public void Ready(PACKET_S_C_READY_BTN pack)
+    {
+        if (!redUsersUIDict.TryGetValue(pack.OrderOfTeam, out InRoomUserUI inRoomUserUI))
+        {
+            Debug.LogWarning(pack.OrderOfTeam);
+            return;
+        }
+
+        inRoomUserUI.SetUserReadyState(pack.readyState);
+    }
+
+    /// <summary>
+    /// 클라 : 유저의 팀 변경 
+    /// </summary>
     private void TeamChange()
     {
         TcpManager.Instance.SendToServer(PTYPE.C_S_TEAM_CHANGE);
     }
 
-    private void Option()
+    /// <summary>
+    /// 서버 : 유저의 팀 변경
+    /// </summary>
+    /// <param name="pack"></param>
+    public void TeamChange(PACKET_S_C_TEAM_CHANGE pack)
     {
-        //TcpManager.Instance.SendToServer();
+        // 바꿀 팀이 레드인 경우
+        if (pack.CurrTeamType == TeamType.RED)
+        {
+            if (!blueUsersUIDict.TryGetValue(pack.PrvOrderOfTeam, out InRoomUserUI inRoomUserUI))
+            {
+                Debug.LogWarning(pack.PrvOrderOfTeam);
+                return;
+            }
+
+            blueUsersUIDict.Remove(pack.PrvOrderOfTeam);
+            redUsersUIDict[pack.CurrOrderOfTeam] = inRoomUserUI;
+            inRoomUserUI.transform.SetParent(redTeamTrDict[pack.CurrOrderOfTeam]);
+        }
+        // 바꿀 팀이 블루인 경우
+        else if (pack.CurrTeamType == TeamType.RED)
+        {
+            if (!redUsersUIDict.TryGetValue(pack.PrvOrderOfTeam, out InRoomUserUI inRoomUserUI))
+            {
+                Debug.LogWarning(pack.PrvOrderOfTeam);
+                return;
+            }
+
+            redUsersUIDict.Remove(pack.PrvOrderOfTeam);
+            blueUsersUIDict[pack.CurrOrderOfTeam] = inRoomUserUI;
+            inRoomUserUI.transform.SetParent(blueTeamTrDict[pack.CurrOrderOfTeam]);
+        }
     }
 
+    /// <summary>
+    /// 방 옵션 변경 UI 활성화 버튼을 눌렀을 경우
+    /// </summary>
+    private void OnClickSetRoomOptions()
+    {
+        PanelManager.Instance.Activate(PanelType.ROOM, PanelType.ROOMOPTION);
+    }
+
+    /// <summary>
+    /// 클라 : 방 옵션 변경 완료 버튼을 눌렀을 경우
+    /// </summary>
+    private void RoomOption()
+    {
+        TcpManager.Instance.SendToServer(PTYPE.C_S_CHANGE_ROOM_OPTION);
+    }
+
+    /// <summary>
+    /// 서버 : 방 옵션 변경
+    /// </summary>
+    /// <param name="pack"></param>
+    public void RoomOption(PACKET_S_C_CHANGE_ROOM_OPTION pack)
+    {
+        roomInfoDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+        roomInfoDict[RoomInfoType.NAME].text = pack.RoomName;
+        roomInfoDict[RoomInfoType.MATCHTYPE].text = pack.MatchType.ToString();
+    }
+
+    /// <summary>
+    /// 클라 : 로비로 나가기
+    /// </summary>
     private void Exit()
     {
-        //TcpManager.Instance.SendToServer();
+        TcpManager.Instance.SendToServer(PTYPE.C_S_MOVE_LOBBY);
     }
+
     #endregion
 
     #region RoomInfo
