@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,10 @@ public class PanelManager : Singleton<PanelManager>
 
     private void Start()
     {
+        Activate((PanelType[])Enum.GetValues(typeof(PanelType)));
         Activate(PanelType.TITLE);
     }
+
 
     public void Activate(params PanelType[] panelTypes)
     {

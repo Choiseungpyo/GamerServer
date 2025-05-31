@@ -13,7 +13,11 @@ public abstract class PoolableObject : MonoBehaviour
     // 풀에서 꺼낼 때 공통적으로 호출
     public void Spawn()
     {
-        gameObject.SetActive(true);
+        TcpManager.Instance.RegisterJop(() =>
+            {
+                gameObject.SetActive(true);
+            });
+       
         OnSpawn();
     }
 
@@ -21,6 +25,9 @@ public abstract class PoolableObject : MonoBehaviour
     public void Despawn()
     {
         OnDespawn();
-        gameObject.SetActive(false);
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            gameObject.SetActive(false);
+        });
     }
 }

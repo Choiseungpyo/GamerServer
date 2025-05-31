@@ -25,6 +25,10 @@
 
 #include <iostream>
 #include <list>
+#include <string>
+#include "Winsock2.h"
+#include "set"
+typedef std::set<SOCKET> SOCK_SET;
 
 using namespace std;
 
@@ -34,44 +38,48 @@ using namespace std;
 
 #define SERVERPORT 8080
 #define BUFSIZE 1024
-constexpr int NAME_SIZE = 64;
+constexpr int NAME_SIZE = 30;
 constexpr int ROOM_NAME_SIZE = 64;
 
 
-enum TeamType {
+enum TeamType : int{
 	RED,
 	BLUE
 };
 
-enum RoomState {
+enum RoomState : int{
 	WAITING,
 	PLAYING
 };
 
-enum MatchType {
+enum MatchType : int{
 	SOLO = 1,
 	DUO = 2,
 	SQUAD = 4
 };
 
-enum ReadyState {
+enum ReadyState : int {
 	UNREADY,
 	READY
 };
+
+
 
 #include <unordered_map>
 #include <unordered_set>
 #include <shared_mutex>
 
-
 #include "Packet.h"
+#include "MTServerManager.h"
 #include "ClientSession.h"
 #include "SessionManager.h"
 
+// 데이터
+#include "UserIcon.h"
+
+
 #include "Game.h"
+#include "Room.h"
+
 #include "User.h"
 #include "LobbyManager.h"
-
-
-
-// TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.

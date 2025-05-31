@@ -1,5 +1,4 @@
 #pragma once
-
 class PlayerEntity;
 
 enum UserState {
@@ -15,22 +14,24 @@ class User
 	string name; // 동물 이름 중 하나 랜덤 배정
 	UserState state;
 	int currRoomNum; // -1 : 방에 들어가지 않음
+	
+	mutable shared_mutex mutex;
 
 public:
 	User(int id);
 
 	~User();
 
-	int GetId() const { return id; }
-	int SetId(int id) { this->id = id; }
+	int GetId() const;
+	void SetId(int id);
 
-	const string& GetName() const { return name; }
+	const char* GetName() const;
 	void SetName(const string& name);
 	
-	UserState GetState() const { return state; }
+	UserState GetState() const;
 	void SetState(UserState state);
 
-	int GetRoomNum() const { return currRoomNum; }  
+	int GetRoomNum() const;
 	void SetRoomNum(int roomNum);
 };
 

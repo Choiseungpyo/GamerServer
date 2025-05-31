@@ -11,6 +11,7 @@ enum Direction
 
 class Game
 {
+	shared_mutex mutex;
 
 public:
 	Game()

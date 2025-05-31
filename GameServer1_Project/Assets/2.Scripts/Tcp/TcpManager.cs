@@ -89,6 +89,13 @@ public class TcpManager : Singleton<TcpManager>
                     // 5단계: 패킷 타입에 따라 역직렬화
                     PacketParsing((PTYPE)type, fullPacket);
                 }
+                // 기본 패킷만 보낸 경우
+                else
+                {
+                    byte[] fullPacket = new byte[headerSize];
+                    Buffer.BlockCopy(headerBytes, 0, fullPacket, 0, headerSize);
+                    PacketParsing((PTYPE)type, fullPacket);
+                }
             }
         }
         //catch (Exception ex)
@@ -118,9 +125,19 @@ public class TcpManager : Singleton<TcpManager>
 
             case PTYPE.S_C_ENTRY_LOBBY:
                 {
-                    PACKET_S_C_ENTRY_LOBBY packet = BytesToStruct<PACKET_S_C_ENTRY_LOBBY>(fullPacket);
+                    PACKET_S_C_LOBBY_USERS_INFO_HEADER header = new();
+                    List<PACKET_S_C_LOBBY_USERS_INFO> usersInfo = new();
+                    GetUserInfo(ref header, usersInfo, fullPacket);
 
                     PanelManager.Instance.Activate(PanelType.LOBBY);
+                    LobbyUIManager.Instance.AddUserProfile(usersInfo);
+                }
+                break;
+
+            case PTYPE.S_C_UPDATE_LOBBY_ROOM_INFO:
+                {
+                    PACKET_S_C_UPDATE_LOBBY_ROOM_INFO packet = BytesToStruct<PACKET_S_C_UPDATE_LOBBY_ROOM_INFO>(fullPacket);
+                    LobbyUIManager.Instance.UpdateRoomInfo(packet);
                 }
                 break;
 
@@ -137,8 +154,8 @@ public class TcpManager : Singleton<TcpManager>
                 }
                 break;
 
-            // 방 생성
-            case PTYPE.S_C_CREATE_ROOM:
+            // Lobby Room Item 생성(로비에서 보이는 방들 UI)
+            case PTYPE.S_C_CREATE_LOBBY_ROOM_INFO:
                 {
                     PACKET_S_C_CREATE_ROOM packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
                     LobbyUIManager.Instance.CreateRoom(packet);
@@ -186,7 +203,7 @@ public class TcpManager : Singleton<TcpManager>
 
             case PTYPE.S_C_CHANGE_ROOM_OPTION:
                 {
-                    PACKET_S_C_CHANGE_ROOM_OPTION packet = BytesToStruct<PACKET_S_C_CHANGE_ROOM_OPTION>(fullPacket);
+                    PACKET_CHANGE_ROOM_OPTION packet = BytesToStruct<PACKET_CHANGE_ROOM_OPTION>(fullPacket);
 
                     // 현재 클라가 로비인 경우
                     if (PanelManager.Instance.CurrentPanel == PanelType.LOBBY)
@@ -282,8 +299,10 @@ public class TcpManager : Singleton<TcpManager>
         }
     }
 
-    void OnApplicationQuit()
+    protected override void OnApplicationQuit()
     {
+        base.OnApplicationQuit();
+
         if (receiveThread != null)
         {
             receiveThread.Join(); // 스레드가 끝날 때까지 기다림
@@ -292,7 +311,6 @@ public class TcpManager : Singleton<TcpManager>
         if (stream != null) stream.Close();
         if (client != null) client.Close();
     }
-
 
     public byte GetByteFromBoolArray(bool[] data)
     {
@@ -391,23 +409,49 @@ public class TcpManager : Singleton<TcpManager>
         stream.Flush();
     }
 
-    private void GetUserInfo(ref Packet_S_C_ROOM_USERS_INFO_HEADER header, List<PACKET_S_C_ROOM_USER_INFO> usersInfo, byte[] fullPacket)
+    private void GetUserInfo<THeader, TBody>(ref THeader header, List<TBody> usersInfo, byte[] fullPacket) where THeader : struct where TBody : struct
     {
         int offset = 0;
 
-        // 헤더 파싱 (ref로 전달된 변수에 값 설정)
-        header = BytesToStruct<Packet_S_C_ROOM_USERS_INFO_HEADER>(
-            fullPacket.Take(Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>()).ToArray());
-        offset += Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>();
+        // 헤더 파싱
+        header = BytesToStruct<THeader>(fullPacket.Take(Marshal.SizeOf<THeader>()).ToArray());
+        offset += Marshal.SizeOf<THeader>();
+
+        // Count 프로퍼티를 반사(reflection)로 가져옴
+        var userCountProp = typeof(THeader).GetField("Count");
+        if (userCountProp == null)
+            throw new Exception("THeader must have a Count property");
+
+        int userCount = (int)userCountProp.GetValue(header);
 
         // 유저들 파싱
-        for (int i = 0; i < header.UserCount; i++)
+        for (int i = 0; i < userCount; i++)
         {
-            byte[] slice = fullPacket.Skip(offset).Take(Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>()).ToArray();
-            PACKET_S_C_ROOM_USER_INFO user = BytesToStruct<PACKET_S_C_ROOM_USER_INFO>(slice);
-            offset += Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>();
+            byte[] slice = fullPacket.Skip(offset).Take(Marshal.SizeOf<TBody>()).ToArray();
+            TBody user = BytesToStruct<TBody>(slice);
+            offset += Marshal.SizeOf<TBody>();
 
-            usersInfo.Add(user); // 매개변수로 받은 리스트에 추가
+            usersInfo.Add(user);
         }
     }
+
+    //private void GetUserInfo(ref Packet_S_C_ROOM_USERS_INFO_HEADER header, List<PACKET_S_C_ROOM_USER_INFO> usersInfo, byte[] fullPacket)
+    //{
+    //    int offset = 0;
+
+    //    // 헤더 파싱 (ref로 전달된 변수에 값 설정)
+    //    header = BytesToStruct<Packet_S_C_ROOM_USERS_INFO_HEADER>(
+    //        fullPacket.Take(Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>()).ToArray());
+    //    offset += Marshal.SizeOf<Packet_S_C_ROOM_USERS_INFO_HEADER>();
+
+    //    // 유저들 파싱
+    //    for (int i = 0; i < header.Count; i++)
+    //    {
+    //        byte[] slice = fullPacket.Skip(offset).Take(Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>()).ToArray();
+    //        PACKET_S_C_ROOM_USER_INFO user = BytesToStruct<PACKET_S_C_ROOM_USER_INFO>(slice);
+    //        offset += Marshal.SizeOf<PACKET_S_C_ROOM_USER_INFO>();
+
+    //        usersInfo.Add(user); // 매개변수로 받은 리스트에 추가
+    //    }
+    //}
 }

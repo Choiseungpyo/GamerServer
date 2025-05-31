@@ -1,13 +1,12 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// ·Îºñ UI¸¦ ´ã´çÇÏ´Â Å¬·¡½º
+/// ë¡œë¹„ UIë¥¼ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class LobbyUIManager : Singleton<LobbyUIManager>
 {
@@ -35,6 +34,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     #region UserNames
     [SerializeField] UserProfilePool userProfilePool;
     [SerializeField] Transform userProfileContent_Tr;
+
     #endregion
 
     #endregion
@@ -46,15 +46,16 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
 
         EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
         CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
+        exitBtn.onClick.AddListener(Exit);
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             //AddItem<Txt>(chatContent_Tr, chatPool.Get, (chat, msg) => chat.SetText(msg), "User1 : Hi");
 
-            AddItem<UserProfile>(0, userProfileContent_Tr, userProfilePool.Get, (profile, name) => profile.SetUserProfile(name), "Cat");
+
         }
         if (Input.GetKeyDown(KeyCode.D))
             DeleteUserProtile(0);
@@ -76,6 +77,24 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         lobbyRoomItemUIDict.Add(packet.RoomNo, newRoomUIFo);
     }
 
+    public void UpdateRoomInfo(PACKET_S_C_UPDATE_LOBBY_ROOM_INFO packet)
+    {
+        // ê¸°ì¡´ì— ìˆëŠ” ë°© ì •ë³´ì¼ ê²½ìš°
+        if (lobbyRoomItemUIDict.TryGetValue(packet.RoomNo, out LobbyRoomItemUI lobbyRoomItemUI))
+        {
+            lobbyRoomItemUI.ChangeRoomUIData(packet);
+        }
+        // ìƒˆë¡œìš´ ë°© ì •ë³´ì¼ ê²½ìš°
+        else
+        {
+            PACKET_S_C_CREATE_ROOM tmpPack = new PACKET_S_C_CREATE_ROOM();
+            tmpPack.RoomNo = packet.RoomNo;
+            tmpPack.RoomName = packet.RoomName;
+            tmpPack.MatchType = (MatchType)packet.MaxNumOfPeople;
+            CreateRoom(tmpPack);
+        }
+    }
+
     private void DeleteRoom(int roomNo)
     {
         lobbyRoomItemUIDict.Remove(roomNo);
@@ -86,14 +105,8 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         TcpManager.Instance.SendToServer(PTYPE.C_S_ENTRY_RANDOMROOM);
     }
 
-    public void EntryRandomRoom(Packet_S_C_ROOM_USERS_INFO_HEADER packet)
-    {
-        // PanelManager. ·ë UI È°¼ºÈ­
-        // RoomManager.instance.AddUser
-    }
-
     /// <summary>
-    /// ¹æ »ı¼º UI¸¦ È°¼ºÈ­ÇÏ±â
+    /// ë°© ìƒì„± UIë¥¼ í™œì„±í™”í•˜ê¸°
     /// </summary>
     private void ShowCreateRoomUI()
     {
@@ -101,23 +114,19 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     }
 
     /// <summary>
-    /// Å¸ÀÌÆ²·Î ÀÌµ¿¹öÆ° Å¬¸¯½Ã
+    /// íƒ€ì´í‹€ë¡œ ì´ë™ë²„íŠ¼ í´ë¦­ì‹œ
     /// </summary>
     private void Exit()
     {
-        // Å¸ÀÌÆ²·Î ÀÌµ¿
-        SceneManager.LoadScene("Title");
+        // íƒ€ì´í‹€ë¡œ ì´ë™
+        TcpManager.Instance.SendToServer(PTYPE.C_S_MOVE_TITLE);
     }
     #endregion
 
-    public void EntryRoom()
-    {
 
-    }
-
-    public void SetRoomOption(PACKET_S_C_CHANGE_ROOM_OPTION pack)
+    public void SetRoomOption(PACKET_CHANGE_ROOM_OPTION pack)
     {
-        if(!lobbyRoomItemUIDict.TryGetValue(pack.RoomNo, out LobbyRoomItemUI value))
+        if (!lobbyRoomItemUIDict.TryGetValue(pack.RoomNo, out LobbyRoomItemUI value))
         {
             Debug.LogWarning(pack.RoomNo);
             return;
@@ -126,7 +135,18 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         value.ChangeRoomUIData(pack);
     }
 
-    // userId°¡ ÇÊ¿äÇÑ °æ¿ì
+    public void AddUserProfile(List<PACKET_S_C_LOBBY_USERS_INFO> userInfo)
+    {
+        foreach (var user in userInfo)
+        {
+           AddItem<UserProfile>(userProfileContent_Tr,
+           () => userProfilePool.Get(user.UserId),
+           (userProfile, userName) => userProfile.SetUserProfile(userName),
+           user.UserName);
+        }
+    }
+
+    // userIdê°€ í•„ìš”í•œ ê²½ìš°
     private void AddItem<T>(int userId, Transform parent, Func<int, T> getter, Action<T, string> setter, string data)
         where T : MonoBehaviour
     {
@@ -140,7 +160,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         setter(item, data);
     }
 
-    // userId°¡ ÇÊ¿ä ¾ø´Â °æ¿ì
+    // userIdê°€ í•„ìš” ì—†ëŠ” ê²½ìš°
     private void AddItem<T>(Transform parent, Func<T> getter, Action<T, string> setter, string data)
         where T : MonoBehaviour
     {
@@ -149,6 +169,10 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         setter(item, data);
     }
 
+    /// <summary>
+    /// ìœ ì €ê°€ ë¡œê·¸ì•„ì›ƒí•˜ë©´ í˜¸ì¶œ
+    /// </summary>
+    /// <param name="userId"></param>
     private void DeleteUserProtile(int userId)
     {
         userProfilePool.Release(userId);

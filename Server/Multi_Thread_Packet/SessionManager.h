@@ -15,7 +15,7 @@ class SessionManager
 public:
 	SessionManager()
 	{
-		clientMap.clear();
+
 	}
 	~SessionManager();
 
@@ -24,9 +24,6 @@ public:
 	static ClientSession* CreateClient(SOCKET sock);
 
 	static void DeleteClient(SOCKET sock, ClientSession* client);
-
-	static int IncreaseClientCount();
-	static int DecreaseClientCount();
 
 	static void Broadcast(const Packet* packet);
 	static void BroadcastExceptOneself(const Packet* packet, ClientSession* oneself);
@@ -37,7 +34,7 @@ public:
 
 
 	static ClientSession* GetClient(SOCKET sock);
-
+	static vector<const ClientSession*> GetClientAll();
 
 private:
 	static SessionManager* instance;

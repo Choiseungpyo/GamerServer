@@ -2,18 +2,112 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - EntityManager
+    - InRoomUI
+    - InRoomUserUI
+    - InRoomUserUIPool
+    - LobbyRoomItemPool
+    - LobbyRoomItemUI
+    - LobbyUIManager
+    - PanelManager
     - Player
+    - RoomOptionUI
+    - SoundManager
     - TcpManager
+    - Title
+    - Txt
+    - TxtPool
+    - UserIcon
+    - UserProfile
+    - UserProfilePool
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
+    Unity.TextMeshPro:
+    - TMPro.TMP_FontAsset
+    - TMPro.TMP_Settings
+    - TMPro.TMP_SpriteAsset
+    - TMPro.TMP_StyleSheet
+    Unity.TextMeshPro.dll:
+    - TMPro.TMP_Dropdown
+    - TMPro.TMP_FontAsset
+    - TMPro.TMP_Settings
+    - TMPro.TMP_SpriteAsset
+    - TMPro.TMP_StyleSheet
+    - TMPro.TextMeshProUGUI
+    UnityEditor.Graphs.dll:
+    - UnityEditor.Graphs.AnimationBlendTree.Graph
+    - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
+    - UnityEditor.Graphs.AnimationStateMachine.Graph
+    - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.StateNode
+    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
     - UnityEditor.TestTools.TestRunner.TestRun.TestJobDataHolder
-  serializedClasses: {}
+    UnityEngine.UI.dll:
+    - UnityEngine.EventSystems.EventSystem
+    - UnityEngine.EventSystems.StandaloneInputModule
+    - UnityEngine.UI.Button
+    - UnityEngine.UI.CanvasScaler
+    - UnityEngine.UI.ContentSizeFitter
+    - UnityEngine.UI.GraphicRaycaster
+    - UnityEngine.UI.HorizontalLayoutGroup
+    - UnityEngine.UI.Image
+    - UnityEngine.UI.Mask
+    - UnityEngine.UI.ScrollRect
+    - UnityEngine.UI.Scrollbar
+    - UnityEngine.UI.Toggle
+    - UnityEngine.UI.VerticalLayoutGroup
+  serializedClasses:
+    Assembly-CSharp:
+    - InRoomUI/ButtonData
+    - InRoomUI/OrderTransform
+    - InRoomUI/RoomInfoData
+    - LobbyRoomItemUI/RoomTxtData
+    - PanelManager/PanelData
+    - Title/BtnData
+    Unity.TextMeshPro:
+    - TMPro.FaceInfo_Legacy
+    - TMPro.FontAssetCreationSettings
+    - TMPro.KerningTable
+    - TMPro.TMP_Character
+    - TMPro.TMP_Dropdown/DropdownEvent
+    - TMPro.TMP_Dropdown/OptionData
+    - TMPro.TMP_Dropdown/OptionDataList
+    - TMPro.TMP_FontFeatureTable
+    - TMPro.TMP_FontWeightPair
+    - TMPro.TMP_GlyphAdjustmentRecord
+    - TMPro.TMP_GlyphPairAdjustmentRecord
+    - TMPro.TMP_GlyphValueRecord
+    - TMPro.TMP_Sprite
+    - TMPro.TMP_SpriteCharacter
+    - TMPro.TMP_SpriteGlyph
+    - TMPro.TMP_Style
+    - TMPro.VertexGradient
+    UnityEngine.CoreModule:
+    - UnityEngine.Events.ArgumentCache
+    - UnityEngine.Events.PersistentCallGroup
+    - UnityEngine.Events.PersistentListenerMode
+    - UnityEngine.RectOffset
+    UnityEngine.TextCoreFontEngineModule:
+    - UnityEngine.TextCore.FaceInfo
+    - UnityEngine.TextCore.Glyph
+    - UnityEngine.TextCore.GlyphMetrics
+    - UnityEngine.TextCore.GlyphRect
+    UnityEngine.UI:
+    - UnityEngine.UI.AnimationTriggers
+    - UnityEngine.UI.Button/ButtonClickedEvent
+    - UnityEngine.UI.ColorBlock
+    - UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
+    - UnityEngine.UI.Navigation
+    - UnityEngine.UI.ScrollRect/ScrollRectEvent
+    - UnityEngine.UI.Scrollbar/ScrollEvent
+    - UnityEngine.UI.SpriteState
+    - UnityEngine.UI.Toggle/ToggleEvent
   methodsToPreserve: []
   sceneClasses:
-    Assets/1.Scenes/SampleScene.unity:
+    Assets/1.Scenes/Lobby.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -32,35 +126,131 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 48
       Script: {instanceID: 0}
+    - Class: 49
+      Script: {instanceID: 0}
+    - Class: 64
+      Script: {instanceID: 0}
     - Class: 65
+      Script: {instanceID: 0}
+    - Class: 74
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
     - Class: 89
       Script: {instanceID: 0}
+    - Class: 90
+      Script: {instanceID: 0}
+    - Class: 91
+      Script: {instanceID: 0}
+    - Class: 95
+      Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
-    - Class: 108
-      Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 16582}
+      Script: {instanceID: 16608}
     - Class: 114
-      Script: {instanceID: 22812}
+      Script: {instanceID: 16634}
     - Class: 114
-      Script: {instanceID: 22816}
+      Script: {instanceID: 16676}
+    - Class: 114
+      Script: {instanceID: 16848}
+    - Class: 114
+      Script: {instanceID: 17258}
+    - Class: 114
+      Script: {instanceID: 17686}
+    - Class: 114
+      Script: {instanceID: 17692}
+    - Class: 114
+      Script: {instanceID: 17694}
+    - Class: 114
+      Script: {instanceID: 17890}
+    - Class: 114
+      Script: {instanceID: 18222}
+    - Class: 114
+      Script: {instanceID: 18348}
+    - Class: 114
+      Script: {instanceID: 18620}
+    - Class: 114
+      Script: {instanceID: 18630}
+    - Class: 114
+      Script: {instanceID: 18636}
+    - Class: 114
+      Script: {instanceID: 18900}
+    - Class: 114
+      Script: {instanceID: 18946}
+    - Class: 114
+      Script: {instanceID: 19176}
+    - Class: 114
+      Script: {instanceID: 19426}
+    - Class: 114
+      Script: {instanceID: 19700}
+    - Class: 114
+      Script: {instanceID: 19972}
+    - Class: 114
+      Script: {instanceID: 20010}
+    - Class: 114
+      Script: {instanceID: 20066}
+    - Class: 114
+      Script: {instanceID: 20128}
+    - Class: 114
+      Script: {instanceID: 20634}
+    - Class: 114
+      Script: {instanceID: 20672}
+    - Class: 114
+      Script: {instanceID: 20824}
+    - Class: 114
+      Script: {instanceID: 20870}
+    - Class: 114
+      Script: {instanceID: 21148}
+    - Class: 114
+      Script: {instanceID: 21158}
+    - Class: 114
+      Script: {instanceID: 21556}
+    - Class: 114
+      Script: {instanceID: 21626}
+    - Class: 114
+      Script: {instanceID: 21720}
+    - Class: 114
+      Script: {instanceID: 21912}
+    - Class: 114
+      Script: {instanceID: 22190}
+    - Class: 114
+      Script: {instanceID: 22252}
+    - Class: 114
+      Script: {instanceID: 22430}
+    - Class: 114
+      Script: {instanceID: 22802}
     - Class: 115
+      Script: {instanceID: 0}
+    - Class: 128
+      Script: {instanceID: 0}
+    - Class: 137
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
     - Class: 196
       Script: {instanceID: 0}
+    - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
+      Script: {instanceID: 0}
+    - Class: 224
+      Script: {instanceID: 0}
   scriptHashData:
   - hash:
       serializedVersion: 2
-      Hash: 2fe9d21fdd721fc70a10ce9bc9a1611c
+      Hash: bf8aea1631349a162e3da2638f86136e
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: TcpManager
+  - hash:
+      serializedVersion: 2
+      Hash: 915204dac8acad99f076d6e72ada0a0f
+    assemblyName: UnityEngine.UI
+    namespaceName: UnityEngine.UI
+    className: Button
   - hash:
       serializedVersion: 2
       Hash: 55060a7bf226ac385ce19ebd450f199f
@@ -97,6 +287,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: Selectable
+  - hash:
+      serializedVersion: 2
+      Hash: 189e69d64fce47b2270d9a37b8f00017
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: TxtPool
   - hash:
       serializedVersion: 2
       Hash: 8703b6ae2b0eefd9dafbc44d8d333fb1
@@ -169,6 +365,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.EventSystems
     className: EventSystem
+  - hash:
+      serializedVersion: 2
+      Hash: b328f49cb99ea1d13df7940c988a66af
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: LobbyRoomItemUI
   - hash:
       serializedVersion: 2
       Hash: 52db48e3be0a2b4f8b06f918fd1ebfbc
@@ -267,10 +469,10 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: 915204dac8acad99f076d6e72ada0a0f
-    assemblyName: UnityEngine.UI
-    namespaceName: UnityEngine.UI
-    className: Button
+      Hash: 5d54eebf6c57b8c8b79a698183050568
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: EntityManager
   - hash:
       serializedVersion: 2
       Hash: d90629714fa6b0145fcaffc87f5c6559
@@ -351,6 +553,12 @@ ScriptsOnlyBuild:
     className: TextMeshPro
   - hash:
       serializedVersion: 2
+      Hash: 920109dad7b0a480d028d75450db04a9
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: LobbyRoomItemPool
+  - hash:
+      serializedVersion: 2
       Hash: b2d2a01a2a85d9ed12e80cb33a9a6044
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
@@ -361,6 +569,18 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnCollisionExit2DMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 8faa77ade5c4a28cc7d6c62f3011d9c7
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: LobbyUIManager
+  - hash:
+      serializedVersion: 2
+      Hash: ec9727525737465f1f1e839a639943a5
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: InRoomUserUIPool
   - hash:
       serializedVersion: 2
       Hash: 0a3f328f3ea906bbbcf794f4c27ee59d
@@ -379,6 +599,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnPointerExitMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: a1bd36d0ad30bbccb2340f37ad5d5679
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: Player
   - hash:
       serializedVersion: 2
       Hash: b747f5d40674055dd70e18552f1b0447
@@ -471,6 +697,12 @@ ScriptsOnlyBuild:
     className: UnityOnPointerClickMessageListener
   - hash:
       serializedVersion: 2
+      Hash: 7e15397a6c41f91665cbe5fb1b5b03d5
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: RoomOptionUI
+  - hash:
+      serializedVersion: 2
       Hash: 0b63f6d3335e11939ce8790b904c8691
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
@@ -529,6 +761,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnTriggerStayMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: abd2cbb3cf39d6c893ce190419d5ad53
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: SoundManager
   - hash:
       serializedVersion: 2
       Hash: 10c17b309bdca62b4d7fbaf113ed4ca0
@@ -609,6 +847,12 @@ ScriptsOnlyBuild:
     className: StateGraphAsset
   - hash:
       serializedVersion: 2
+      Hash: 38f0b12cf0ebd174a98cedc7bf5079f8
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: UserProfilePool
+  - hash:
+      serializedVersion: 2
       Hash: 540882762544409cc4530e60db00e951
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
@@ -631,6 +875,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.TextMeshPro
     namespaceName: TMPro
     className: TextMeshProUGUI
+  - hash:
+      serializedVersion: 2
+      Hash: 15983b6870c7f4cd81cd9758458fc6c7
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: InRoomUserUI
   - hash:
       serializedVersion: 2
       Hash: da5a949a0bbd2ff91bc51c5805c2c41f
@@ -711,6 +961,12 @@ ScriptsOnlyBuild:
     className: VerticalLayoutGroup
   - hash:
       serializedVersion: 2
+      Hash: 8fdcd5cd8c8a378b2b12f1866d4ba804
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: InRoomUI
+  - hash:
+      serializedVersion: 2
       Hash: c4b85a67513b4f0cf7b5fb2d5ded04b0
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -739,6 +995,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.TestRunner
     namespaceName: UnityEngine.TestTools.TestRunner.Callbacks
     className: PlayModeRunnerCallback
+  - hash:
+      serializedVersion: 2
+      Hash: 5d2dee5a81d8c34aad0ff338a74f3fc1
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: UserIcon
   - hash:
       serializedVersion: 2
       Hash: afb7b65d28d5a7423e69a1b076be0064
@@ -789,6 +1051,12 @@ ScriptsOnlyBuild:
     className: Dropdown
   - hash:
       serializedVersion: 2
+      Hash: 7f957efdd722f39f3fb137f7f56021d3
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: PanelManager
+  - hash:
+      serializedVersion: 2
       Hash: 4728e3d21cc2a12e391e71ec9b7eed0b
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
@@ -813,10 +1081,10 @@ ScriptsOnlyBuild:
     className: ScrollRect
   - hash:
       serializedVersion: 2
-      Hash: a77b63853f3a3fb199780b0a12c3fc05
+      Hash: 5b1653555836944de58420075e3c1a60
     assemblyName: Assembly-CSharp
     namespaceName: 
-    className: EventManager
+    className: Txt
   - hash:
       serializedVersion: 2
       Hash: 9a174471d4db2c0c6d3ac47d2f818db1
@@ -829,6 +1097,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnMouseOverMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: a4bfb6240389925c685ff30a5236829b
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: Title
   - hash:
       serializedVersion: 2
       Hash: 2c583ad0ac85d03e8700dd05fdcb46cb
@@ -867,6 +1141,12 @@ ScriptsOnlyBuild:
     className: SignalEmitter
   - hash:
       serializedVersion: 2
+      Hash: a7b7916581730f9e872870e446dcd7fa
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: UserProfile
+  - hash:
+      serializedVersion: 2
       Hash: 02a47340661d2ea7c6d30e292cfef403
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -895,19 +1175,7 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: a1bd36d0ad30bbccb2340f37ad5d5679
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: Player
-  - hash:
-      serializedVersion: 2
-      Hash: ac905075a6f4eb80c6ecfbb946adfee3
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: EntityManager
   platform: 19
   scenePathNames:
-  - Assets/1.Scenes/SampleScene.unity
-  playerPath: C:/Users/OWNER/Desktop/GameServer1_Pro/BuildFile/GameServer1_Project.exe
+  - Assets/1.Scenes/Lobby.unity
+  playerPath: C:/Users/OWNER/Desktop/TMP/GameServer1_Project.exe

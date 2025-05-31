@@ -1,8 +1,4 @@
 #include "stdafx.h"
-#include "MTServerManager.h"
-#include "ClientSession.h"
-#include "SessionManager.h"
-#include "LobbyManager.h"
 
 HWND MTServerManager::g_hMsgWnd = NULL;
 MTServerManager* GMTServerManager = nullptr;
@@ -13,9 +9,11 @@ SessionManager* MTServerManager::sessionManager = SessionManager::GetInstance();
 
 MTServerManager* MTServerManager::GetInstance()
 {
-	if (!instance)
+	// shared_mutex 대신 맨 처음에만 초기화하는 용도로 once_flag  사용
+	static std::once_flag flag;
+	std::call_once(flag, []() {
 		instance = new MTServerManager();
-
+		});
 	return instance;
 }
 
@@ -108,7 +106,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 	switch (packet->Type)
 	{
 		case C_S_ENTRY_LOBBY: // 로비 입장 버튼 누른 경우
-			client->EntryLobby();
+			LobbyManager::EntryLobby(client);
 			break;
 
 		case C_S_LOGOUT: // 게임 종료 버튼 누른 경우
@@ -122,6 +120,9 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 
 			// 방 생성 버튼을 누른 경우
 		case C_S_CREATE_ROOM:
+			// 로비에 있는 클라들한테 새로운 방 ui 추가하기
+			// 현재 클라는 in room ui 활성화
+
 			LobbyManager::CreateRoom(packet, client);
 			break;
 
@@ -131,7 +132,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			break;
 
 		case C_S_MOVE_TITLE: // Exit 버튼 누른 경우
-			client->MoveTitle();
+			client->Send(S_C_MOVE_TITLE);
 			break;
 
 		case C_S_READY_BTN:
@@ -322,6 +323,7 @@ bool MTServerManager::InitServer()
 	WSAAsyncSelect(m_hsoListen, hWnd, WM_ASYNC_SOCKET, FD_ACCEPT);
 	cout << "Start Server..." << endl;
 	cout << " ==> Waiting for client's connection......" << endl;
+	return true;
 }
 
 void MTServerManager::MesseageLoop()

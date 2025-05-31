@@ -1,27 +1,59 @@
 #include "stdafx.h"
-#include "User.h"
 
 User::User(int id)
 	:id(id), state(TITLE), currRoomNum(-1)
 {
-	name = "User" + id;
+	
+	name = UserIcon::GetIconName(id);
 }
 
 User::~User()
 {
 }
 
+int User::GetId() const
+{
+	std::shared_lock<std::shared_mutex> lock(mutex);
+	return id;
+}
+void User::SetId(int id) 
+{
+	std::unique_lock<std::shared_mutex> lock(mutex);
+	this->id = id;
+}
+
+const char* User::GetName() const 
+{
+	std::shared_lock<std::shared_mutex> lock(mutex);
+	return name.c_str();
+}
+
 void User::SetName(const string& name)
 {
+	std::unique_lock<std::shared_mutex> lock(mutex);
 	this->name = name;
+}
+
+UserState User::GetState() const 
+{
+	std::shared_lock<std::shared_mutex> lock(mutex);
+	return state;
 }
 
 void User::SetState(UserState state)
 {
+	std::unique_lock<std::shared_mutex> lock(mutex);
 	this->state = state;
 }
 
-void User::SetRoomNum(int roomNum)
+int User::GetRoomNum() const 
 {
-	currRoomNum = roomNum;
+	std::shared_lock<std::shared_mutex> lock(mutex);
+	return currRoomNum;
+}
+
+void User::SetRoomNum(int roomNum) 
+{
+	std::unique_lock<std::shared_mutex> lock(mutex);
+	this->currRoomNum = roomNum;
 }

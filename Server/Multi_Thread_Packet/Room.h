@@ -1,11 +1,8 @@
 #pragma once
-#include "stdafx.h"
-
-
 
 struct RoomUserData {
 	int userId;
-	char userName[20];
+	char userName[NAME_SIZE];
 	TeamType teamType;
 	unsigned char isReady;
 	unsigned char isHost;
@@ -50,7 +47,7 @@ class Room
 {
 	// int : id°ª
 	unordered_map<int, const ClientSession*> clientMap;
-	unordered_map<int, RoomUserInfo> roomUserInfoMap;
+	unordered_map<int, RoomUserInfo*> roomUserInfoMap;
 	unordered_set<int> redTeamIds;
 	unordered_set<int> blueTeamIds;
 
@@ -61,14 +58,33 @@ class Room
 
 	Game game;
 
+	mutable shared_mutex mutex;
 
 public:
-	Room(int no, const RoomOption& roomOption);
+	Room(int no, RoomOption roomOption);
 	~Room();
 
-	void SetNo(int no) { this->no = no; }
+	int GetUserCount() const;
+	int GetMaxUserCount() const;
 
-	void SetName(const string& name) { this->name = name; }
+	std::vector<const ClientSession*> GetAllClients();
+
+
+	void SetNo(int no);
+
+	int GetNo() const;
+
+	void SetName(const string& name);
+
+	const string& GetName() const;
+
+	void SetRoomState(RoomState state);
+
+	RoomState GetRoomState() const;
+
+	void SetMatchType(MatchType matchType);
+
+	MatchType GetMatch() const;
 
 	void ChangeReadyState(int userId);
 

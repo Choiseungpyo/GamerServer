@@ -7,15 +7,18 @@ shared_mutex SessionManager::mutex;
 
 SessionManager::~SessionManager()
 {
+	unique_lock<shared_mutex> lock(mutex);
 	clientMap.clear();
 
 	delete instance;
 }
 SessionManager* SessionManager::GetInstance()
 {
-	if (!instance)
-		return new SessionManager();
-
+	// shared_mutex 대신 맨 처음에만 초기화하는 용도로 once_flag  사용
+	static std::once_flag flag;
+	std::call_once(flag, []() {
+		instance = new SessionManager();
+		});
 	return instance;
 }
 
@@ -36,6 +39,7 @@ ClientSession * SessionManager::CreateClient(SOCKET sock)
 		std::cout << "create ClientSession.." << std::endl;
 		ClientSession* newClient = new ClientSession(sock, clientMap.size());
 		clientMap[sock] = newClient;
+		mClientCount++;
 		return newClient;
 	}
 
@@ -54,37 +58,9 @@ void SessionManager::DeleteClient(SOCKET sock, ClientSession* client)
 	unique_lock<shared_mutex> lock(mutex);
 	client->Disconnect();
 	clientMap.erase(sock);
-}
-
-/*
-함수명 : IncreaseClientCount()
-인자값 : 
-기능 : 접속된 clientsession이 생기면 전체 클라이언트 갯수를 증가시킴. 
-	   서로 다른 객체들끼리 동기화시키기 위해 CRITICAL_SECTION을 사용.
-*/
-int SessionManager::IncreaseClientCount()
-{
-	unique_lock<shared_mutex> lock(mutex);
-	mClientCount++;
-	cout << "client count increase.." << endl;
-
-	return mClientCount;
-}
-
-/*
-함수명 : DecreaseClientCount()
-인자값 :
-기능 : 접속이 끊기는 clientsession이 생기면 전체 클라이언트 갯수를 감소시킴.
-	   서로 다른 객체들끼리 동기화시키기 위해 CRITICAL_SECTION을 사용.
-*/
-int SessionManager::DecreaseClientCount()
-{
-	unique_lock<shared_mutex> lock(mutex);
 	mClientCount--;
-	cout << "client count decrease.." << endl;
-
-	return mClientCount;
 }
+
 
 void SessionManager::Broadcast(const Packet* packet)
 {
@@ -134,7 +110,11 @@ void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
 }
 
 
-int SessionManager::GetClientSize() { return mClientCount; }
+int SessionManager::GetClientSize() 
+{
+	shared_lock<shared_mutex> lock(mutex);
+	return mClientCount; 
+}
 
 
 ClientSession* SessionManager::GetClient(SOCKET sock)
@@ -149,4 +129,15 @@ ClientSession* SessionManager::GetClient(SOCKET sock)
 
 	cout << "socket : " << sock << " 존재하지 않음";
 	return nullptr;
+}
+
+vector<const ClientSession*> SessionManager::GetClientAll() {
+	shared_lock<shared_mutex> lock(mutex);
+	vector<const ClientSession*> clients;
+	for (auto it : clientMap)
+	{
+		clients.push_back(it.second);
+	}
+
+	return clients;
 }

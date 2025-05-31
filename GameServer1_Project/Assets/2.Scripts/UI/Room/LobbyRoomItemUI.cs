@@ -51,12 +51,20 @@ public class LobbyRoomItemUI : PoolableObject
     /// 방 정보를 변경시 호출하는 함수
     /// </summary>
     /// <param name="packet"></param>
-    public void ChangeRoomUIData(PACKET_S_C_CHANGE_ROOM_OPTION pack)
+    public void ChangeRoomUIData(PACKET_CHANGE_ROOM_OPTION pack)
     {
         roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
         roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
         roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
         roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
+    }
+
+    public void ChangeRoomUIData(PACKET_S_C_UPDATE_LOBBY_ROOM_INFO pack)
+    {
+        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
+        roomTxtDict[RoomInfoType.PEOPLENUM].text = pack.CurrNumOfPeople + "/" + pack.MaxNumOfPeople;
+        roomTxtDict[RoomInfoType.STATE].text = pack.RoomState.ToString();
     }
 
     private void InitRoomUIData()

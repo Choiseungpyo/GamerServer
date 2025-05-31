@@ -114,12 +114,22 @@ public class InRoomUI : MonoBehaviour
             if (userInfo.teamType == TeamType.RED)
             {
                 redUsersUIDict.Add(userInfo.userOrderOfTeam, newInRoomUserUI);
-                newInRoomUserUI.transform.SetParent(redTeamTrDict[userInfo.userOrderOfTeam]);
+                TcpManager.Instance.RegisterJop(() =>
+                {
+                    newInRoomUserUI.transform.SetParent(redTeamTrDict[userInfo.userOrderOfTeam]);
+                    newInRoomUserUI.GetRectTr().localPosition = Vector3.zero;
+                });
+               
             }
             else
             {
                 blueUsersUIDict.Add(userInfo.userOrderOfTeam, newInRoomUserUI);
-                newInRoomUserUI.transform.SetParent(blueTeamTrDict[userInfo.userOrderOfTeam]);
+                TcpManager.Instance.RegisterJop(() =>
+                {
+                    newInRoomUserUI.transform.SetParent(blueTeamTrDict[userInfo.userOrderOfTeam]);
+                    newInRoomUserUI.GetRectTr().localPosition = Vector3.zero;
+                });
+               
             }
         }
     }
@@ -256,7 +266,7 @@ public class InRoomUI : MonoBehaviour
     /// 서버 : 방 옵션 변경
     /// </summary>
     /// <param name="pack"></param>
-    public void RoomOption(PACKET_S_C_CHANGE_ROOM_OPTION pack)
+    public void RoomOption(PACKET_CHANGE_ROOM_OPTION pack)
     {
         roomInfoDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
         roomInfoDict[RoomInfoType.NAME].text = pack.RoomName;
@@ -278,6 +288,13 @@ public class InRoomUI : MonoBehaviour
     {
         foreach (var v in roomInfoDatas)
             roomInfoDict[v.type] = v.txt;
+
+        foreach (var redTeamTr in redTeamTrDatas)
+            redTeamTrDict[redTeamTr.order] = redTeamTr.transform;
+
+        foreach (var blueTeamTr in blueTeamTrDatas)
+            blueTeamTrDict[blueTeamTr.order] = blueTeamTr.transform;
+
     }
 
 

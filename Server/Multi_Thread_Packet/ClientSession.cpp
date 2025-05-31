@@ -2,12 +2,14 @@
 
 ClientSession::ClientSession(SOCKET sock, int id) : mSocket(sock), mConnected(false), sessionManager(SessionManager::GetInstance())
 {
+	unique_lock<shared_mutex> lock(mutex);
 	memset(&mClientAddr, 0, sizeof(SOCKADDR_IN));
 	user = new User(id);
 }
 
 ClientSession::~ClientSession()
 {
+	unique_lock<shared_mutex> lock(mutex);
 	if (user)
 		delete user;
 	delete sessionManager;
@@ -21,6 +23,7 @@ ClientSession::~ClientSession()
 */
 bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 {
+	unique_lock<shared_mutex> lock(mutex);
 	memcpy(&mClientAddr, addr, sizeof(SOCKADDR_IN));
 	
 	int addrlen = sizeof(SOCKADDR_IN);
@@ -33,6 +36,12 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 	return true;
 }
 
+bool ClientSession::IsConnected() const
+{
+	shared_lock<shared_mutex> lock(mutex);
+	return mConnected;
+}
+
 
 
 // 플레이어를 스폰 한다.
@@ -43,13 +52,26 @@ bool ClientSession::OnConnect(SOCKADDR_IN* addr)
 //	Send(&pack);
 //}
 
+
 /*
-함수명 : Send()
-인자값 : Packet * pack
-기능 : 전달받은 Packet을 client에 전송함.
+함수명 : Disconnect()
+인자값 :
+기능 : 접속 종료된 socket을 지움.
 */
-bool ClientSession::Send(const Packet * pack)
+void ClientSession::Disconnect()
 {
+	unique_lock<shared_mutex> lock(mutex);
+	cout << "client disconnected IP = " << inet_ntoa(mClientAddr.sin_addr) << ",  Port = " << ntohs(mClientAddr.sin_port) << endl;
+
+	closesocket(mSocket);
+	
+	mConnected = false;
+}
+
+bool ClientSession::Send(const Packet* pack) const
+{
+	shared_lock<shared_mutex> lock(mutex);
+
 	if (!IsConnected())
 		return false;
 
@@ -61,7 +83,7 @@ bool ClientSession::Send(const Packet * pack)
 	if (re == SOCKET_ERROR)
 	{
 		delete[] sendBuf;
-		cout << "send error..." <<endl; 
+		cout << "send error..." << endl;
 		return false;
 	}
 
@@ -70,41 +92,25 @@ bool ClientSession::Send(const Packet * pack)
 	return true;
 }
 
-
-/*
-함수명 : Disconnect()
-인자값 :
-기능 : 접속 종료된 socket을 지움.
-*/
-void ClientSession::Disconnect()
+SOCKET ClientSession::GetSocket() const
 {
-	cout << "client disconnected IP = " << inet_ntoa(mClientAddr.sin_addr) << ",  Port = " << ntohs(mClientAddr.sin_port) << endl;
-
-	sessionManager->DecreaseClientCount();
-
-	//세션 매니저에서 수 감소
-	closesocket(mSocket);
-	
-	mConnected = false;
+	shared_lock<shared_mutex> lock(mutex);
+	return mSocket;
 }
 
-void ClientSession::EntryLobby()
+User* ClientSession::GetUser() const
 {
-	user->SetState(LOBBY);
-	PACKET_S_C_ENTRY_LOBBY pack;
-	pack.Type = S_C_ENTRY_LOBBY;
-	pack.id = user->GetId();
+	shared_lock<shared_mutex> lock(mutex);
+	return user;
+}
 
-	string tmp = "User"+pack.id;
+void ClientSession::Send(PTYPE ptype) const
+{
+	PACKET pack;
+	pack.Type = ptype;
+	pack.Length = sizeof(PACKET);
 
-	strncpy_s(pack.name, tmp.c_str(), sizeof(pack.name));
-	pack.name[sizeof(pack.name) - 1] = '\0';  // 널 보장
 	Send(&pack);
-}
-
-void ClientSession::MoveTitle()
-{
-	user->SetState(TITLE);
 }
 
 void ClientSession::Send_Id()

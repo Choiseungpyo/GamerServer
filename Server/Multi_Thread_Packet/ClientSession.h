@@ -19,22 +19,20 @@ public:
 	
 	~ClientSession();
 
-	bool	OnConnect(SOCKADDR_IN* addr);
-	bool	IsConnected() const { return mConnected; }
-
-	bool Send(const Packet * pack);
+	bool OnConnect(SOCKADDR_IN* addr);
+	bool IsConnected() const;
 
 	void Disconnect();
 
-	SOCKET GetSocket() const { return mSocket; }
-	User* GetUser() const {return user; }
+	bool Send(const Packet* pack) const;
+
+	SOCKET GetSocket() const;
+
+	User* GetUser() const;
 
 	// 클라로 전송
 	void Send_Id();
-
-	// 패킷 파싱시 하는 함수들
-	void EntryLobby();
-	void MoveTitle();
+	void Send(PTYPE ptype) const;
 
 private:
 	SessionManager* sessionManager;
@@ -44,6 +42,8 @@ private:
 	SOCKADDR_IN		mClientAddr;
 	
 	User* user;
+
+	mutable shared_mutex mutex;
 
 	friend class SessionManager;
 };

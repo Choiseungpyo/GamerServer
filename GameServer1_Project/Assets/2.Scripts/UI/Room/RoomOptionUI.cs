@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.VersionControl.Asset;
 
 public struct RoomOption
 {
@@ -77,11 +75,11 @@ public class RoomOptionUI : MonoBehaviour
     {
         roomNameDropdown.ClearOptions();
 
-        roomNames.Add("Come on, bro. Prove it.");
-        roomNames.Add("Only one walks out alive");
-        roomNames.Add("No mercy, no surrender.");
-        roomNames.Add("Your trigger, your justice.");
-        roomNames.Add("This is your final battlefield.");
+        roomNames.Add("Come on, bro.");
+        roomNames.Add("Boom boom room");
+        roomNames.Add("let's gooo");
+        roomNames.Add("Siuuuuuuu");
+        roomNames.Add("Gg ez room");
 
         roomNameDropdown.AddOptions(roomNames);
 

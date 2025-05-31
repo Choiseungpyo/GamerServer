@@ -1,47 +1,20 @@
 #pragma once
-
-#include "Room.h"
 #define MAXROOMNUM 8
-
 
 class LobbyManager
 {
 	// int : Room No
 	static unordered_map<int, Room*> roomMap; // 모든 방 정보
+	static unordered_map<int, const ClientSession*> lobbyUserMap; // 로비에 있는 유저 정보
 	static LobbyManager* instance;
+
+	static shared_mutex mutex;
 
 	static bool CanMakeRoom();
 
 	static Room* GetJoinableRandomRoom();
-
-	static void Send_EntryRoomPacket(SOCKET targetSock,  int userId)
-	{
-		PACKET_S_C_ENTRY_LOBBY packet;
-		packet.id = userId;
-		strncpy_s(packet.name, "123", sizeof(packet.name));
-		packet.name[sizeof(packet.name) - 1] = '\0';  // 꼭 종료문자 추가
-
-		SessionManager::SendTo(&packet, targetSock);
-	}
-	static void Send_Lobby_Room_Users_Info(SOCKET targetSock)
-	{
-		//std::vector<char> buffer;
-		//PACKET_S_C_ROOM_USERS_INFO_HEADER header;
-		//header.roomId = 1001;
-		//header.userCount = roomMap.size();
-		//header.Length += sizeof(PACKET_ROOM_USER_INFO) * roomMap.size(); // 전체 패킷 크기
-
-		//buffer.resize(header.Length);
-		//memcpy(buffer.data(), &header, sizeof(header));
-
-		//for (size_t i = 0; i < header.userCount; ++i)
-		//{
-		//	memcpy(buffer.data() + sizeof(header) + i * sizeof(PACKET_ROOM_USER_INFO),
-		//		&users[i], sizeof(PACKET_ROOM_USER_INFO));
-		//}
-
-		//send(targetSock, buffer.data(), buffer.size(), 0);
-	}
+	static void EntryRoom(const ClientSession* client, PTYPE type, Room* room, int roomNo);
+	static void UpdateLobbyRoomInfo(const ClientSession* client, const Room* room);
 
 public:
 	LobbyManager() {}
@@ -67,5 +40,7 @@ public:
 	static void SetReadyState(const ClientSession* client);
 	static void SetTeamType(const ClientSession* client);
 	static void SetRoomOption(const PACKET* packet, const ClientSession* client);
+	static void EntryLobby(const ClientSession* client);
+	
 };
 

@@ -5,15 +5,13 @@
 서버 모델이 변경될때마다 제일많이 변경될 부분..
 extern 부분을 나중에 싱글턴으로 변경예정.
 */
-#include "Winsock2.h"
-#include "set"
 
 #define PORT 8080
 
 #define WM_ASYNC_SOCKET	WM_USER + 500
 
-typedef std::set<SOCKET> SOCK_SET;
-
+class ClientSession;
+class SessionManager;
 
 class MTServerManager
 {
