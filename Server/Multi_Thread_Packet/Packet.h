@@ -10,35 +10,34 @@ typedef enum PTYPE
 	C_S_LOGOUT, // 게임 종료 버튼 누른 경우
 
 #pragma region  Lobby
-	S_C_ENTRY_LOBBY, // 유저 프로필 전달
+	S_C_USERS_PROFILE, // 유저 프로필 전달
 
 	// 로비 방 정보 UI 업데이트
-	S_C_UPDATE_LOBBY_ROOM_INFO,
+	S_C_LOBBY_ALL_ROOM_INFO,
+	S_C_LOBBY_ROOM_INFO,
 
-	// 방 목록에서 특정 방 클릭시 입장하는 경우
-	C_S_ENTRY_ROOM,
-	S_C_ENTRY_ROOM,
+	// 방 안의 정보 세팅
+	S_C_INROOM_INFO,
 
 	// 방 생성 버튼을 누른 경우
 	C_S_CREATE_ROOM,
 
-	// 로비의 방 목록 UI를 추가해야할 경우
-	S_C_CREATE_LOBBY_ROOM_INFO,
+	// 방 목록에서 특정 방 클릭시 입장하는 경우
+	C_S_ENTRY_ROOM,
 
 	// 랜덤 입장 버튼을 누른 경우
 	C_S_ENTRY_RANDOMROOM,
-	S_C_ENTRY_RANDOMROOM,
 
 	// Exit 버튼 누른 경우
-	C_S_MOVE_TITLE,
-	S_C_MOVE_TITLE,
+	C_S_EXIT_LOBBY,
+	S_C_EXIT_TITLE,
 #pragma endregion
 
 #pragma region  Room
 
 	// 준비 완료 버튼을 누른경우
-	C_S_READY_BTN,
-	S_C_READY_BTN,
+	C_S_INROOM_USERSTATE,
+	S_C_INROOM_USERSTATE,
 
 	//게임 시작 버튼을 누른경우
 	C_S_GAMETSTART_BTN,
@@ -52,9 +51,9 @@ typedef enum PTYPE
 	C_S_CHANGE_ROOM_OPTION,
 	S_C_CHANGE_ROOM_OPTION,
 
-	// 로비로 나가기 버튼을 누른 경우
-	C_S_MOVE_LOBBY,
-	S_C_MOVE_LOBBY,
+	C_S_EXIT_ROOM,
+	S_C_EXIT_ROOM,
+
 #pragma endregion
 
 	S_PLAYER_SPAWN,
@@ -106,16 +105,10 @@ typedef struct PACKET_LOBBY_USERS_INFO
 		userId = 0;
 		memset(userName, 0, sizeof(userName));
 	}
-
-	PACKET_LOBBY_USERS_INFO(const char* userName)
-	{
-		userId = 0;
-		strncpy_s(this->userName, sizeof(this->userName), userName, _TRUNCATE);
-	}
 }Packet_lobby_users_info;
 #pragma pack(pop)
 
-// S_C_ENTRY_LOBBY
+// S_C_USERS_PROFILE
 // 유저가 로비에 입장할 떄 전체 유저를 얻기 위함
 #pragma pack(push,1)
 typedef struct PACKET_S_C_LOBBY_USERS_INFO_HEADER : PACKET
@@ -123,7 +116,7 @@ typedef struct PACKET_S_C_LOBBY_USERS_INFO_HEADER : PACKET
 	int userCount;
 
 	PACKET_S_C_LOBBY_USERS_INFO_HEADER() {
-		Type = S_C_ENTRY_LOBBY;
+		Type = S_C_USERS_PROFILE;
 		Length = sizeof(PACKET_LOBBY_USERS_INFO);
 		userCount = 0;
 	}
@@ -190,7 +183,7 @@ typedef struct PACKET_ROOM_USER_INFO
 {
 	int userId;
 	char userName[NAME_SIZE];
-	ReadyState readyState;
+	InRoomUserState inRoomUserState;
 	TeamType teamType;
 	int userOrderOfTeam;
 
@@ -198,16 +191,7 @@ typedef struct PACKET_ROOM_USER_INFO
 	{
 		userId = 0;
 		memset(userName, 0, sizeof(userName));
-		readyState = UNREADY;
-		teamType = RED;
-		userOrderOfTeam = 0;
-	}
-
-	PACKET_ROOM_USER_INFO(const char* userName)
-	{
-		userId = 0;
-		strncpy_s(this->userName, sizeof(this->userName), userName, _TRUNCATE);
-		readyState = UNREADY;
+		inRoomUserState = UNREADY;
 		teamType = RED;
 		userOrderOfTeam = 0;
 	}
@@ -216,7 +200,7 @@ typedef struct PACKET_ROOM_USER_INFO
 
 // 유저가 입장할 떄 방에 있는 유저들의 정보를 얻기 위함
 #pragma pack(push,1)
-typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
+typedef struct PACKET_S_C_INROOM_INFO_HEADER : PACKET
 {
 	int hostId;
 	int roomNo;
@@ -224,9 +208,9 @@ typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
 	MatchType matchType;
 	int userCount;
 
-	PACKET_S_C_ROOM_USERS_INFO_HEADER() {
-		Type = S_C_ENTRY_ROOM;
-		Length = sizeof(PACKET_S_C_ROOM_USERS_INFO_HEADER);  // 이후 동적으로 더함
+	PACKET_S_C_INROOM_INFO_HEADER() {
+		Type = S_C_INROOM_INFO;
+		Length = sizeof(PACKET_S_C_INROOM_INFO_HEADER);  // 이후 동적으로 더함
 		hostId = 0;
 		roomNo = 0;
 		memset(roomName, 0, sizeof(roomName));
@@ -237,21 +221,21 @@ typedef struct PACKET_S_C_ROOM_USERS_INFO_HEADER : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_S_C_READY_BTN : PACKET
+typedef struct PACKET_S_C_CHANGE_INROOM_USERSTATE : PACKET
 {
-	ReadyState readyState;
+	InRoomUserState inRoomUserState;
 	TeamType teamType;
 	int orderOfTeam;
 
-	PACKET_S_C_READY_BTN()
+	PACKET_S_C_CHANGE_INROOM_USERSTATE()
 	{
-		Type = S_C_READY_BTN;
+		Type = S_C_INROOM_USERSTATE;
 		Length = sizeof(*this);
-		readyState = UNREADY;
+		inRoomUserState = UNREADY;
 		teamType = RED;
 		orderOfTeam = 0;
 	}
-}Packet_s_c_ready_btn;
+}Packet_s_c_change_inroom_userstate;
 #pragma pack(pop)
 
 #pragma pack(push,1)
@@ -273,7 +257,7 @@ typedef struct PACKET_CHANGE_ROOM_OPTION : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO : PACKET
+typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO
 {
 	int roomNo;
 	char roomName[ROOM_NAME_SIZE];
@@ -283,8 +267,6 @@ typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO : PACKET
 
 	PACKET_S_C_UPDATE_LOBBY_ROOM_INFO()
 	{
-		Type = S_C_UPDATE_LOBBY_ROOM_INFO;
-		Length = sizeof(*this);
 		roomNo = 0;
 		memset(roomName, 0, sizeof(roomName));
 		currNumOfPeople = 0;
@@ -294,8 +276,6 @@ typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO : PACKET
 
 	PACKET_S_C_UPDATE_LOBBY_ROOM_INFO(int roomNo, const string& roomName, int currNumOfPeople, int maxNumOfPeople, RoomState roomState)
 	{
-		Type = S_C_UPDATE_LOBBY_ROOM_INFO;
-		Length = sizeof(*this);
 		this->roomNo = roomNo;
 		strncpy_s(this->roomName, sizeof(this->roomName), roomName.c_str(), _TRUNCATE);
 		this->currNumOfPeople = currNumOfPeople;
@@ -305,14 +285,27 @@ typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO : PACKET
 }PACKET_s_c_update_lobby_room_info;
 #pragma pack(pop)
 
+#pragma pack(push,1)
+typedef struct PACKET_S_C_LOBBY_ROOM_INFO_HEADER : PACKET
+{
+	int roomCount;
 
+	PACKET_S_C_LOBBY_ROOM_INFO_HEADER(int roomCount)
+	{
+		Type = S_C_LOBBY_ALL_ROOM_INFO;
+		Length = sizeof(*this);
+		this->roomCount = roomCount;
+	}
+
+}PACKET_s_c_update_lobby_room_info_header;
+#pragma pack(pop)
 
 #pragma pack(push,1)
 typedef struct PACKET_S_C_TEAM_CHANGE : PACKET
 {
-	int prvOrderOfTeam;
-	int currOrderOfTeam;
-	TeamType currTeamType;
+	int prvOrderOfTeam; // 이전 팀 종류
+	int currOrderOfTeam; // 바꾼 후 팀 내 위치
+	TeamType currTeamType; // 바꾼 팀 종류
 
 	PACKET_S_C_TEAM_CHANGE()
 	{

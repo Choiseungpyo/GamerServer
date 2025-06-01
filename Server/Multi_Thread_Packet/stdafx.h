@@ -58,15 +58,16 @@ enum MatchType : int{
 	SQUAD = 4
 };
 
-enum ReadyState : int {
+enum InRoomUserState : int {
 	UNREADY,
-	READY
+	READY,
+	IDLE,
+	START
 };
 
 
-
+#include <tuple>
 #include <unordered_map>
-#include <unordered_set>
 #include <shared_mutex>
 
 #include "Packet.h"

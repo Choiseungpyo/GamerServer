@@ -28,34 +28,33 @@ public enum PTYPE :int
     C_S_LOGOUT, // 게임 종료 버튼 누른 경우 : bool
 
     // Lobby
-    S_C_ENTRY_LOBBY, // 유저 프로필 전달 
+    S_C_USERS_PROFILE, // 유저 프로필 전달 
 
     // 로비 방 정보 UI 업데이트
-    S_C_UPDATE_LOBBY_ROOM_INFO,
+    S_C_LOBBY_ALL_ROOM_INFO,
+    S_C_LOBBY_ROOM_INFO,
 
-    // 방 목록에서 특정 방 클릭시 입장하는 경우
-    C_S_ENTRY_ROOM, 
-    S_C_ENTRY_ROOM,
+    // 방 안의 정보 세팅
+    S_C_INROOM_INFO,
 
     // 방 생성 버튼을 누른 경우
     C_S_CREATE_ROOM,
 
-    // 로비의 방 목록 UI를 추가해야할 경우
-    S_C_CREATE_LOBBY_ROOM_INFO,
-
+    // 방 목록에서 특정 방 클릭시 입장하는 경우
+    C_S_ENTRY_ROOM,
+    
     // 랜덤 입장 버튼을 누른 경우
     C_S_ENTRY_RANDOMROOM, // bool
-    S_C_ENTRY_RANDOMROOM,
 
     // Exit 버튼 누른 경우
-    C_S_MOVE_TITLE, // bool
-    S_C_MOVE_TITLE, // bool
+    C_S_EXIT_LOBBY, // bool
+    S_C_EXIT_LOBBY, // bool
 
     // Room
 
     // 준비 완료 버튼을 누른경우
-    C_S_READY_BTN, // bool
-    S_C_READY_BTN,
+    C_S_INROOM_USERSTATE, // bool
+    S_C_INROOM_USERSTATE,
 
     //게임 시작 버튼을 누른경우
     C_S_GAMETSTART_BTN, // bool
@@ -70,8 +69,10 @@ public enum PTYPE :int
     S_C_CHANGE_ROOM_OPTION,
 
     // 로비로 나가기 버튼을 누른 경우
-    C_S_MOVE_LOBBY, // bool
-    S_C_MOVE_LOBBY,
+    C_S_EXIT_ROOM,
+    S_C_EXIT_ROOM,
+
+
 
     S_PLAYER_SPAWN,
     C_PLAYER_MOVE,
@@ -123,13 +124,13 @@ public struct PACKET_S_C_ROOM_USER_INFO
 
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.NAME_SIZE)]
     public string UserName;
-    public ReadyState readyState;
+    public InRoomUserState InRoomUserState;
     public TeamType teamType;
     public int userOrderOfTeam;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-public struct Packet_S_C_ROOM_USERS_INFO_HEADER : IPacket
+public struct PACKET_S_C_INROOM_INFO_HEADER : IPacket
 { 
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
@@ -179,17 +180,23 @@ public struct PACKET_S_C_CREATE_ROOM : IPacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-public struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO : IPacket
+public struct PACKET_S_C_LOBBY_ROOM_INFO
 {
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
-
     public int RoomNo;
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.ROOM_NAME_SIZE)]
     public string RoomName; 
     public int CurrNumOfPeople;
     public int MaxNumOfPeople;
     public RoomState RoomState;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct PACKET_S_C_LOBBY_ROOM_INFO_HEADER : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+
+    public int Count;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -207,13 +214,13 @@ public struct PACKET_S_C_TEAM_CHANGE : IPacket
 
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_C_READY_BTN : IPacket
+public struct PACKET_S_C_CHANGE_INROOM_USERSTATE : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
 
-    public ReadyState readyState;
-    public TeamType teamType;
+    public InRoomUserState InRoomUserState;
+    public TeamType TeamType;
     public int OrderOfTeam;
 }
 

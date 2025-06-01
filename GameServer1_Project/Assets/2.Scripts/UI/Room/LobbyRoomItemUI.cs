@@ -31,6 +31,14 @@ public class LobbyRoomItemUI : PoolableObject
 
     private void Awake()
     {
+        InitRoomTxtDict();
+    }
+
+    void InitRoomTxtDict()
+    {
+        if (roomTxtDict.Count > 0)
+            return;
+
         foreach (var v in roomTxtDatas)
             roomTxtDict[v.type] = v.txt;
     }
@@ -41,6 +49,7 @@ public class LobbyRoomItemUI : PoolableObject
     /// <param name="packet"></param>
     public void InitRoomUIData(PACKET_S_C_CREATE_ROOM pack)
     {
+        // 호출하는 쪽에서 작업 등록
         roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
         roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
         roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
@@ -51,20 +60,24 @@ public class LobbyRoomItemUI : PoolableObject
     /// 방 정보를 변경시 호출하는 함수
     /// </summary>
     /// <param name="packet"></param>
-    public void ChangeRoomUIData(PACKET_CHANGE_ROOM_OPTION pack)
+    public void ChangeRoomOptionUI(PACKET_CHANGE_ROOM_OPTION pack)
     {
-        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
-        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
-        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
-        roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+            roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
+        });
     }
 
-    public void ChangeRoomUIData(PACKET_S_C_UPDATE_LOBBY_ROOM_INFO pack)
+    public void ChangeRoomUIData(PACKET_S_C_LOBBY_ROOM_INFO pack)
     {
-        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
-        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
-        roomTxtDict[RoomInfoType.PEOPLENUM].text = pack.CurrNumOfPeople + "/" + pack.MaxNumOfPeople;
-        roomTxtDict[RoomInfoType.STATE].text = pack.RoomState.ToString();
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
+            roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
+            roomTxtDict[RoomInfoType.PEOPLENUM].text = pack.CurrNumOfPeople + "/" + pack.MaxNumOfPeople;
+            roomTxtDict[RoomInfoType.STATE].text = pack.RoomState.ToString();
+        });
     }
 
     private void InitRoomUIData()
@@ -75,12 +88,15 @@ public class LobbyRoomItemUI : PoolableObject
 
     protected override void OnSpawn()
     {
-       
+
     }
 
     protected override void OnDespawn()
     {
-        InitRoomUIData();
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            InitRoomUIData();
+        });
     }
 
 

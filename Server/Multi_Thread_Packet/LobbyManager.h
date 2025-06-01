@@ -5,7 +5,9 @@ class LobbyManager
 {
 	// int : Room No
 	static unordered_map<int, Room*> roomMap; // 모든 방 정보
-	static unordered_map<int, const ClientSession*> lobbyUserMap; // 로비에 있는 유저 정보
+
+	// int : 소켓 번호
+	static unordered_map<SOCKET, const ClientSession*> lobbyUserMap; // 로비에 있는 유저 정보
 	static LobbyManager* instance;
 
 	static shared_mutex mutex;
@@ -13,8 +15,9 @@ class LobbyManager
 	static bool CanMakeRoom();
 
 	static Room* GetJoinableRandomRoom();
-	static void EntryRoom(const ClientSession* client, PTYPE type, Room* room, int roomNo);
 	static void UpdateLobbyRoomInfo(const ClientSession* client, const Room* room);
+
+	static void UpdateInRoomInfo(const ClientSession* client, PTYPE type, Room* room, int roomNo);
 
 public:
 	LobbyManager() {}
@@ -40,7 +43,18 @@ public:
 	static void SetReadyState(const ClientSession* client);
 	static void SetTeamType(const ClientSession* client);
 	static void SetRoomOption(const PACKET* packet, const ClientSession* client);
+	
 	static void EntryLobby(const ClientSession* client);
 	
+	static void UpdateLobbyAllRoomInfo();
+
+	static void SendToAllLobbyUser(vector<char> buffer);
+	static void SendToAllLobbyUser(const Packet* pack);
+	
+	static void ExitLobby(const ClientSession* client);
+
+	static void ExitRoom(const ClientSession* client);
+
+	static void DeleteRoom(int roomId);
 };
 

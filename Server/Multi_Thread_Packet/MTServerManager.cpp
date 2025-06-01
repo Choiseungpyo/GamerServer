@@ -113,10 +113,6 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			SessionManager::DeleteClient(client->GetSocket(), client);
 			break;
 
-			// 방 목록에서 특정 방 클릭시 입장하는 경우
-		case C_S_ENTRY_ROOM:
-			LobbyManager::EntryRoom(packet, client);
-			break;
 
 			// 방 생성 버튼을 누른 경우
 		case C_S_CREATE_ROOM:
@@ -126,16 +122,21 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			LobbyManager::CreateRoom(packet, client);
 			break;
 
+			// 방 목록에서 특정 방 클릭시 입장하는 경우
+		case C_S_ENTRY_ROOM:
+			LobbyManager::EntryRoom(packet, client);
+			break;
+
 			// 랜덤 입장 버튼을 누른 경우
 		case C_S_ENTRY_RANDOMROOM:
 			LobbyManager::EntryRandomRoom(client);
 			break;
 
-		case C_S_MOVE_TITLE: // Exit 버튼 누른 경우
-			client->Send(S_C_MOVE_TITLE);
+		case C_S_EXIT_LOBBY: // Exit 버튼 누른 경우
+			LobbyManager::ExitLobby(client);
 			break;
 
-		case C_S_READY_BTN:
+		case C_S_INROOM_USERSTATE:
 			LobbyManager::SetReadyState(client);
 			break;
 
@@ -151,7 +152,8 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			LobbyManager::SetRoomOption(packet, client);
 			break;
 
-		case C_S_MOVE_LOBBY:
+		case C_S_EXIT_ROOM:
+			LobbyManager::ExitRoom(client);
 			break;
 
 		case C_PLAYER_MOVE:

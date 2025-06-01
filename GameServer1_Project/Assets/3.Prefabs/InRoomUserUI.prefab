@@ -396,4 +396,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImg: {fileID: 6991024474326977690}
   userNameTxt: {fileID: 9000807948870657592}
-  readyStateTxt: {fileID: 8777773486659333262}
+  inRoomUserStateTxt: {fileID: 8777773486659333262}

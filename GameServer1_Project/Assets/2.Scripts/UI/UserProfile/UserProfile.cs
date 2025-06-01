@@ -30,8 +30,11 @@ public class UserProfile : PoolableObject
 
     public void SetUserProfile(string userNametxt)
     {
-        userNameTxt.text = userNametxt;
-        SetIcon();
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            userNameTxt.text = userNametxt;
+            SetIcon();
+        });
     }
 
     private void SetIcon()

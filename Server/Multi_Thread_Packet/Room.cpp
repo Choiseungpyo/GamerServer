@@ -1,10 +1,17 @@
 #include "stdafx.h"
 
 Room::Room(int no, RoomOption roomOption)
-	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType)
+	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType), hostId(0)
 {}
 
-Room::~Room() {}
+Room::~Room() 
+{
+	clientMap.clear(); // Const ClientSession*는 SessionManager에서 삭제
+	for (auto& roomUserInfoItem : roomUserInfoMap) {
+		delete roomUserInfoItem.second;
+	}
+	roomUserInfoMap.clear();
+}
 
 
 int Room::GetUserCount() const
@@ -16,20 +23,59 @@ int Room::GetUserCount() const
 int Room::GetMaxUserCount() const
 {
 	shared_lock<shared_mutex> lock(mutex);
-	return matchType;
+	return (int)matchType * 2;
 };
 
-std::vector<const ClientSession*>Room::GetAllClients()
+std::vector<int> Room::GetAllClientId()
 {
 	shared_lock<shared_mutex> lock(mutex);
-	std::vector<const ClientSession*> clients;
+	std::vector<int> allClientId;
 	for (const auto& pair : clientMap)
 	{
-		clients.push_back(pair.second);
+		allClientId.push_back(pair.first);
 	}
-	return clients;
+
+	return allClientId;
 }
 
+PACKET_ROOM_USER_INFO Room::GetPacketRoomUserInfo(int id)
+{
+	shared_lock<shared_mutex> lock(mutex);
+
+	PACKET_ROOM_USER_INFO pack;
+	User* user = clientMap[id]->GetUser();
+	auto roomUserInfo = roomUserInfoMap[id];
+
+	pack.userId = id;
+	strncpy_s(pack.userName, sizeof(pack.userName), user->GetName(), _TRUNCATE);
+	pack.inRoomUserState = roomUserInfo->inRoomUserState;
+	pack.teamType = roomUserInfo->teamType;
+	pack.userOrderOfTeam = roomUserInfo->userOrderOfTeam;
+
+	return pack;
+}
+
+
+RoomUserInfo* Room::GetRoomUserInfo(int id) const
+{
+	shared_lock<shared_mutex> lock(mutex);
+
+	auto it = roomUserInfoMap.find(id);
+
+	// 소켓이 없다면
+	if (it == roomUserInfoMap.end()) {
+		std::cout << "roomUserInfoMap - InValid Id : " << id << std::endl;
+		return NULL;
+	}
+
+	return it->second;
+}
+
+int Room::GetHostId() const
+{
+	shared_lock<shared_mutex> lock(mutex);
+	return hostId;
+}
 
 void Room::SetNo(int no)
 {
@@ -73,7 +119,7 @@ void Room::SetMatchType(MatchType matchType)
 	this->matchType = matchType;
 }
 
-MatchType Room::GetMatch() const
+MatchType Room::GetMatchType() const
 {
 	shared_lock<shared_mutex> lock(mutex);
 	return matchType;
@@ -81,14 +127,28 @@ MatchType Room::GetMatch() const
 
 void Room::AddUser(const ClientSession* client)
 {
-	unique_lock<shared_mutex> lock(mutex);
 	User* user = client->GetUser();
 
 	int clientId = user->GetId();
 	
-	clientMap[clientId] = client;
-	TeamType teamType = JoinAvailableTeam(clientId);
-	roomUserInfoMap[clientId] = new RoomUserInfo(teamType);
+	{
+		unique_lock<shared_mutex> lock(mutex);
+		clientMap[clientId] = client;
+	}
+
+	auto data = JoinAvailableTeam(clientId);
+
+	{
+		unique_lock<shared_mutex> lock(mutex);
+		TeamType team = std::get<0>(data);
+		int orderOfTeam = std::get<1>(data);
+
+		bool isHost = clientMap.size() == 1;
+		if (isHost)
+			hostId = user->GetId();
+		roomUserInfoMap[clientId] = new RoomUserInfo(isHost, team, orderOfTeam);
+	}
+
 	user->SetState(ROOM);
 
 	// 팀의 몇번째에 위치하는지 계산해서 RoomUserInfo에 저장하는 것 필요
@@ -96,27 +156,54 @@ void Room::AddUser(const ClientSession* client)
 	cout << "User" << clientId << "has entered the room.";
 }
 
-// 호출에서 락걸어줘야 함
-TeamType Room::JoinAvailableTeam(int clientId)
+/// <summary>
+/// 유저 삭제
+/// </summary>
+/// <param name="userId"></param>
+/// <returns>방에 남은 유저 수</returns>
+int Room::DeleteUser(int userId)
 {
-	if (redTeamIds.size() >= (int)matchType) {
-		blueTeamIds.insert(clientId);
-		return BLUE;
+	unique_lock<shared_mutex> lock(mutex);
+	auto it = roomUserInfoMap.find(userId);
+
+	// 못찾았을 경우
+	if (it == roomUserInfoMap.end()) {
+		cout << "roomUserInfoMap - Invalid Id : " << userId << endl;
+		return -1;
 	}
 
-	redTeamIds.insert(clientId);
-	return RED;
+	delete it->second;
+	roomUserInfoMap.erase(it);
+
+	clientMap.erase(userId);
+	return clientMap.size();
+}
+
+// 유저가 무조건 들어올 수 있다는 가정하에 동작
+tuple<TeamType, int> Room::JoinAvailableTeam(int clientId)
+{
+	unique_lock<shared_mutex> lock(mutex);
+
+	int redTeamSize = redTeamUserOrder.size();
+	int blueTeamSize = blueTeamUserOrder.size();
+
+	if (redTeamSize > blueTeamSize) {
+		blueTeamUserOrder[clientId] = blueTeamSize;
+		return make_tuple(BLUE, blueTeamUserOrder.size()-1); // 팀에서의 자기 위치 index : 0~max-1
+	}
+
+	redTeamUserOrder[clientId] = redTeamSize;
+	return make_tuple(RED, redTeamUserOrder.size()-1); // 팀에서의 자기 위치 index : 0~max-1
 }
 
 bool Room::CanJoinRoom()
 {
-	shared_lock<shared_mutex> lock(mutex);
 	// 게임 중일 경우
 	if (state == PLAYING)
 		return false;
 
 	// 최대 인원에 도달했을 경우
-	if (clientMap.size() >= (int)matchType)
+	if (GetUserCount() >= GetMaxUserCount())
 		return false;
 
 	return true;
@@ -136,7 +223,7 @@ void Room::Send_InRoom_UsersData()
 		RoomUserData roomUserData;
 		roomUserData.userId = user->GetId();
 		//strcpy(roomUserData.userName, user->GetName().c_str());
-		roomUserData.isReady = info.readyState;
+		roomUserData.isReady = info.inRoomUserState;
 		roomUserData.isHost = info.isHost;
 		roomUserData.teamType = info.teamType;
 
@@ -144,28 +231,122 @@ void Room::Send_InRoom_UsersData()
 	}
 }
 
-void Room::ChangeReadyState(int userId)
+
+void Room::SendToAllUserInRoom(vector<char> buffer)
 {
-	unique_lock<shared_mutex> lock(mutex);
-	if (roomUserInfoMap[userId]->readyState == UNREADY)
-		roomUserInfoMap[userId]->readyState = READY;
-	else
-		roomUserInfoMap[userId]->readyState = UNREADY;
+	vector<const ClientSession*> clients;
+
+	{
+		shared_lock<shared_mutex> lock(mutex);
+
+		for (auto& item : clientMap)
+			clients.push_back(item.second);
+	}
+
+	for (auto client : clients)
+	{
+		send(client->GetSocket(), buffer.data(), buffer.size(), 0);
+	}
 }
 
-void Room::ChangeTeamType(int userId)
+void Room::SendToAllUserInRoom(const Packet* pack)
 {
-	unique_lock<shared_mutex> lock(mutex);
-	if (roomUserInfoMap[userId]->teamType == RED)
-		roomUserInfoMap[userId]->teamType = BLUE;
-	else
-		roomUserInfoMap[userId]->teamType = RED;
+	vector<const ClientSession*> clients;
+
+	{
+		shared_lock<shared_mutex> lock(mutex);
+
+		for (auto& item : clientMap)
+			clients.push_back(item.second);
+	}
+
+	for (auto client : clients)
+	{
+		client->Send(pack);
+	}
 }
 
-void Room::ChangeRoomUserInfo(PACKET_CHANGE_ROOM_OPTION* pack)
+const RoomUserInfo* Room::ChangeInRoomUserState(int userId)
 {
 	unique_lock<shared_mutex> lock(mutex);
-	no = pack->roomNo;
+
+	auto roomUserInfo = roomUserInfoMap[userId];
+	if (roomUserInfo->isHost)
+	{
+		if (roomUserInfo->inRoomUserState == IDLE)
+			roomUserInfo->inRoomUserState = START;
+		else
+			roomUserInfo->inRoomUserState = IDLE;
+	}
+	else
+	{
+		if (roomUserInfo->inRoomUserState == UNREADY)
+			roomUserInfo->inRoomUserState = READY;
+		else
+			roomUserInfo->inRoomUserState = UNREADY;
+	}
+	
+	return roomUserInfo;
+}
+
+PACKET_S_C_TEAM_CHANGE Room::ChangeTeamType(RoomUserInfo* roomUserInfo, int userId)
+{
+	unique_lock<shared_mutex> lock(mutex);
+	
+	int userOrderOfTeam;
+	int prvOrdereOfTeam;
+
+	// 팀 변경하기
+	// 현재 팀이 레드팀인 경우
+	if (roomUserInfo->teamType == RED)
+	{
+		prvOrdereOfTeam = redTeamUserOrder[userId];
+		roomUserInfo->teamType = BLUE;
+
+		redTeamUserOrder.erase(userId);
+		userOrderOfTeam = blueTeamUserOrder.size();
+		blueTeamUserOrder[userId] = userOrderOfTeam;
+		roomUserInfo->userOrderOfTeam = userOrderOfTeam;
+	}
+	else
+	{
+		prvOrdereOfTeam = blueTeamUserOrder[userId];
+		roomUserInfo->teamType = RED;
+		
+		blueTeamUserOrder.erase(userId);
+		userOrderOfTeam = redTeamUserOrder.size();
+		redTeamUserOrder[userId] = userOrderOfTeam;
+		roomUserInfo->userOrderOfTeam = userOrderOfTeam;
+	}
+	
+	PACKET_S_C_TEAM_CHANGE pack;
+
+	pack.currOrderOfTeam = userOrderOfTeam;
+	pack.prvOrderOfTeam = prvOrdereOfTeam;
+	pack.currTeamType = roomUserInfo->teamType;
+	
+	return pack;
+}
+
+bool Room::CanChangeTeam(const RoomUserInfo* roomUserInfo)
+{
+	if (roomUserInfo->teamType == RED)
+	{
+		if (redTeamUserOrder.size() >= matchType)
+			return false;
+		return true;
+	}
+
+	if (blueTeamUserOrder.size() >= matchType)
+		return false;
+
+	return true;
+}
+
+void Room::ChangeRoomUserInfo(const PACKET_CHANGE_ROOM_OPTION* pack)
+{
+	unique_lock<shared_mutex> lock(mutex);
+
 	name = pack->roomName;
 	matchType = pack->matchType;
 }

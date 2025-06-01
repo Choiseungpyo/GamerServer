@@ -65,20 +65,24 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     #region Room
     public void CreateRoom(PACKET_S_C_CREATE_ROOM packet)
     {
-        GameObject newRoomInfoUI_Obj = Instantiate(roomUI_Prefab, roomContents.transform);
-        LobbyRoomItemUI newRoomUIFo = newRoomInfoUI_Obj.GetComponent<LobbyRoomItemUI>();
-        if (!newRoomUIFo)
+        TcpManager.Instance.RegisterJop(() =>
         {
-            Debug.LogWarning(newRoomUIFo);
-            return;
-        }
+            GameObject newRoomInfoUI_Obj = Instantiate(roomUI_Prefab, roomContents.transform);
+            LobbyRoomItemUI newRoomUIFo = newRoomInfoUI_Obj.GetComponent<LobbyRoomItemUI>();
+            if (!newRoomUIFo)
+            {
+                Debug.LogWarning(newRoomUIFo);
+                return;
+            }
 
-        newRoomUIFo.InitRoomUIData(packet);
-        lobbyRoomItemUIDict.Add(packet.RoomNo, newRoomUIFo);
+            newRoomUIFo.InitRoomUIData(packet);
+            lobbyRoomItemUIDict.Add(packet.RoomNo, newRoomUIFo);
+        });
     }
 
-    public void UpdateRoomInfo(PACKET_S_C_UPDATE_LOBBY_ROOM_INFO packet)
+    public void UpdateRoomInfo(PACKET_S_C_LOBBY_ROOM_INFO packet)
     {
+
         // 기존에 있는 방 정보일 경우
         if (lobbyRoomItemUIDict.TryGetValue(packet.RoomNo, out LobbyRoomItemUI lobbyRoomItemUI))
         {
@@ -90,10 +94,19 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
             PACKET_S_C_CREATE_ROOM tmpPack = new PACKET_S_C_CREATE_ROOM();
             tmpPack.RoomNo = packet.RoomNo;
             tmpPack.RoomName = packet.RoomName;
-            tmpPack.MatchType = (MatchType)packet.MaxNumOfPeople;
+            tmpPack.MatchType = (MatchType)(packet.MaxNumOfPeople/2);
             CreateRoom(tmpPack);
         }
     }
+
+    public void UpdateAllRoomInfo(List<PACKET_S_C_LOBBY_ROOM_INFO> packets)
+    {
+        foreach(var pack in packets)
+        {
+            UpdateRoomInfo(pack);
+        }
+    }
+
 
     private void DeleteRoom(int roomNo)
     {
@@ -119,7 +132,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     private void Exit()
     {
         // 타이틀로 이동
-        TcpManager.Instance.SendToServer(PTYPE.C_S_MOVE_TITLE);
+        TcpManager.Instance.SendToServer(PTYPE.C_S_EXIT_LOBBY);
     }
     #endregion
 
@@ -132,17 +145,26 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
             return;
         }
 
-        value.ChangeRoomUIData(pack);
+        value.ChangeRoomOptionUI(pack);
     }
 
     public void AddUserProfile(List<PACKET_S_C_LOBBY_USERS_INFO> userInfo)
     {
         foreach (var user in userInfo)
         {
-           AddItem<UserProfile>(userProfileContent_Tr,
-           () => userProfilePool.Get(user.UserId),
-           (userProfile, userName) => userProfile.SetUserProfile(userName),
-           user.UserName);
+            AddItem<UserProfile>(
+                userProfileContent_Tr, () =>
+                {
+                    var profile = userProfilePool.Get(user.UserId);
+                    return profile ?? null;
+                },
+                (profile, userName) =>
+                {
+                    if (profile != null)
+                        profile.SetUserProfile(userName);
+                },
+                user.UserName
+            );
         }
     }
 
@@ -156,7 +178,11 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
             Debug.LogWarning(userId);
             return;
         }
-        item.transform.SetParent(parent);
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            item.transform.SetParent(parent);
+        });
+       
         setter(item, data);
     }
 
@@ -164,8 +190,17 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     private void AddItem<T>(Transform parent, Func<T> getter, Action<T, string> setter, string data)
         where T : MonoBehaviour
     {
-        T item = getter();
-        item.transform.SetParent(parent);
+       T item = getter();
+        if (!item)
+        {
+            Debug.LogWarning(item);
+            return;
+        }
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            item.transform.SetParent(parent);
+        });
+      
         setter(item, data);
     }
 

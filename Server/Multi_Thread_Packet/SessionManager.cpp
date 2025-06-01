@@ -37,9 +37,8 @@ ClientSession * SessionManager::CreateClient(SOCKET sock)
 	// 소켓이 없다면
 	if (it == clientMap.end()) {
 		std::cout << "create ClientSession.." << std::endl;
-		ClientSession* newClient = new ClientSession(sock, clientMap.size());
+		ClientSession* newClient = new ClientSession(sock, mClientCount++);
 		clientMap[sock] = newClient;
-		mClientCount++;
 		return newClient;
 	}
 
@@ -99,14 +98,14 @@ void SessionManager::SendTo(const Packet* packet, SOCKET targetSocket)
 
 	auto it = clientMap.find(targetSocket);
 
-	// 키 값이 있는 경우
-	if (it != clientMap.end()) {
-		ClientSession* client = it->second;
-		client->Send(packet);
-	}
 	// 키 값이 없는 경우
-	else
+	if (it == clientMap.end()) {
 		cout << "target socket : " << targetSocket << " 존재하지 않음";
+		return;
+	}
+	
+	ClientSession* client = it->second;
+	client->Send(packet);
 }
 
 
@@ -122,13 +121,15 @@ ClientSession* SessionManager::GetClient(SOCKET sock)
 	shared_lock<shared_mutex> lock(mutex);
 	auto it = clientMap.find(sock);
 
-	// 키 값이 있는 경우
-	if (it != clientMap.end()) {
-		return it->second;
+	// 키 값이 없는 경우
+	if (it == clientMap.end()) 
+	{
+		cout << "socket : " << sock << " 존재하지 않음";
+		return nullptr;
+	
 	}
 
-	cout << "socket : " << sock << " 존재하지 않음";
-	return nullptr;
+	return it->second;
 }
 
 vector<const ClientSession*> SessionManager::GetClientAll() {

@@ -5,17 +5,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ReadyState : int
+public enum InRoomUserState : int
 {
-    WAITING,
-    READY
+    UNREADY,
+    READY,
+    IDLE,
+    START
 }
 
 public class InRoomUserUI : PoolableObject
 {
     [SerializeField] private Image iconImg;
     [SerializeField] private TMP_Text userNameTxt;
-    [SerializeField] private TMP_Text readyStateTxt;
+    [SerializeField] private TMP_Text inRoomUserStateTxt;
     private RectTransform rectTr;
 
     private void Awake()
@@ -23,22 +25,22 @@ public class InRoomUserUI : PoolableObject
         rectTr = GetComponent<RectTransform>();
     }
 
-    public void SetInRoomUserUI(string userName, ReadyState readyState)
+    public void SetInRoomUserUI(string userName, InRoomUserState InRoomUserState)
     {
         TcpManager.Instance.RegisterJop(() =>
         {
             iconImg.sprite = UserIcon.Instance.GetSprite(userName);
             userNameTxt.text = userName;
         });
-        
-        SetUserReadyState(readyState);
+
+        SetInRoomUserStateTxt(InRoomUserState);
     }
 
-    public void SetUserReadyState(ReadyState readyState)
+    public void SetInRoomUserStateTxt(InRoomUserState inRoomUserState)
     {
         TcpManager.Instance.RegisterJop(() =>
         {
-            readyStateTxt.text = readyState.ToString();
+            inRoomUserStateTxt.text = inRoomUserState.ToString();
         });
     }
     
@@ -48,7 +50,7 @@ public class InRoomUserUI : PoolableObject
         {
             iconImg.sprite = null;
             userNameTxt.text = "";
-            readyStateTxt.text = "";
+            inRoomUserStateTxt.text = "";
         });
   
     }

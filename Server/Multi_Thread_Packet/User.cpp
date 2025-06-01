@@ -52,7 +52,7 @@ int User::GetRoomNum() const
 	return currRoomNum;
 }
 
-void User::SetRoomNum(int roomNum) 
+void User::SetCurrRoomNum(int roomNum) 
 {
 	std::unique_lock<std::shared_mutex> lock(mutex);
 	this->currRoomNum = roomNum;

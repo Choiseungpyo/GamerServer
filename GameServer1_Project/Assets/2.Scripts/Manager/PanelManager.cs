@@ -24,13 +24,6 @@ public class PanelManager : Singleton<PanelManager>
     [SerializeField] private List<PanelData> panelDatas;
     private Dictionary<PanelType, GameObject> panelDict = new();
 
-    private PanelType currPanel;
-
-    public PanelType CurrentPanel
-    {
-        get { return currPanel; }
-        set { currPanel = value; }
-    }
 
     protected override void Awake()
     {
@@ -72,16 +65,19 @@ public class PanelManager : Singleton<PanelManager>
         }
     }
 
-    public bool IsActive(PanelType panelType)
+    public void IsActive(PanelType panelType, Action<bool> callback)
     {
         if (!panelDict.TryGetValue(panelType, out var panel))
         {
             Debug.LogWarning(panelType);
-            return false; // 또는 기본값
-           
+            callback?.Invoke(false);
+            return;
         }
 
-        return panel.activeSelf;
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            callback?.Invoke(panel.activeSelf);
+        });
     }
 
 }

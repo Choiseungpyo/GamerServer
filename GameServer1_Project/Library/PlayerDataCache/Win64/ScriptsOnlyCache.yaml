@@ -36,10 +36,8 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -147,33 +145,33 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 16608}
+      Script: {instanceID: 16632}
     - Class: 114
-      Script: {instanceID: 16634}
+      Script: {instanceID: 16674}
     - Class: 114
-      Script: {instanceID: 16676}
+      Script: {instanceID: 16846}
     - Class: 114
-      Script: {instanceID: 16848}
+      Script: {instanceID: 17256}
     - Class: 114
-      Script: {instanceID: 17258}
+      Script: {instanceID: 17684}
     - Class: 114
-      Script: {instanceID: 17686}
+      Script: {instanceID: 17690}
     - Class: 114
       Script: {instanceID: 17692}
     - Class: 114
-      Script: {instanceID: 17694}
+      Script: {instanceID: 17888}
     - Class: 114
-      Script: {instanceID: 17890}
+      Script: {instanceID: 18220}
     - Class: 114
-      Script: {instanceID: 18222}
+      Script: {instanceID: 18346}
     - Class: 114
-      Script: {instanceID: 18348}
+      Script: {instanceID: 18618}
     - Class: 114
-      Script: {instanceID: 18620}
+      Script: {instanceID: 18628}
     - Class: 114
-      Script: {instanceID: 18630}
+      Script: {instanceID: 18634}
     - Class: 114
-      Script: {instanceID: 18636}
+      Script: {instanceID: 18844}
     - Class: 114
       Script: {instanceID: 18900}
     - Class: 114
@@ -239,12 +237,6 @@ ScriptsOnlyBuild:
     - Class: 224
       Script: {instanceID: 0}
   scriptHashData:
-  - hash:
-      serializedVersion: 2
-      Hash: bf8aea1631349a162e3da2638f86136e
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: TcpManager
   - hash:
       serializedVersion: 2
       Hash: 915204dac8acad99f076d6e72ada0a0f
@@ -595,6 +587,12 @@ ScriptsOnlyBuild:
     className: ActivationTrack
   - hash:
       serializedVersion: 2
+      Hash: bf8aea1631349a162e3da2638f86136e
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: TcpManager
+  - hash:
+      serializedVersion: 2
       Hash: 552dca338f20933ce362ebbe559a6aa6
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -877,7 +875,7 @@ ScriptsOnlyBuild:
     className: TextMeshProUGUI
   - hash:
       serializedVersion: 2
-      Hash: 15983b6870c7f4cd81cd9758458fc6c7
+      Hash: 1b024e7c878816c0b57f2c9ea1910077
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: InRoomUserUI
@@ -961,7 +959,7 @@ ScriptsOnlyBuild:
     className: VerticalLayoutGroup
   - hash:
       serializedVersion: 2
-      Hash: 8fdcd5cd8c8a378b2b12f1866d4ba804
+      Hash: d3a1661bdcba1fb41fd63a6ce4368d2c
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: InRoomUI
@@ -1178,4 +1176,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/1.Scenes/Lobby.unity
-  playerPath: C:/Users/OWNER/Desktop/TMP/GameServer1_Project.exe
+  playerPath: C:/Users/OWNER/Desktop/GameServer1_Pro/GameServer1_Project.exe

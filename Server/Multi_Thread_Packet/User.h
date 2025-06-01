@@ -32,6 +32,6 @@ public:
 	void SetState(UserState state);
 
 	int GetRoomNum() const;
-	void SetRoomNum(int roomNum);
+	void SetCurrRoomNum(int roomNum);
 };
 

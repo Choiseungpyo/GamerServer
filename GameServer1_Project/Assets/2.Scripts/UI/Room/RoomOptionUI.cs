@@ -4,17 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct RoomOption
-{
-    public string roomName;
-    public MatchType matchType;
-
-    public RoomOption(string roomName, MatchType matchType)
-    {
-        this.roomName = roomName;
-        this.matchType = matchType;
-    }
-}
 
 /// <summary>
 /// 방 생성시 방 옵션 UI
@@ -33,8 +22,6 @@ public class RoomOptionUI : MonoBehaviour
 
     string roomName;
     MatchType matchType;
-
-    bool isCreateBtn;
 
     private void Awake()
     {
@@ -62,13 +49,10 @@ public class RoomOptionUI : MonoBehaviour
 
     private void SetOkBtnTxt()
     {
-        isCreateBtn = PanelManager.Instance.IsActive(PanelType.LOBBY);
-        // Lobby 에서는 생성
-        if (isCreateBtn)
-            okTxt.text = "Create";
-        // In Room 에서는 확인
-        else
-            okTxt.text = "Ok";
+        PanelManager.Instance.IsActive(PanelType.LOBBY, isLobby =>
+        {
+            okTxt.text = isLobby ? "Create" : "Ok";
+        });
     }
 
     private void InitRoomNames()
@@ -77,8 +61,8 @@ public class RoomOptionUI : MonoBehaviour
 
         roomNames.Add("Come on, bro.");
         roomNames.Add("Boom boom room");
-        roomNames.Add("let's gooo");
-        roomNames.Add("Siuuuuuuu");
+        roomNames.Add("Let's gooo");
+        roomNames.Add("I'll Kill You");
         roomNames.Add("Gg ez room");
 
         roomNameDropdown.AddOptions(roomNames);
@@ -116,10 +100,10 @@ public class RoomOptionUI : MonoBehaviour
                 return MatchType.Solo;
 
             case "Duo":
-                return MatchType.Solo;
+                return MatchType.Duo;
 
             case "Squad":
-                return MatchType.Solo;
+                return MatchType.Squad;
 
             default:
                 Debug.LogWarning(matchType);
@@ -133,24 +117,23 @@ public class RoomOptionUI : MonoBehaviour
     /// </summary>
     private void Create()
     {
-        // Lobby에서 방 생성시
-        if(isCreateBtn)
+        PanelManager.Instance.IsActive(PanelType.LOBBY, isLobby =>
         {
-            TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, (roomName, matchType));
-        }
-        // In Game에서 방 옵션 설정시
-        else
-        {
-
-        }
+            if(isLobby)
+                TcpManager.Instance.SendToServer(PTYPE.C_S_CREATE_ROOM, (roomName, matchType));
+            else
+                TcpManager.Instance.SendToServer(PTYPE.C_S_CHANGE_ROOM_OPTION, (roomName, matchType));
+        });
     }
 
     private void Cancle()
     {
-        if (isCreateBtn)
-            PanelManager.Instance.Activate(PanelType.LOBBY);
-        else
-            PanelManager.Instance.Activate(PanelType.ROOM);
-
+        PanelManager.Instance.IsActive(PanelType.LOBBY, isLobby =>
+        {
+            if (isLobby)
+                PanelManager.Instance.Activate(PanelType.LOBBY);
+            else
+                PanelManager.Instance.Activate(PanelType.ROOM);
+        });
     }
 }
