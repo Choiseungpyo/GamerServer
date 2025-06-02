@@ -5,6 +5,27 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum TeamType : int
+{
+    RED,
+    BLUE
+}
+
+public enum RoomState : int
+{
+    WAITING,
+    INGAME
+}
+
+public enum MatchType : int
+{
+    SOLO = 1,
+    DUO = 2,
+    SQUAD = 4
+}
+
+
+
 public class InRoomUI : MonoBehaviour
 {
     #region Variables
@@ -148,7 +169,7 @@ public class InRoomUI : MonoBehaviour
                    
 
                 // 유저 정보 UI 설정
-                var newInRoomUserUI = inRoomUserUIPool.Get();
+                var newInRoomUserUI = inRoomUserUIPool.Get(userInfo.UserId);
                 newInRoomUserUI.SetInRoomUserUI(userInfo.UserName, userInfo.InRoomUserState);
 
 
@@ -171,7 +192,7 @@ public class InRoomUI : MonoBehaviour
 
 
                 // 유저 정보 UI 설정
-                var newInRoomUserUI = inRoomUserUIPool.Get();
+                var newInRoomUserUI = inRoomUserUIPool.Get(userInfo.UserId);
                 newInRoomUserUI.SetInRoomUserUI(userInfo.UserName, userInfo.InRoomUserState);
 
 

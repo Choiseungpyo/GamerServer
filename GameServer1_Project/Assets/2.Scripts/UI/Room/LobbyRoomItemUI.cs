@@ -53,7 +53,7 @@ public class LobbyRoomItemUI : PoolableObject
         roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
         roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
         roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
-        roomTxtDict[RoomInfoType.STATE].text = RoomState.WATING.ToString();
+        roomTxtDict[RoomInfoType.STATE].text = RoomState.WAITING.ToString();
     }
 
     /// <summary>

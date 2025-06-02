@@ -74,9 +74,9 @@ public enum PTYPE :int
 
 
 
-    S_PLAYER_SPAWN,
-    C_PLAYER_MOVE,
-    S_PLAYER_MOVE
+    S_PlayerEntity_SPAWN,
+    C_S_MOVE_PLAYER,
+    S_C_MOVE_PLAYER
 }
 
 public interface IPacket
@@ -90,6 +90,15 @@ public struct PACKET : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct PACKET_INFO_HEADER : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+
+    public int Count;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -109,13 +118,6 @@ public struct PACKET_S_C_LOBBY_USERS_INFO
     public string UserName;
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_C_LOBBY_USERS_INFO_HEADER : IPacket
-{
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
-    public int Count;
-}
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 public struct PACKET_S_C_ROOM_USER_INFO
@@ -191,15 +193,6 @@ public struct PACKET_S_C_LOBBY_ROOM_INFO
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_C_LOBBY_ROOM_INFO_HEADER : IPacket
-{
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
-
-    public int Count;
-}
-
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PACKET_S_C_TEAM_CHANGE : IPacket
 {
     public UInt32 Length { get; set; }
@@ -239,40 +232,32 @@ public struct PACKET_CHANGE_ROOM_OPTION : IPacket
 
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_SPAWN : IPacket
+public struct PACKET_C_S_PLAYERENTITY_DATA : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
+
     public int Id;
-    public Vector3 Position;
-}
+    public string Name;
+    public TeamType TeamType;
 
-
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_C_MOVE : IPacket
-{
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-    public byte Directions; // bool로 사용하려 했으나 C++과 C#에서의 정렬 문제 떄문에 byte로 변경
+    public byte IsMoveKeyPressed;
+    public int rotationValue;
+    byte isShoot;
+    byte isReload;
 }
+
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_S_MOVE : IPacket
+public struct PACKET_S_C_PLAYERENTITY_DATA
 {
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
     public int Id;
-    public Vector3 Position;
-}
+    public string Name;
+    public TeamType TeamType;
 
-public struct PACKET_S_PLAYER_DATA
-{
-    public UInt32 Length;
-    public PTYPE Type;
-    public int Id;
-    public string name;
-    public int characterType;
     public Vector3 Position;
     public Vector3 Rotation;
+    public PlayerState State;
+    public int CurrHp;
 }

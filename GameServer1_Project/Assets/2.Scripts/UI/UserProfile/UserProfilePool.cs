@@ -6,7 +6,7 @@ public class UserProfilePool : ObjectPoolBase<UserProfile>
 {
     protected override void Awake()
     {
-        //maxCount = EntityManager.Instance.MaxPlayerNum;
+        //maxCount = EntityManager.Instance.MaxPlayerEntityNum;
         base.Awake();
         
     }

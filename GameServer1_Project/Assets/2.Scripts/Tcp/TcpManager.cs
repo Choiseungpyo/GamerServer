@@ -119,13 +119,12 @@ public class TcpManager : Singleton<TcpManager>
                     if (id != -1)
                         return;
                     id = packet.Id;
-                    EntityManager.Instance.CurrUserId = packet.Id;
                 }
                 break;
 
             case PTYPE.S_C_USERS_PROFILE:
                 {
-                    PACKET_S_C_LOBBY_USERS_INFO_HEADER header = new();
+                    PACKET_INFO_HEADER header = new();
                     List<PACKET_S_C_LOBBY_USERS_INFO> usersInfo = new();
                     GetUserInfo(ref header, usersInfo, fullPacket);
 
@@ -139,7 +138,7 @@ public class TcpManager : Singleton<TcpManager>
             // 방 생성시
             case PTYPE.S_C_LOBBY_ALL_ROOM_INFO:
                 {
-                    PACKET_S_C_LOBBY_ROOM_INFO_HEADER header = new();
+                    PACKET_INFO_HEADER header = new();
                     List<PACKET_S_C_LOBBY_ROOM_INFO> roomsInfo = new();
                     GetUserInfo(ref header, roomsInfo, fullPacket);
 
@@ -151,7 +150,7 @@ public class TcpManager : Singleton<TcpManager>
             // 방 하나의 정보만 바뀌었을 경우
             case PTYPE.S_C_LOBBY_ROOM_INFO:
                 {
-                    PACKET_S_C_LOBBY_ROOM_INFO_HEADER header = new();
+                    PACKET_INFO_HEADER header = new();
                     List<PACKET_S_C_LOBBY_ROOM_INFO> roomsInfo = new();
                     GetUserInfo(ref header, roomsInfo, fullPacket);
 
@@ -229,23 +228,23 @@ public class TcpManager : Singleton<TcpManager>
 
 
             // 게임
-            //case PTYPE.S_PLAYER_SPAWN:
+            //case PTYPE.S_PlayerEntity_SPAWN:
             //    {
             //        PACKET_S_SPAWN packet = BytesToStruct<PACKET_S_SPAWN>(fullPacket);
-            //        EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PLAYER, this, packet);
+            //        EventManager.Instance.PostNotification(EVENT_TYPE.ADD_PlayerEntity, this, packet);
             //    }
             //    break;
-            //case PTYPE.C_PLAYER_MOVE:
+            //case PTYPE.C_S_MOVE_PLAYER:
             //    {
             //        //PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
             //        //id = packet.Id;
                  
             //    }
             //    break;
-            //case PTYPE.S_PLAYER_MOVE:
+            //case PTYPE.S_C_MOVE_PLAYER:
             //    {
             //        PACKET_S_MOVE packet = BytesToStruct<PACKET_S_MOVE>(fullPacket);
-            //        EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PLAYER_MOVEMENT, this, packet);
+            //        EventManager.Instance.PostNotification(EVENT_TYPE.APPLY_PlayerEntity_MOVEMENT, this, packet);
             //    }
             //    break;
 

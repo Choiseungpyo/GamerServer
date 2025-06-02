@@ -97,17 +97,17 @@ public class RoomOptionUI : MonoBehaviour
         switch (matchType)
         {
             case "Solo":
-                return MatchType.Solo;
+                return MatchType.SOLO;
 
             case "Duo":
-                return MatchType.Duo;
+                return MatchType.DUO;
 
             case "Squad":
-                return MatchType.Squad;
+                return MatchType.SQUAD;
 
             default:
                 Debug.LogWarning(matchType);
-                return MatchType.Solo;
+                return MatchType.SOLO;
         }
 
     }

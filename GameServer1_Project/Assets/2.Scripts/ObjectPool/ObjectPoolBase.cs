@@ -23,32 +23,6 @@ public abstract class ObjectPoolBase<T> : MonoBehaviour where T : PoolableObject
         }
     }
 
-    public T Get()
-    {
-        T obj;
-
-        if (pool.Count > 0)
-        {
-            obj = pool.Dequeue();
-        }
-        else
-        {
-            // 모두 사용 중이면 가장 오래된 것 제거
-            var oldest = activeDict.Values.First();
-            oldest.Despawn();
-            activeDict.Remove(oldest.ID);
-            obj = oldest;
-        }
-
-        obj.Spawn();
-
-        obj.ID = activeDict.Count;
-        activeDict[obj.ID] = obj;  // id 기준 등록
-
-        return obj;
-    }
-
-
     public T Get(int id)
     {
         // id가 이미 존재하는 경우
@@ -80,13 +54,17 @@ public abstract class ObjectPoolBase<T> : MonoBehaviour where T : PoolableObject
         return obj;
     }
 
-    public void Release(int id)
+    public bool Release(int id)
     {
-        if (activeDict.TryGetValue(id, out T obj))
+        if (!activeDict.TryGetValue(id, out T obj))
         {
-            obj.Despawn();
-            activeDict.Remove(id);
-            pool.Enqueue(obj);
+            Debug.Log($"Release - Invalid Id : {id}");
+            return false;
         }
+
+        obj.Despawn();
+        activeDict.Remove(id);
+        pool.Enqueue(obj);
+        return true;
     }
 }

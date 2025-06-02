@@ -1,119 +1,82 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class EntityManager : Singleton<EntityManager>
 {
-    [SerializeField] GameObject[] player_Prefabs;
-
-    Dictionary<int, Player> players = new();
-    [SerializeField] int maxPlayerNum;
-    int currUserId;
-
-    public int CurrUserId
+    [System.Serializable]
+    public struct EntityData
     {
-        get { return currUserId; }
-        set { currUserId = value; }
+        public int id;
+        public PlayerEntity playerEntity;
     }
 
-    public int MaxPlayerNum
+    [SerializeField] private List<EntityData> entityDatas;
+
+    // <UserId, PlayerEntity>
+    private Dictionary<int, PlayerEntity> playerEntityDict = new(); // RedTeam + BlueTeam
+
+    [SerializeField] private PlayerEntityPool redTeamEntityPool;
+    [SerializeField] private PlayerEntityPool blueTeamEntityPool;
+
+    protected override void Awake()
     {
-        get { return maxPlayerNum; }
-        set { }
+        base.Awake();
+
+        foreach(var entityData in entityDatas)
+            playerEntityDict.Add(entityData.id, entityData.playerEntity);
     }
 
-    private void Start()
+    public void SpawnAllEntity(List<PACKET_S_C_PLAYERENTITY_DATA> packs)
     {
-        currUserId = TcpManager.Instance.Id;
-
-        GameObject playerObj = Instantiate(player_Prefabs[0]);
-
-        Player player = playerObj.GetComponent<Player>();
-        player.Id = 0;
-        EntityManager.Instance.AddPlayer(player.Id, Vector3.zero);
+        foreach(var pack in packs)
+        {
+            if (pack.TeamType == TeamType.RED)
+            {
+                var playerEntity = redTeamEntityPool.Get(pack.Id);
+                playerEntity.UpdataeData(pack);
+            }
+            else
+            {
+                var playerEntity = blueTeamEntityPool.Get(pack.Id);
+                playerEntity.UpdataeData(pack);
+            }
+        }
     }
 
-    //public void AddPlayer(PACKET_S_PLAYER_DATA playerData)
-    //{
-    //    GameObject player = Instantiate(
-    //        player_Prefabs[playerData.characterType],
-    //        new Vector3(playerData.Rotation.X, playerData.Rotation.Y, playerData.Rotation.Z), 
-    //        Quaternion.Euler(new Vector3(playerData.Rotation.X, playerData.Rotation.Y, playerData.Rotation.Z))
-    //        , transform);
-    //}
-
-    public void AddPlayer(int id, Vector3 pos)
+    public void UpdateEntityData(PACKET_S_C_PLAYERENTITY_DATA data)
     {
-        GameObject playerObj = Instantiate(
-            player_Prefabs[0],
-            pos,
-            Quaternion.identity
-            , transform);
-        Player player = playerObj.GetComponent<Player>();
-        player.Id = id;
-        player.name = "Player_" + id.ToString();
+        var playerEntity = GetPlayerEntity(data.Id);
 
-        players.Add(id, player);
+        if (!playerEntity)
+            return;
+
+        playerEntity.UpdataeData(data);
     }
 
-    public Player GetPlayer(int id)
+    public void DeleteAllEntity()
     {
-        if (id < 0 || id >= players.Count)
+        foreach(var entity in playerEntityDict)
+        {
+            if(!redTeamEntityPool.Release(entity.Key))
+                blueTeamEntityPool.Release(entity.Key);
+        }
+    }
+
+    public PlayerEntity GetPlayerEntity(int id)
+    {
+        if (id < 0 || id >= playerEntityDict.Count)
             return null;
 
-        Player player = players[id];
+        PlayerEntity PlayerEntity = playerEntityDict[id];
 
-        if (!player)
-            Debug.LogWarning(id);
-        return players[id];
-    }
-
-    public bool IsCurrPlayer(int id)
-    {
-        return currUserId == id;
-    }
-
-    private void SetPlayerPos(int id, Vector3 pos)
-    {
-        if(id < 0 || players.Count <= id)
+        if (!PlayerEntity)
         {
-            Debug.LogError($"id : {id}");
-            return;
+            Debug.LogWarning(id);
+            return null;
         }
-        players[id].transform.position = pos;
+            
+        return PlayerEntity;
     }
-
-    //public void OnEvent(EVENT_TYPE EventType, Component Sender, object Param = null)
-    //{
-    //    Vector3 tmp_pos;
-
-    //    switch (EventType)
-    //    {
-    //        case EVENT_TYPE.ADD_PLAYER:
-    //            {
-    //                PACKET_S_SPAWN packet = (PACKET_S_SPAWN)Param;
-    //                TcpManager.Instance.RegisterJop(() =>
-    //                {
-    //                    tmp_pos.x = packet.Position.X;
-    //                    tmp_pos.y = packet.Position.Y;
-    //                    tmp_pos.z = packet.Position.Z;
-    //                    AddPlayer(packet.Id, tmp_pos);
-    //                });
-    //            }
-    //            break;
-
-    //        case EVENT_TYPE.APPLY_PLAYER_MOVEMENT:
-    //            {
-    //                PACKET_S_MOVE packet = (PACKET_S_MOVE)Param;
-    //                TcpManager.Instance.RegisterJop(() =>
-    //                {
-    //                    tmp_pos.x = packet.Position.X;
-    //                    tmp_pos.y = packet.Position.Y;
-    //                    tmp_pos.z = packet.Position.Z;
-    //                    SetPlayerPos(packet.Id, tmp_pos);
-    //                });
-    //            }
-    //            break;
-    //    }
-    //}
 }
