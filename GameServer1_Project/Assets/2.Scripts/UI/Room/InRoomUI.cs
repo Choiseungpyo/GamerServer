@@ -24,8 +24,6 @@ public enum MatchType : int
     SQUAD = 4
 }
 
-
-
 public class InRoomUI : MonoBehaviour
 {
     #region Variables

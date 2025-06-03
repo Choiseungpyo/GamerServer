@@ -56,5 +56,22 @@ public:
 	static void ExitRoom(const ClientSession* client);
 
 	static void DeleteRoom(int roomId);
+
+	static void RegisterNewGame(const ClientSession* client)
+	{
+		auto user = client->GetUser();
+		auto roomNo = user->GetRoomNo();
+
+		auto it = roomMap.find(roomNo);
+		
+		if(it == roomMap.end())
+		{
+			cout << "roomMap - Invalid roomNo : " << roomNo << endl;
+			return;
+		}
+
+		auto currRoom = it->second;
+		currRoom->CreateNewGame();
+	}
 };
 

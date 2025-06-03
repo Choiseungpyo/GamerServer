@@ -153,18 +153,16 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         foreach (var user in userInfo)
         {
             AddItem<UserProfile>(
-                userProfileContent_Tr, () =>
-                {
-                    var profile = userProfilePool.Get(user.UserId);
-                    return profile ?? null;
-                },
-                (profile, userName) =>
-                {
-                    if (profile != null)
-                        profile.SetUserProfile(userName);
-                },
-                user.UserName
-            );
+                      user.UserId,                       // userId
+                      userProfileContent_Tr,             // parent
+                      (id) => userProfilePool.Get(id),  // getter: id로 프로필 얻기
+                      (profile, userName) =>
+                      {
+                          if (profile != null)
+                              profile.SetUserProfile(userName);
+                      },
+                      user.UserName                      // data
+                  );
         }
     }
 
@@ -183,24 +181,6 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
             item.transform.SetParent(parent);
         });
        
-        setter(item, data);
-    }
-
-    // userId가 필요 없는 경우
-    private void AddItem<T>(Transform parent, Func<T> getter, Action<T, string> setter, string data)
-        where T : MonoBehaviour
-    {
-       T item = getter();
-        if (!item)
-        {
-            Debug.LogWarning(item);
-            return;
-        }
-        TcpManager.Instance.RegisterJop(() =>
-        {
-            item.transform.SetParent(parent);
-        });
-      
         setter(item, data);
     }
 

@@ -31,11 +31,12 @@ public struct PlayerEntityData
 public class PlayerEntity : PoolableObject
 {
     private int id;
-    private string Name;
+    private string userName;
     private TeamType teamType;
 
     private bool[] isMoveKeyPressed = new bool[4];
     private Vector3 position;
+    private Vector3 rotation;
 
     // Variables
     [SerializeField] GameObject hitEffect_Prefab;
@@ -43,7 +44,6 @@ public class PlayerEntity : PoolableObject
 
     private const int maxHp = 100;
     private int currHp;
-
     // Property
     public int Id
     {
@@ -56,20 +56,27 @@ public class PlayerEntity : PoolableObject
         get { return teamType; }
         private set { }
     }
+    private Rigidbody rb;
 
 
-    void Start()
+    private void Awake()
     {
         isMoveKeyPressed = new bool[4];
         for (int i = 0; i < isMoveKeyPressed.Length; i++)
             isMoveKeyPressed[i] = false;
 
         //StartCoroutine(SendData());
+        rb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+
+    private void FixedUpdate()
     {
-        CheckInput();
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        Vector3 move = new Vector3(h, 0, v).normalized;
+        rb.MovePosition(rb.position + move * 2 * Time.fixedDeltaTime);
     }
 
     void CheckInput()
@@ -148,18 +155,42 @@ public class PlayerEntity : PoolableObject
     {
         id = data.Id;
 
+       
         //for(int i=0; i< isMoveKeyPressed.Length; i++)
         //    isMoveKeyPressed = data.isMoveKeyPressed;
-
-        // position = data.Position;
-        // TcpManager.Instance.RegisterJop(() =>
-        //{
-        //    transform.rotation = Quaternion.Euler(data.rotation);
-        //});
-
-        state = data.State;
+        userName = data.Name;
+        
+        teamType = data.TeamType;
         currHp = data.CurrHp;
+        state = data.State;
+
+        Vector3 tmpVector = Vector3.zero;
+        Vector3 dir = Vector3.zero; // 오른쪽으로 1만큼 이동
+
+        TcpManager.Instance.RegisterJop(() =>
+        {
+            SetUnityVector3(ref tmpVector, data.Position);
+            dir = tmpVector - position;
+            position = tmpVector;
+
+            
+            rb.MovePosition(rb.position + dir);
+            transform.position = rb.position;
+
+            SetUnityVector3(ref tmpVector, data.Rotation);
+            rotation = tmpVector;
+            rb.MoveRotation(Quaternion.Euler(rotation));
+            transform.rotation = rb.rotation;
+        }); 
     }
+
+    private void SetUnityVector3(ref Vector3 tmpVector , System.Numerics.Vector3 v)
+    {
+        tmpVector.x = v.X;
+        tmpVector.y = v.Y;
+        tmpVector.z = v.Z;
+    }
+    
 
     protected override void OnSpawn()
     {
@@ -171,5 +202,6 @@ public class PlayerEntity : PoolableObject
 
     }
 
+    
 
 }

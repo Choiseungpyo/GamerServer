@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -20,6 +21,11 @@ public class EntityManager : Singleton<EntityManager>
     [SerializeField] private PlayerEntityPool redTeamEntityPool;
     [SerializeField] private PlayerEntityPool blueTeamEntityPool;
 
+    [SerializeField] private List<Transform> redTeamSpawnTr;
+    [SerializeField] private List<Transform> blueTeamSpawnTr;
+
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -30,18 +36,35 @@ public class EntityManager : Singleton<EntityManager>
 
     public void SpawnAllEntity(List<PACKET_S_C_PLAYERENTITY_DATA> packs)
     {
+        int hostId = TcpManager.Instance.Id;
+
         foreach(var pack in packs)
         {
+            PlayerEntity playerEntity;
+            float dir;
             if (pack.TeamType == TeamType.RED)
             {
-                var playerEntity = redTeamEntityPool.Get(pack.Id);
+                playerEntity = redTeamEntityPool.Get(pack.Id);
                 playerEntity.UpdataeData(pack);
+                dir = -0.2f;
             }
             else
             {
-                var playerEntity = blueTeamEntityPool.Get(pack.Id);
+                playerEntity = blueTeamEntityPool.Get(pack.Id);
                 playerEntity.UpdataeData(pack);
+                dir = 0.2f;
             }
+
+            if (hostId != pack.Id)
+                continue;
+
+            TcpManager.Instance.RegisterJop(() =>
+            {
+                Camera.main.transform.SetParent(playerEntity.transform);
+                Camera.main.transform.localPosition = new Vector3(0, 1.3f, dir);
+                Camera.main.transform.localRotation = playerEntity.transform.rotation;
+            });
+
         }
     }
 
@@ -79,4 +102,6 @@ public class EntityManager : Singleton<EntityManager>
             
         return PlayerEntity;
     }
+
+
 }

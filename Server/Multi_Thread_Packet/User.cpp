@@ -1,9 +1,8 @@
 #include "stdafx.h"
 
 User::User(int id)
-	:id(id), state(TITLE), currRoomNum(-1)
+	:id(id), state(TITLE), currRoomNum(-1), game(nullptr)
 {
-	
 	name = UserIcon::GetIconName(id);
 }
 
@@ -46,7 +45,7 @@ void User::SetState(UserState state)
 	this->state = state;
 }
 
-int User::GetRoomNum() const 
+int User::GetRoomNo() const 
 {
 	std::shared_lock<std::shared_mutex> lock(mutex);
 	return currRoomNum;

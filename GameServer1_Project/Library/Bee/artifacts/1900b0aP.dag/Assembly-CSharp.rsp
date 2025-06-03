@@ -313,14 +313,13 @@
 "Assets/2.Scripts/Manager/SoundManager.cs"
 "Assets/2.Scripts/ObjectPool/ObjectPoolBase.cs"
 "Assets/2.Scripts/ObjectPool/PoolableObject.cs"
-"Assets/2.Scripts/Play/Player.cs"
-"Assets/2.Scripts/Play/UserData.cs"
+"Assets/2.Scripts/Player/Gun.cs"
+"Assets/2.Scripts/Player/PlayerEntity.cs"
+"Assets/2.Scripts/Player/PlayerEntityPool.cs"
 "Assets/2.Scripts/Source.cs"
 "Assets/2.Scripts/Tcp/Packet.cs"
 "Assets/2.Scripts/Tcp/TcpManager.cs"
 "Assets/2.Scripts/Tcp/UnityMainThreadDispatcher.cs"
-"Assets/2.Scripts/Team/Room.cs"
-"Assets/2.Scripts/Team/Team.cs"
 "Assets/2.Scripts/UI/LobbyUIManager.cs"
 "Assets/2.Scripts/UI/Room/InRoomUI.cs"
 "Assets/2.Scripts/UI/Room/InRoomUserUI/InRoomUserUI.cs"
@@ -334,6 +333,7 @@
 "Assets/2.Scripts/UI/UserIcon.cs"
 "Assets/2.Scripts/UI/UserProfile/UserProfile.cs"
 "Assets/2.Scripts/UI/UserProfile/UserProfilePool.cs"
+"Assets/TMP_SPAWN.cs"
 -langversion:9.0
 
 /deterministic

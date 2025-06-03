@@ -16,6 +16,7 @@ public class TcpManager : Singleton<TcpManager>
 
     [SerializeField] private InRoomUI inRoomUI;
 
+
     public int Id
     {
         get { return id; }
@@ -48,7 +49,7 @@ public class TcpManager : Singleton<TcpManager>
 
     void ReceiveLoop()
     {
-        //try
+        try
         {
             while (client.Connected)
             {
@@ -98,9 +99,9 @@ public class TcpManager : Singleton<TcpManager>
                 }
             }
         }
-        //catch (Exception ex)
+        catch (Exception ex)
         {
-            //AppendMessage("수신 중 오류: " + ex.Message);
+            AppendMessage("수신 중 오류: " + ex.Message);
         }
     }
 
@@ -114,11 +115,11 @@ public class TcpManager : Singleton<TcpManager>
             // Title
             case PTYPE.S_C_ID:
                 {
-                    PACKET_ID packet = BytesToStruct<PACKET_ID>(fullPacket);
+                    PACKET_INT packet = BytesToStruct<PACKET_INT>(fullPacket);
                     // 이미 id이 할당된 경우 => 다른 플레이어
                     if (id != -1)
                         return;
-                    id = packet.Id;
+                    id = packet.Value;
                 }
                 break;
 
@@ -225,7 +226,16 @@ public class TcpManager : Singleton<TcpManager>
                 PanelManager.Instance.Activate(PanelType.LOBBY);
                 break;
 
+            case PTYPE.S_C_GAME_SPAWN_ALL:
+                {
+                    PACKET_INFO_HEADER header = new();
+                    List<PACKET_S_C_PLAYERENTITY_DATA> datas = new();
+                    GetUserInfo(ref header, datas, fullPacket);
 
+                    PanelManager.Instance.Activate(PanelType.GAME);
+                    EntityManager.Instance.SpawnAllEntity(datas);
+                }
+                break;
 
             // 게임
             //case PTYPE.S_PlayerEntity_SPAWN:
@@ -238,7 +248,7 @@ public class TcpManager : Singleton<TcpManager>
             //    {
             //        //PACKET_S_ID packet = BytesToStruct<PACKET_S_ID>(fullPacket);
             //        //id = packet.Id;
-                 
+
             //    }
             //    break;
             //case PTYPE.S_C_MOVE_PLAYER:
@@ -260,10 +270,9 @@ public class TcpManager : Singleton<TcpManager>
 
     void AppendMessage(string message)
     {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        RegisterJop(() =>
         {
             Debug.Log(message);
-            //chatDisplay.text += message + "\n";
         });
     }
 
@@ -380,6 +389,40 @@ public class TcpManager : Singleton<TcpManager>
                 }
                 break;
 
+            //case PTYPE.C_S_GAME_REDTEAM_SPAWNPOS:
+            //case PTYPE.C_S_GAME_BLUETEAM_SPAWNPOS:
+            //    {
+            //        var (posList, teamType) = ((List<Vector3>, TeamType))param;
+
+            //        List<PACKET_POSITION> packs = new List<PACKET_POSITION>();
+                    
+            //        foreach(var pos in posList)
+            //        {
+            //            PACKET_POSITION pack = new PACKET_POSITION();
+            //            pack.Position.X = pos.x;
+            //            pack.Position.Y = pos.y;
+            //            pack.Position.Z = pos.z;
+            //            packs.Add(pack);
+            //        }
+
+            //        PACKET_C_S_TEAM_SPAWNPOS header = new PACKET_C_S_TEAM_SPAWNPOS();
+            //        header.Type = pType;
+            //        header.TeamType = teamType;
+            //        header.PositionCount = (ushort)packs.Count;
+            //        header.Length = (ushort)(Marshal.SizeOf(typeof(PACKET_INFO_HEADER)) + packs.Count * Marshal.SizeOf(typeof(PACKET_POSITION)));
+                    
+            //        List<byte> buffer = new List<byte>();
+            //        buffer.AddRange(StructToBytes(header));
+
+            //        foreach (var p in packs)
+            //        {
+            //            buffer.AddRange(StructToBytes(p));
+            //        }
+
+            //        Send(buffer.ToArray());
+            //    }
+            //    break;
+
             // 기본 패킷 이용하는 경우
             case PTYPE.C_S_ENTRY_LOBBY:
             case PTYPE.C_S_LOGOUT:
@@ -406,6 +449,12 @@ public class TcpManager : Singleton<TcpManager>
                 break;
         }
        
+    }
+
+    private void Send(byte[] data)
+    {
+        stream.Write(data, 0, data.Length);
+        stream.Flush();
     }
 
     private void Send<T>(T packet) where T : struct, IPacket

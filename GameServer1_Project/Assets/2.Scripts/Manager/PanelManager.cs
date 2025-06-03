@@ -9,7 +9,8 @@ public enum PanelType : int
     TITLE=0,
     LOBBY,
     ROOMOPTION,
-    ROOM
+    ROOM,
+    GAME
 }
 
 public class PanelManager : Singleton<PanelManager>

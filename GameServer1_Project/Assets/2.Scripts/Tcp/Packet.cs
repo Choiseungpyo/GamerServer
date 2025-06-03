@@ -72,7 +72,9 @@ public enum PTYPE :int
     C_S_EXIT_ROOM,
     S_C_EXIT_ROOM,
 
+    // ∞‘¿”
 
+    S_C_GAME_SPAWN_ALL,
 
     S_PlayerEntity_SPAWN,
     C_S_MOVE_PLAYER,
@@ -102,11 +104,11 @@ public struct PACKET_INFO_HEADER : IPacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PACKET_ID : IPacket
+public struct PACKET_INT : IPacket
 {
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
-    public int Id;
+    public int Value;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
@@ -249,10 +251,11 @@ public struct PACKET_C_S_PLAYERENTITY_DATA : IPacket
 }
 
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 public struct PACKET_S_C_PLAYERENTITY_DATA
 {
     public int Id;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.NAME_SIZE)]
     public string Name;
     public TeamType TeamType;
 

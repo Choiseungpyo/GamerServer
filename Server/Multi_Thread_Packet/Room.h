@@ -45,9 +45,9 @@ class Room
 	unordered_map<int, const ClientSession*> clientMap;
 	unordered_map<int, RoomUserInfo*> roomUserInfoMap;
 
-	// <userId, ÆÀ³»¼ø¼­>
-	unordered_map<int, int> redTeamUserOrder;
-	unordered_map<int, int> blueTeamUserOrder;
+	// index : ÆÀ ³» ¼ø¼­	°ª : userId
+	vector<int> redTeamUserOrder;
+	vector<int> blueTeamUserOrder;
 
 	int no;
 	string name;
@@ -55,7 +55,7 @@ class Room
 	MatchType matchType;
 	int hostId;
 
-	Game game;
+	const Game* game;
 
 	mutable shared_mutex mutex;
 
@@ -68,8 +68,13 @@ public:
 
 	std::vector<int> GetAllClientId();
 
+	int GetRedTeamUserOrder(int userId) const;
+	int GetBlueTeamUserOrder(int userId) const;
+
 	PACKET_ROOM_USER_INFO GetPacketRoomUserInfo(int id);
 	RoomUserInfo* GetRoomUserInfo(int id) const;
+
+	void CreateNewGame();
 
 	int GetHostId() const;
 
@@ -107,8 +112,23 @@ public:
 
 	void Send_InRoom_UsersData();
 
-	void SendToAllUserInRoom(vector<char> buffer);
+	void SendToAllUserInRoom(vector<char> buffer) const;
 
-	void SendToAllUserInRoom(const Packet* pack);
+	void SendToAllUserInRoom(const Packet* pack) const;
+
+	const unordered_map<int, RoomUserInfo*>& GetRoomUserInfoMap() const
+	{
+		shared_lock<shared_mutex> lock(mutex);
+
+		return roomUserInfoMap;
+	}
+
+	const unordered_map<int, const ClientSession*>& GetClientMap() const
+	{
+		shared_lock<shared_mutex> lock(mutex);
+
+		return clientMap;
+	}
+
 };
 

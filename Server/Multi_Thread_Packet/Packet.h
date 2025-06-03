@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 typedef enum PTYPE
 {
@@ -56,9 +57,8 @@ typedef enum PTYPE
 
 #pragma endregion
 
-	S_PLAYER_SPAWN,
-	C_PLAYER_MOVE,
-	S_PLAYER_MOVE
+	S_C_GAME_SPAWN_ALL,
+
 }Ptype;
 
 #pragma pack(push, 1)  // 메모리 정렬을 1바이트로 설정
@@ -69,6 +69,7 @@ typedef struct VECTOR3
 	float z;
 
 	VECTOR3() : x(0.0f), y(0.0f), z(0.0f) {}
+	VECTOR3(float x, float y, float z) : x(x), y(y), z(z) {}
 
 }Vector3;
 
@@ -81,17 +82,32 @@ typedef struct PACKET
 }Packet;
 #pragma pack(pop)
 
+// S_C_USERS_PROFILE
+// 유저가 로비에 입장할 떄 전체 유저를 얻기 위함
 #pragma pack(push,1)
-typedef struct PACKET_S_C_ID : PACKET
+typedef struct PACKET_INFO_HEADER : PACKET
 {
-	int id;
-	PACKET_S_C_ID() {	//패킷 초기화
+	int count;
+
+	PACKET_INFO_HEADER(int count) {
+		Type = S_C_USERS_PROFILE;
+		Length = sizeof(PACKET_INFO_HEADER);
+		this->count = count;
+	}
+}Packet_info_header;
+#pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct PACKET_INT : PACKET
+{
+	int value;
+	PACKET_INT() {	//패킷 초기화
 		Type = S_C_ID;
 		Length = sizeof(*this);
-		id = 0;
+		value = 0;
 	}
 
-}Packet_s_c_id;
+}PACKET_INT;
 #pragma pack(pop)
 
 #pragma pack(push,1)
@@ -107,22 +123,6 @@ typedef struct PACKET_LOBBY_USERS_INFO
 	}
 }Packet_lobby_users_info;
 #pragma pack(pop)
-
-// S_C_USERS_PROFILE
-// 유저가 로비에 입장할 떄 전체 유저를 얻기 위함
-#pragma pack(push,1)
-typedef struct PACKET_S_C_LOBBY_USERS_INFO_HEADER : PACKET
-{
-	int userCount;
-
-	PACKET_S_C_LOBBY_USERS_INFO_HEADER() {
-		Type = S_C_USERS_PROFILE;
-		Length = sizeof(PACKET_LOBBY_USERS_INFO);
-		userCount = 0;
-	}
-}Packet_s_c_lobby_users_info_header;
-#pragma pack(pop)
-
 
 #pragma pack(push,1)
 typedef struct PACKET_C_S_ENTRY_ROOM : PACKET
@@ -286,21 +286,6 @@ typedef struct PACKET_S_C_UPDATE_LOBBY_ROOM_INFO
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_S_C_LOBBY_ROOM_INFO_HEADER : PACKET
-{
-	int roomCount;
-
-	PACKET_S_C_LOBBY_ROOM_INFO_HEADER(int roomCount)
-	{
-		Type = S_C_LOBBY_ALL_ROOM_INFO;
-		Length = sizeof(*this);
-		this->roomCount = roomCount;
-	}
-
-}PACKET_s_c_update_lobby_room_info_header;
-#pragma pack(pop)
-
-#pragma pack(push,1)
 typedef struct PACKET_S_C_TEAM_CHANGE : PACKET
 {
 	int prvOrderOfTeam; // 이전 팀 종류
@@ -318,47 +303,80 @@ typedef struct PACKET_S_C_TEAM_CHANGE : PACKET
 }Packet_s_c_team_change;
 #pragma pack(pop)
 
-
 #pragma pack(push,1)
-typedef struct PACKET_S_C_SPAWN : PACKET
+typedef struct PACKET_C_S_PLAYERENTITY_DATA
 {
-	int id;
-	Vector3 Pos;
-	PACKET_S_C_SPAWN() {	//패킷 초기화
-		Type = S_PLAYER_SPAWN;
-		Length = sizeof(*this);
-		id = 0;
-		Pos = VECTOR3();
-	}
+	int userId;
+	char userName[NAME_SIZE];
+	TeamType teamType;
+	unsigned char directions;
+	int rotationValue;
+	unsigned char isShoot;
+	unsigned char isReload;
 
-}Packet_s_c_spawn;
+	PACKET_C_S_PLAYERENTITY_DATA()
+	{
+		userId = 0;
+		memset(userName, 0, sizeof(userName));
+;		teamType = RED;
+		directions = 0;
+		rotationValue = RED;
+		isShoot = 0;
+		isReload = 0;
+	}
+}Packet_c_s_palyerentity_data;
 #pragma pack(pop)
 
 #pragma pack(push,1)
-typedef struct PACKET_C_S_MOVE : PACKET
+typedef struct PACKET_S_C_PLAYERENTITY_DATA
 {
-	unsigned char Directions;
-	PACKET_C_S_MOVE() {	//패킷 초기화
-		Type = C_PLAYER_MOVE;
-		Length = sizeof(*this);
-		Directions = 0;
-	}
+	int userId;
+	char userName[NAME_SIZE];
+	TeamType teamType;
+	
+	Vector3 position;
+	Vector3 Rotataion;
+	PlayerState state;
+	int currHp;
 
-}Packet_c_s_move;
+	PACKET_S_C_PLAYERENTITY_DATA()
+	{
+		userId = 0;
+		memset(userName, 0, sizeof(userName));
+		teamType = RED;
+		position = Vector3();
+		Rotataion = Vector3();
+		state = PlayerState::IDLE;
+		currHp = 0;
+	}
+}Packet_s_c_palyerentity_data;
 #pragma pack(pop)
 
-
-#pragma pack(push,1)
-typedef struct PACKET_S_MOVE : PACKET
-{
-	int Id;
-	Vector3 Pos;
-	PACKET_S_MOVE() {	//패킷 초기화
-		Type = S_PLAYER_MOVE;
-		Length = sizeof(*this);
-		Id = 0;
-		Pos = Vector3();
-	}
-
-}Packet_s_move;
-#pragma pack(pop)
+//#pragma pack(push,1)
+//typedef struct PACKET_C_S_MOVE : PACKET
+//{
+//	unsigned char Directions;
+//	PACKET_C_S_MOVE() {	//패킷 초기화
+//		Type = C_PLAYER_MOVE;
+//		Length = sizeof(*this);
+//		Directions = 0;
+//	}
+//
+//}Packet_c_s_move;
+//#pragma pack(pop)
+//
+//
+//#pragma pack(push,1)
+//typedef struct PACKET_S_MOVE : PACKET
+//{
+//	int Id;
+//	Vector3 Pos;
+//	PACKET_S_MOVE() {	//패킷 초기화
+//		Type = S_PLAYER_MOVE;
+//		Length = sizeof(*this);
+//		Id = 0;
+//		Pos = Vector3();
+//	}
+//
+//}Packet_s_move;
+//#pragma pack(pop)

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 Room::Room(int no, RoomOption roomOption)
-	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType), hostId(0)
+	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType), hostId(0), game(nullptr)
 {}
 
 Room::~Room() 
@@ -11,13 +11,15 @@ Room::~Room()
 		delete roomUserInfoItem.second;
 	}
 	roomUserInfoMap.clear();
+
+	delete game;
 }
 
 
 int Room::GetUserCount() const
 {
 	shared_lock<shared_mutex> lock(mutex);
-	return clientMap.size();
+	return (int)clientMap.size();
 };
 
 int Room::GetMaxUserCount() const
@@ -36,6 +38,29 @@ std::vector<int> Room::GetAllClientId()
 	}
 
 	return allClientId;
+}
+
+int Room::GetRedTeamUserOrder(int userId) const
+{
+	for (int i = 0; i < redTeamUserOrder.size(); i++)
+	{
+		if (redTeamUserOrder[i] == userId)
+			return i;
+	}
+
+	return -1;
+}
+
+int Room::GetBlueTeamUserOrder(int userId) const
+{
+	for (int i = 0; i < blueTeamUserOrder.size(); i++)
+	{
+		if (blueTeamUserOrder[i] == userId)
+			return i;
+	}
+
+	return -1;
+
 }
 
 PACKET_ROOM_USER_INFO Room::GetPacketRoomUserInfo(int id)
@@ -69,6 +94,19 @@ RoomUserInfo* Room::GetRoomUserInfo(int id) const
 	}
 
 	return it->second;
+}
+
+void Room::CreateNewGame()
+{
+	Game* newGame = new Game(this);
+	this->game = newGame;
+	for (auto& pair : clientMap)
+	{
+		auto user = pair.second->GetUser();
+		user->SetGame(newGame);
+	}
+
+	newGame->SpawnAllPlayerEntity();
 }
 
 int Room::GetHostId() const
@@ -176,7 +214,7 @@ int Room::DeleteUser(int userId)
 	roomUserInfoMap.erase(it);
 
 	clientMap.erase(userId);
-	return clientMap.size();
+	return (int)clientMap.size();
 }
 
 // 유저가 무조건 들어올 수 있다는 가정하에 동작
@@ -184,15 +222,15 @@ tuple<TeamType, int> Room::JoinAvailableTeam(int clientId)
 {
 	unique_lock<shared_mutex> lock(mutex);
 
-	int redTeamSize = redTeamUserOrder.size();
-	int blueTeamSize = blueTeamUserOrder.size();
+	int redTeamSize = (int)redTeamUserOrder.size();
+	int blueTeamSize = (int)blueTeamUserOrder.size();
 
 	if (redTeamSize > blueTeamSize) {
-		blueTeamUserOrder[clientId] = blueTeamSize;
+		blueTeamUserOrder.push_back(clientId);
 		return make_tuple(BLUE, blueTeamUserOrder.size()-1); // 팀에서의 자기 위치 index : 0~max-1
 	}
 
-	redTeamUserOrder[clientId] = redTeamSize;
+	redTeamUserOrder.push_back(clientId);
 	return make_tuple(RED, redTeamUserOrder.size()-1); // 팀에서의 자기 위치 index : 0~max-1
 }
 
@@ -222,7 +260,7 @@ void Room::Send_InRoom_UsersData()
 
 		RoomUserData roomUserData;
 		roomUserData.userId = user->GetId();
-		//strcpy(roomUserData.userName, user->GetName().c_str());
+		strncpy_s(roomUserData.userName, sizeof(roomUserData.userName), user->GetName(), _TRUNCATE);
 		roomUserData.isReady = info.inRoomUserState;
 		roomUserData.isHost = info.isHost;
 		roomUserData.teamType = info.teamType;
@@ -232,7 +270,7 @@ void Room::Send_InRoom_UsersData()
 }
 
 
-void Room::SendToAllUserInRoom(vector<char> buffer)
+void Room::SendToAllUserInRoom(vector<char> buffer) const
 {
 	vector<const ClientSession*> clients;
 
@@ -245,11 +283,11 @@ void Room::SendToAllUserInRoom(vector<char> buffer)
 
 	for (auto client : clients)
 	{
-		send(client->GetSocket(), buffer.data(), buffer.size(), 0);
+		send(client->GetSocket(), buffer.data(), (int)buffer.size(), 0);
 	}
 }
 
-void Room::SendToAllUserInRoom(const Packet* pack)
+void Room::SendToAllUserInRoom(const Packet* pack) const
 {
 	vector<const ClientSession*> clients;
 
@@ -273,10 +311,10 @@ const RoomUserInfo* Room::ChangeInRoomUserState(int userId)
 	auto roomUserInfo = roomUserInfoMap[userId];
 	if (roomUserInfo->isHost)
 	{
-		if (roomUserInfo->inRoomUserState == IDLE)
+		if (roomUserInfo->inRoomUserState == InRoomUserState::IDLE)
 			roomUserInfo->inRoomUserState = START;
 		else
-			roomUserInfo->inRoomUserState = IDLE;
+			roomUserInfo->inRoomUserState = InRoomUserState::IDLE;
 	}
 	else
 	{
@@ -303,8 +341,10 @@ PACKET_S_C_TEAM_CHANGE Room::ChangeTeamType(RoomUserInfo* roomUserInfo, int user
 		prvOrdereOfTeam = redTeamUserOrder[userId];
 		roomUserInfo->teamType = BLUE;
 
-		redTeamUserOrder.erase(userId);
-		userOrderOfTeam = blueTeamUserOrder.size();
+		int order = GetRedTeamUserOrder(userId);
+
+		redTeamUserOrder.erase(redTeamUserOrder.begin() + order);
+		userOrderOfTeam = (int)blueTeamUserOrder.size();
 		blueTeamUserOrder[userId] = userOrderOfTeam;
 		roomUserInfo->userOrderOfTeam = userOrderOfTeam;
 	}
@@ -313,8 +353,10 @@ PACKET_S_C_TEAM_CHANGE Room::ChangeTeamType(RoomUserInfo* roomUserInfo, int user
 		prvOrdereOfTeam = blueTeamUserOrder[userId];
 		roomUserInfo->teamType = RED;
 		
-		blueTeamUserOrder.erase(userId);
-		userOrderOfTeam = redTeamUserOrder.size();
+		int order = GetBlueTeamUserOrder(userId);
+
+		blueTeamUserOrder.erase(blueTeamUserOrder.begin() + order);
+		userOrderOfTeam = (int)redTeamUserOrder.size();
 		redTeamUserOrder[userId] = userOrderOfTeam;
 		roomUserInfo->userOrderOfTeam = userOrderOfTeam;
 	}

@@ -9,9 +9,10 @@ ScriptsOnlyBuild:
     - LobbyRoomItemUI
     - LobbyUIManager
     - PanelManager
-    - Player
+    - PlayerEntity
+    - PlayerEntityPool
     - RoomOptionUI
-    - SoundManager
+    - TMP_SPAWN
     - TcpManager
     - Title
     - Txt
@@ -36,8 +37,10 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -126,6 +129,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 49
       Script: {instanceID: 0}
+    - Class: 54
+      Script: {instanceID: 0}
     - Class: 64
       Script: {instanceID: 0}
     - Class: 65
@@ -135,8 +140,6 @@ ScriptsOnlyBuild:
     - Class: 81
       Script: {instanceID: 0}
     - Class: 89
-      Script: {instanceID: 0}
-    - Class: 90
       Script: {instanceID: 0}
     - Class: 91
       Script: {instanceID: 0}
@@ -149,31 +152,33 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16674}
     - Class: 114
-      Script: {instanceID: 16846}
+      Script: {instanceID: 16736}
     - Class: 114
-      Script: {instanceID: 17256}
+      Script: {instanceID: 16774}
     - Class: 114
-      Script: {instanceID: 17684}
+      Script: {instanceID: 16850}
     - Class: 114
-      Script: {instanceID: 17690}
+      Script: {instanceID: 17260}
     - Class: 114
-      Script: {instanceID: 17692}
+      Script: {instanceID: 17688}
     - Class: 114
-      Script: {instanceID: 17888}
+      Script: {instanceID: 17694}
     - Class: 114
-      Script: {instanceID: 18220}
+      Script: {instanceID: 17696}
     - Class: 114
-      Script: {instanceID: 18346}
+      Script: {instanceID: 17892}
     - Class: 114
-      Script: {instanceID: 18618}
+      Script: {instanceID: 18224}
     - Class: 114
-      Script: {instanceID: 18628}
+      Script: {instanceID: 18350}
     - Class: 114
-      Script: {instanceID: 18634}
+      Script: {instanceID: 18620}
     - Class: 114
-      Script: {instanceID: 18844}
+      Script: {instanceID: 18630}
     - Class: 114
-      Script: {instanceID: 18900}
+      Script: {instanceID: 18636}
+    - Class: 114
+      Script: {instanceID: 18846}
     - Class: 114
       Script: {instanceID: 18946}
     - Class: 114
@@ -182,8 +187,6 @@ ScriptsOnlyBuild:
       Script: {instanceID: 19426}
     - Class: 114
       Script: {instanceID: 19700}
-    - Class: 114
-      Script: {instanceID: 19972}
     - Class: 114
       Script: {instanceID: 20010}
     - Class: 114
@@ -201,13 +204,15 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 21148}
     - Class: 114
-      Script: {instanceID: 21158}
+      Script: {instanceID: 21156}
     - Class: 114
-      Script: {instanceID: 21556}
+      Script: {instanceID: 21554}
     - Class: 114
-      Script: {instanceID: 21626}
+      Script: {instanceID: 21624}
     - Class: 114
-      Script: {instanceID: 21720}
+      Script: {instanceID: 21718}
+    - Class: 114
+      Script: {instanceID: 21808}
     - Class: 114
       Script: {instanceID: 21912}
     - Class: 114
@@ -217,7 +222,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 22430}
     - Class: 114
-      Script: {instanceID: 22802}
+      Script: {instanceID: 22800}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -257,6 +262,12 @@ ScriptsOnlyBuild:
     className: Image
   - hash:
       serializedVersion: 2
+      Hash: 9a745f55adc3c1bc4b33edbfb91a91a6
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: PlayerEntity
+  - hash:
+      serializedVersion: 2
       Hash: f45600bcc886206dd55a3208474aad61
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -267,6 +278,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
     className: SignalAsset
+  - hash:
+      serializedVersion: 2
+      Hash: 834dc0d7976ee12f5c203f9d2bf3da4d
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: TMP_SPAWN
   - hash:
       serializedVersion: 2
       Hash: 8dff8e9853297d341afa0c11f9091b59
@@ -461,7 +478,7 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: 5d54eebf6c57b8c8b79a698183050568
+      Hash: 58944a27bf14bddffdfe55c2b9842d89
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: EntityManager
@@ -575,6 +592,12 @@ ScriptsOnlyBuild:
     className: InRoomUserUIPool
   - hash:
       serializedVersion: 2
+      Hash: afd7edc1bbb1f8b9366dc98ebb43aced
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: Gun
+  - hash:
+      serializedVersion: 2
       Hash: 0a3f328f3ea906bbbcf794f4c27ee59d
     assemblyName: Unity.VisualScripting.Flow
     namespaceName: Unity.VisualScripting
@@ -597,12 +620,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnPointerExitMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: a1bd36d0ad30bbccb2340f37ad5d5679
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: Player
   - hash:
       serializedVersion: 2
       Hash: b747f5d40674055dd70e18552f1b0447
@@ -1017,6 +1034,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnPointerDownMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 478126eeea91471f78ffb3286a91d351
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: PlayerEntityPool
   - hash:
       serializedVersion: 2
       Hash: ee34255e3e86289bde9bad5e07b84cbc

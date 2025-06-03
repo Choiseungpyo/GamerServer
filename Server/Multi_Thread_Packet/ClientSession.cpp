@@ -115,7 +115,7 @@ void ClientSession::Send(PTYPE ptype) const
 
 void ClientSession::Send_Id()
 {
-	PACKET_S_C_ID pack;
-	pack.id = user->GetId();
+	PACKET_INT pack;
+	pack.value = user->GetId();
 	Send(&pack);
 }

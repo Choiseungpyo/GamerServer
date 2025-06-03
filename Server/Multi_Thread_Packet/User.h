@@ -13,8 +13,10 @@ class User
 	int id;
 	string name; // 동물 이름 중 하나 랜덤 배정
 	UserState state;
+
+	Game* game;
 	int currRoomNum; // -1 : 방에 들어가지 않음
-	
+
 	mutable shared_mutex mutex;
 
 public:
@@ -31,7 +33,16 @@ public:
 	UserState GetState() const;
 	void SetState(UserState state);
 
-	int GetRoomNum() const;
+	int GetRoomNo() const;
 	void SetCurrRoomNum(int roomNum);
+
+	Game* GetGame() const
+	{
+		return game;
+	}
+	void SetGame(Game* game)
+	{
+		this->game = game;
+	}
 };
 

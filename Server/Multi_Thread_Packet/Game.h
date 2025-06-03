@@ -1,5 +1,8 @@
 #pragma once
 
+class PlayerEntity;
+class Room;
+
 enum Direction
 {
 	UP = 0,
@@ -11,12 +14,38 @@ enum Direction
 
 class Game
 {
+	// <UserId, PlayerEntity>
+	unordered_map<int, PlayerEntity*> playerEntityMap;
+	
+	// <Index, redTeamSpawnPos>
+	unordered_map<int, Vector3> redTeamSpawnPos;
+	unordered_map<int, Vector3> blueTeamSpawnPos;
+	const Room* room;
+
 	shared_mutex mutex;
 
+	void InitTeamSpawnPos();
+	void InitPlayerEntityMap();
+
 public:
-	Game()
+	Game(const Room* room)
 	{
+		this->room = room;
+
+		InitTeamSpawnPos();
+		InitPlayerEntityMap();
 	}
+
+	~Game() {
+		for (auto& pair : playerEntityMap)
+			delete pair.second;
+
+		playerEntityMap.clear();
+	}
+
+	void SpawnAllPlayerEntity();
+
+
 	//}
 	////플레이어 움직임 설정 함수
 	//void SetPlayerMovement(PACKET* pack);

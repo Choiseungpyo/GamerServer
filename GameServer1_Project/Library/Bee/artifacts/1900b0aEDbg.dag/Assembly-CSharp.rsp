@@ -382,6 +382,7 @@
 "Assets/2.Scripts/UI/UserIcon.cs"
 "Assets/2.Scripts/UI/UserProfile/UserProfile.cs"
 "Assets/2.Scripts/UI/UserProfile/UserProfilePool.cs"
+"Assets/TMP_SPAWN.cs"
 -langversion:9.0
 
 /deterministic

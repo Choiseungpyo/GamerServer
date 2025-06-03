@@ -65,6 +65,14 @@ enum InRoomUserState : int {
 	START
 };
 
+enum class PlayerState {
+	IDLE,
+	MOVE,
+	SHOOT,
+	RELOAD,
+	DEAD
+};
+
 
 #include <tuple>
 #include <unordered_map>
@@ -84,3 +92,4 @@ enum InRoomUserState : int {
 
 #include "User.h"
 #include "LobbyManager.h"
+#include "PlayerEntity.h"

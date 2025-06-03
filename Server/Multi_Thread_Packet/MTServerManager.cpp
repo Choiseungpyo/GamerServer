@@ -141,7 +141,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			break;
 
 		case C_S_GAMETSTART_BTN:
-			cout << "Game Start!\n";
+			LobbyManager::RegisterNewGame(client);
 			break;
 
 		case C_S_TEAM_CHANGE:
@@ -154,10 +154,6 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 
 		case C_S_EXIT_ROOM:
 			LobbyManager::ExitRoom(client);
-			break;
-
-		case C_PLAYER_MOVE:
-			//client->SetPlayerMovement(packet);
 			break;
 	}
 
