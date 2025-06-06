@@ -24,7 +24,7 @@ public enum MatchType : int
     SQUAD = 4
 }
 
-public class InRoomUI : MonoBehaviour
+public class InRoomUI : ChatUI
 {
     #region Variables
     #region Team
@@ -102,8 +102,9 @@ public class InRoomUI : MonoBehaviour
     #endregion
 
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         hostId = -1;
         InitBtns();
         InitRoomInfo();
@@ -245,11 +246,8 @@ public class InRoomUI : MonoBehaviour
         {
             case "READY":
             case "UNREADY":
-                TcpManager.Instance.SendToServer(PTYPE.C_S_INROOM_USERSTATE);
-                break;
-
             case "IDLE":
-                TcpManager.Instance.SendToServer(PTYPE.C_S_GAMETSTART_BTN);
+                TcpManager.Instance.SendToServer(PTYPE.C_S_INROOM_USERSTATE);
                 break;
 
             default:
@@ -374,7 +372,12 @@ public class InRoomUI : MonoBehaviour
 
     }
 
+    #endregion
 
     #endregion
-    #endregion
+
+    protected override void SendToSever(string msg)
+    {
+        TcpManager.Instance.SendToServer(PTYPE.C_S_CHAT_ROOM, msg);
+    }
 }

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-Room::Room(int no, RoomOption roomOption)
-	:no(no), name(roomOption.roomName), state(RoomState::WAITING), matchType(roomOption.matchType), hostId(0), game(nullptr)
+Room::Room(int no, RoomOption roomOption, int hostId)
+	:no(no), name(roomOption.roomName), state(RoomState::WAITING), 
+	matchType(roomOption.matchType), hostId(hostId), game(nullptr), readyNum(0)
 {}
 
 Room::~Room() 
@@ -98,6 +99,11 @@ RoomUserInfo* Room::GetRoomUserInfo(int id) const
 
 void Room::CreateNewGame()
 {
+	{
+		unique_lock<shared_mutex> lock(mutex);
+		state = PLAYING;
+	}
+
 	Game* newGame = new Game(this);
 	this->game = newGame;
 	for (auto& pair : clientMap)
@@ -188,8 +194,6 @@ void Room::AddUser(const ClientSession* client)
 	}
 
 	user->SetState(ROOM);
-
-	// 팀의 몇번째에 위치하는지 계산해서 RoomUserInfo에 저장하는 것 필요
 
 	cout << "User" << clientId << "has entered the room.";
 }
@@ -311,6 +315,10 @@ const RoomUserInfo* Room::ChangeInRoomUserState(int userId)
 	auto roomUserInfo = roomUserInfoMap[userId];
 	if (roomUserInfo->isHost)
 	{
+		// 모두 준비하지 않은 경우
+		if (readyNum < 2 * matchType - 1)
+			return roomUserInfo;
+
 		if (roomUserInfo->inRoomUserState == InRoomUserState::IDLE)
 			roomUserInfo->inRoomUserState = START;
 		else
@@ -319,9 +327,16 @@ const RoomUserInfo* Room::ChangeInRoomUserState(int userId)
 	else
 	{
 		if (roomUserInfo->inRoomUserState == UNREADY)
+		{
 			roomUserInfo->inRoomUserState = READY;
+			readyNum++;
+		}
 		else
+		{
 			roomUserInfo->inRoomUserState = UNREADY;
+			readyNum--;
+		}
+			
 	}
 	
 	return roomUserInfo;

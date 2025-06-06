@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1593131866691926371}
   - component: {fileID: 4425843585796353513}
   m_Layer: 5
-  m_Name: ChatMsgTxt
+  m_Name: RoomChatMsgTxt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 580, y: 30}
+  m_SizeDelta: {x: 480, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7105749935000585009
 CanvasRenderer:

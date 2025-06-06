@@ -113,12 +113,8 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			SessionManager::DeleteClient(client->GetSocket(), client);
 			break;
 
-
 			// 방 생성 버튼을 누른 경우
 		case C_S_CREATE_ROOM:
-			// 로비에 있는 클라들한테 새로운 방 ui 추가하기
-			// 현재 클라는 in room ui 활성화
-
 			LobbyManager::CreateRoom(packet, client);
 			break;
 
@@ -136,12 +132,16 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			LobbyManager::ExitLobby(client);
 			break;
 
-		case C_S_INROOM_USERSTATE:
-			LobbyManager::SetReadyState(client);
+		case C_S_CHAT_LOBBY:
+			LobbyManager::SendMsgToLobby(packet);
 			break;
 
-		case C_S_GAMETSTART_BTN:
-			LobbyManager::RegisterNewGame(client);
+		case C_S_CHAT_ROOM:
+			LobbyManager::SendMsgToRoom(packet, client);
+			break;
+
+		case C_S_INROOM_USERSTATE:
+			LobbyManager::SetReadyState(client);
 			break;
 
 		case C_S_TEAM_CHANGE:
@@ -221,8 +221,8 @@ LRESULT CALLBACK MTServerManager::WndSockProc(HWND hWnd, UINT uMsg, WPARAM wPara
 			// 클라이언트 접속 처리.
 			if (client->OnConnect(&clientAddr))
 			{
-				// S_C_ID, 랜덤 이름 보내기
 				client->Send_Id();
+				LobbyManager::SendLobbyUserProtile();
 			}
 			else
 			{

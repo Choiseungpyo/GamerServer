@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 로비 UI를 담당하는 클래스
 /// </summary>
-public class LobbyUIManager : Singleton<LobbyUIManager>
+public class LobbyUIManager : ChatUI
 {
     #region Variables
     #region Room
@@ -25,11 +25,6 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     [SerializeField] Button exitBtn;
     #endregion
 
-    #region Chat
-    //UserNamePool userNamePool;
-    [SerializeField] private TxtPool chatPool;
-    [SerializeField] private Transform chatContent_Tr;
-    #endregion
 
     #region UserNames
     [SerializeField] UserProfilePool userProfilePool;
@@ -43,27 +38,14 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
     protected override void Awake()
     {
         base.Awake();
-
         EntryRandomBtn.onClick.AddListener(EntryRandomRoom);
         CreateRoomBtn.onClick.AddListener(ShowCreateRoomUI);
         exitBtn.onClick.AddListener(Exit);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            //AddItem<Txt>(chatContent_Tr, chatPool.Get, (chat, msg) => chat.SetText(msg), "User1 : Hi");
-
-
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-            DeleteUserProtile(0);
-
-    }
 
     #region Room
-    public void CreateRoom(PACKET_S_C_CREATE_ROOM packet)
+    public void CreateRoom(PACKET_S_C_LOBBY_ROOM_INFO packet)
     {
         TcpManager.Instance.RegisterJop(() =>
         {
@@ -75,7 +57,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
                 return;
             }
 
-            newRoomUIFo.InitRoomUIData(packet);
+            newRoomUIFo.ChangeRoomUIData(packet);
             lobbyRoomItemUIDict.Add(packet.RoomNo, newRoomUIFo);
         });
     }
@@ -91,11 +73,7 @@ public class LobbyUIManager : Singleton<LobbyUIManager>
         // 새로운 방 정보일 경우
         else
         {
-            PACKET_S_C_CREATE_ROOM tmpPack = new PACKET_S_C_CREATE_ROOM();
-            tmpPack.RoomNo = packet.RoomNo;
-            tmpPack.RoomName = packet.RoomName;
-            tmpPack.MatchType = (MatchType)(packet.MaxNumOfPeople/2);
-            CreateRoom(tmpPack);
+            CreateRoom(packet);
         }
     }
 

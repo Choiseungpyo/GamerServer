@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chat.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LobbyManager.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="UserIcon.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LobbyManager.cpp" />

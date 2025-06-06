@@ -12,7 +12,6 @@ ScriptsOnlyBuild:
     - PlayerEntity
     - PlayerEntityPool
     - RoomOptionUI
-    - TMP_SPAWN
     - TcpManager
     - Title
     - Txt
@@ -30,6 +29,7 @@ ScriptsOnlyBuild:
     Unity.TextMeshPro.dll:
     - TMPro.TMP_Dropdown
     - TMPro.TMP_FontAsset
+    - TMPro.TMP_InputField
     - TMPro.TMP_Settings
     - TMPro.TMP_SpriteAsset
     - TMPro.TMP_StyleSheet
@@ -55,7 +55,9 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.HorizontalLayoutGroup
     - UnityEngine.UI.Image
+    - UnityEngine.UI.LayoutElement
     - UnityEngine.UI.Mask
+    - UnityEngine.UI.RectMask2D
     - UnityEngine.UI.ScrollRect
     - UnityEngine.UI.Scrollbar
     - UnityEngine.UI.Toggle
@@ -81,6 +83,11 @@ ScriptsOnlyBuild:
     - TMPro.TMP_GlyphAdjustmentRecord
     - TMPro.TMP_GlyphPairAdjustmentRecord
     - TMPro.TMP_GlyphValueRecord
+    - TMPro.TMP_InputField/OnChangeEvent
+    - TMPro.TMP_InputField/SelectionEvent
+    - TMPro.TMP_InputField/SubmitEvent
+    - TMPro.TMP_InputField/TextSelectionEvent
+    - TMPro.TMP_InputField/TouchScreenKeyboardEvent
     - TMPro.TMP_Sprite
     - TMPro.TMP_SpriteCharacter
     - TMPro.TMP_SpriteGlyph
@@ -154,7 +161,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16736}
     - Class: 114
-      Script: {instanceID: 16774}
+      Script: {instanceID: 16800}
     - Class: 114
       Script: {instanceID: 16850}
     - Class: 114
@@ -182,11 +189,15 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 18946}
     - Class: 114
+      Script: {instanceID: 19162}
+    - Class: 114
       Script: {instanceID: 19176}
     - Class: 114
       Script: {instanceID: 19426}
     - Class: 114
       Script: {instanceID: 19700}
+    - Class: 114
+      Script: {instanceID: 19948}
     - Class: 114
       Script: {instanceID: 20010}
     - Class: 114
@@ -204,25 +215,25 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 21148}
     - Class: 114
-      Script: {instanceID: 21156}
+      Script: {instanceID: 21158}
     - Class: 114
-      Script: {instanceID: 21554}
+      Script: {instanceID: 21556}
     - Class: 114
-      Script: {instanceID: 21624}
+      Script: {instanceID: 21626}
     - Class: 114
-      Script: {instanceID: 21718}
+      Script: {instanceID: 21720}
     - Class: 114
-      Script: {instanceID: 21808}
+      Script: {instanceID: 21810}
     - Class: 114
-      Script: {instanceID: 21912}
+      Script: {instanceID: 21914}
     - Class: 114
-      Script: {instanceID: 22190}
+      Script: {instanceID: 22192}
     - Class: 114
-      Script: {instanceID: 22252}
+      Script: {instanceID: 22254}
     - Class: 114
-      Script: {instanceID: 22430}
+      Script: {instanceID: 22432}
     - Class: 114
-      Script: {instanceID: 22800}
+      Script: {instanceID: 22802}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -278,12 +289,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
     className: SignalAsset
-  - hash:
-      serializedVersion: 2
-      Hash: 834dc0d7976ee12f5c203f9d2bf3da4d
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: TMP_SPAWN
   - hash:
       serializedVersion: 2
       Hash: 8dff8e9853297d341afa0c11f9091b59
@@ -580,7 +585,7 @@ ScriptsOnlyBuild:
     className: UnityOnCollisionExit2DMessageListener
   - hash:
       serializedVersion: 2
-      Hash: 8faa77ade5c4a28cc7d6c62f3011d9c7
+      Hash: 271866ee52bf54f3464fd81957267fbd
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: LobbyUIManager
@@ -610,7 +615,7 @@ ScriptsOnlyBuild:
     className: ActivationTrack
   - hash:
       serializedVersion: 2
-      Hash: bf8aea1631349a162e3da2638f86136e
+      Hash: 411617fd12bcb1db9ca5f8c552140692
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: TcpManager
@@ -976,7 +981,7 @@ ScriptsOnlyBuild:
     className: VerticalLayoutGroup
   - hash:
       serializedVersion: 2
-      Hash: d3a1661bdcba1fb41fd63a6ce4368d2c
+      Hash: e04771e6e9634185169715b4cea35aed
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: InRoomUI
@@ -1196,6 +1201,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 078a8e3bb078f4535e619f05adddef5d
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: ChatUI
   platform: 19
   scenePathNames:
   - Assets/1.Scenes/Lobby.unity

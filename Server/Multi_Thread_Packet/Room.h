@@ -54,13 +54,14 @@ class Room
 	RoomState state;
 	MatchType matchType;
 	int hostId;
+	int readyNum;
 
 	const Game* game;
 
 	mutable shared_mutex mutex;
 
 public:
-	Room(int no, RoomOption roomOption);
+	Room(int no, RoomOption roomOption, int hostId);
 	~Room();
 
 	int GetUserCount() const;

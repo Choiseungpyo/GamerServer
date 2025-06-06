@@ -15,6 +15,7 @@ public static class PacketConstants
 {
     public const int NAME_SIZE = 30;
     public const int ROOM_NAME_SIZE = 64;
+    public const int CHAT_SIZE = 30;
 }
 
 public enum PTYPE :int
@@ -50,15 +51,16 @@ public enum PTYPE :int
     C_S_EXIT_LOBBY, // bool
     S_C_EXIT_LOBBY, // bool
 
+    C_S_CHAT_LOBBY,
+    S_C_CHAT_LOBBY,
+    C_S_CHAT_ROOM,
+    S_C_CHAT_ROOM,
+
     // Room
 
     // 준비 완료 버튼을 누른경우
     C_S_INROOM_USERSTATE, // bool
     S_C_INROOM_USERSTATE,
-
-    //게임 시작 버튼을 누른경우
-    C_S_GAMETSTART_BTN, // bool
-    S_C_GAMETSTART_BTN, 
 
     // 팀 변경 버튼을 누른 경우
     C_S_TEAM_CHANGE, // bool
@@ -93,6 +95,16 @@ public struct PACKET : IPacket
     public UInt32 Length { get; set; }
     public PTYPE Type { get; set; }
 }
+
+[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+public struct PACKET_CHAT : IPacket
+{
+    public UInt32 Length { get; set; }
+    public PTYPE Type { get; set; }
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.CHAT_SIZE)]
+    public string Msg;
+}
+
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PACKET_INFO_HEADER : IPacket
@@ -164,20 +176,6 @@ public struct PACKET_C_S_CREATE_ROOM : IPacket
     public PTYPE Type { get; set; }
     public int Id;
 
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.ROOM_NAME_SIZE)]
-    public string RoomName;
-    public MatchType MatchType;
-}
-
-
-[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-public struct PACKET_S_C_CREATE_ROOM : IPacket
-{
-    public UInt32 Length { get; set; }
-    public PTYPE Type { get; set; }
-    public int Id;
-
-    public int RoomNo;
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = PacketConstants.ROOM_NAME_SIZE)]
     public string RoomName;
     public MatchType MatchType;

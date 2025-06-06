@@ -13,19 +13,28 @@ public class TcpManager : Singleton<TcpManager>
     private Thread receiveThread;
 
     private int id;
+    private string userName;
 
     [SerializeField] private InRoomUI inRoomUI;
+    [SerializeField] private LobbyUIManager lobbyUIManger;
 
 
     public int Id
     {
         get { return id; }
-        set { id = value; }
+        private set { id = value; }
+    }
+
+    public string UserName
+    {
+        get { return userName; }
+        private set { userName = value; }
     }
 
     void Start()
     {
         id = -1;
+        userName = "";
 
         ConnectToServer("127.0.0.1", 8080);
     }
@@ -129,8 +138,18 @@ public class TcpManager : Singleton<TcpManager>
                     List<PACKET_S_C_LOBBY_USERS_INFO> usersInfo = new();
                     GetUserInfo(ref header, usersInfo, fullPacket);
 
+                    if(userName.Equals(""))
+                    {
+                        foreach (var userInfo in usersInfo)
+                        {
+                            if (userInfo.UserId == id)
+                                userName = userInfo.UserName;
+                        }
+                    }
+
+
                     PanelManager.Instance.Activate(PanelType.LOBBY);
-                    LobbyUIManager.Instance.AddUserProfile(usersInfo);
+                    lobbyUIManger.AddUserProfile(usersInfo);
                 }
                 break;
 
@@ -144,7 +163,7 @@ public class TcpManager : Singleton<TcpManager>
                     GetUserInfo(ref header, roomsInfo, fullPacket);
 
                     PanelManager.Instance.Activate(PanelType.LOBBY);
-                    LobbyUIManager.Instance.UpdateAllRoomInfo(roomsInfo);
+                    lobbyUIManger.UpdateAllRoomInfo(roomsInfo);
                 }
                 break;
 
@@ -156,7 +175,7 @@ public class TcpManager : Singleton<TcpManager>
                     GetUserInfo(ref header, roomsInfo, fullPacket);
 
                     // PACKET_S_C_LOBBY_ROOM_INFO packet = BytesToStruct<PACKET_S_C_LOBBY_ROOM_INFO>(fullPacket);
-                    LobbyUIManager.Instance.UpdateRoomInfo(roomsInfo[0]);
+                    lobbyUIManger.UpdateRoomInfo(roomsInfo[0]);
                 }
                 break;
 
@@ -173,6 +192,19 @@ public class TcpManager : Singleton<TcpManager>
                 }
                 break;
 
+            case PTYPE.S_C_CHAT_LOBBY:
+                {
+                    PACKET_CHAT packet = BytesToStruct<PACKET_CHAT>(fullPacket);
+                    lobbyUIManger.AddMsg(packet.Msg);
+                }
+                break;
+
+            case PTYPE.S_C_CHAT_ROOM:
+                {
+                    PACKET_CHAT packet = BytesToStruct<PACKET_CHAT>(fullPacket);
+                    inRoomUI.AddMsg(packet.Msg);
+                }
+                break;
 
             // 타이틀로 이동
             case PTYPE.S_C_EXIT_LOBBY:
@@ -184,13 +216,6 @@ public class TcpManager : Singleton<TcpManager>
                 {
                     PACKET_S_C_CHANGE_INROOM_USERSTATE packet = BytesToStruct<PACKET_S_C_CHANGE_INROOM_USERSTATE>(fullPacket);
                     inRoomUI.ChangeInRoomUserState(packet);
-                }
-                break;
-
-            case PTYPE.S_C_GAMETSTART_BTN:
-                {
-                    //PAEK packet = BytesToStruct<PACKET_S_C_CREATE_ROOM>(fullPacket);
-                    //LobbyUIManager.Instance.CreateRoom(packet);
                 }
                 break;
 
@@ -210,7 +235,7 @@ public class TcpManager : Singleton<TcpManager>
                         // 현재 클라가 로비인 경우
                         if (isActive)
                         {
-                            LobbyUIManager.Instance.SetRoomOption(packet);
+                            lobbyUIManger.SetRoomOption(packet);
                         }
                         // 현재 클라가 나머지인 경우(방, 방 옵션)
                         else
@@ -371,6 +396,17 @@ public class TcpManager : Singleton<TcpManager>
                 }
                 break;
 
+            case PTYPE.C_S_CHAT_LOBBY:
+            case PTYPE.C_S_CHAT_ROOM:
+                {
+                    PACKET_CHAT packet = new PACKET_CHAT();
+                    packet.Type = pType;
+                    packet.Msg = (string)param;
+
+                    Send(packet);
+                }
+                break;
+
             case PTYPE.C_S_CHANGE_ROOM_OPTION:
                 {
                     var packet = new PACKET_CHANGE_ROOM_OPTION();
@@ -429,7 +465,6 @@ public class TcpManager : Singleton<TcpManager>
             case PTYPE.C_S_ENTRY_RANDOMROOM:
             case PTYPE.S_C_EXIT_LOBBY:
             case PTYPE.C_S_INROOM_USERSTATE:
-            case PTYPE.C_S_GAMETSTART_BTN:
             case PTYPE.C_S_TEAM_CHANGE:
             case PTYPE.C_S_EXIT_ROOM:
             case PTYPE.C_S_EXIT_LOBBY:

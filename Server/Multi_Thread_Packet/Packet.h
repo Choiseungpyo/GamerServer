@@ -5,13 +5,14 @@ typedef enum PTYPE
 {
 	// A_B_COMMAND : A -> B 로 COMMAND 패킷 전달
 	NONE,
-	// Title
-	S_C_ID, // 클라 고유 S_C_ID 전달
-	C_S_ENTRY_LOBBY, // 로비 입장 버튼 누른 경우
-	C_S_LOGOUT, // 게임 종료 버튼 누른 경우
 
-#pragma region  Lobby
-	S_C_USERS_PROFILE, // 유저 프로필 전달
+	// Title
+	S_C_ID, // 클라 고유 ID 전달
+	C_S_ENTRY_LOBBY, // 로비 입장 버튼 누른 경우 : bool
+	C_S_LOGOUT, // 게임 종료 버튼 누른 경우 : bool
+
+	// Lobby
+	S_C_USERS_PROFILE, // 유저 프로필 전달 
 
 	// 로비 방 정보 UI 업데이트
 	S_C_LOBBY_ALL_ROOM_INFO,
@@ -27,37 +28,42 @@ typedef enum PTYPE
 	C_S_ENTRY_ROOM,
 
 	// 랜덤 입장 버튼을 누른 경우
-	C_S_ENTRY_RANDOMROOM,
+	C_S_ENTRY_RANDOMROOM, // bool
 
 	// Exit 버튼 누른 경우
-	C_S_EXIT_LOBBY,
-	S_C_EXIT_TITLE,
-#pragma endregion
+	C_S_EXIT_LOBBY, // bool
+	S_C_EXIT_LOBBY, // bool
 
-#pragma region  Room
+	C_S_CHAT_LOBBY,
+	S_C_CHAT_LOBBY,
+	C_S_CHAT_ROOM,
+	S_C_CHAT_ROOM,
+
+	// Room
 
 	// 준비 완료 버튼을 누른경우
-	C_S_INROOM_USERSTATE,
+	C_S_INROOM_USERSTATE, // bool
 	S_C_INROOM_USERSTATE,
 
-	//게임 시작 버튼을 누른경우
-	C_S_GAMETSTART_BTN,
-	S_C_GAMETSTART_BTN,
-
 	// 팀 변경 버튼을 누른 경우
-	C_S_TEAM_CHANGE,
+	C_S_TEAM_CHANGE, // bool
 	S_C_TEAM_CHANGE,
 
 	// 방 옵션 변경을 누른 경우
-	C_S_CHANGE_ROOM_OPTION,
+	C_S_CHANGE_ROOM_OPTION, // bool
 	S_C_CHANGE_ROOM_OPTION,
 
+	// 로비로 나가기 버튼을 누른 경우
 	C_S_EXIT_ROOM,
 	S_C_EXIT_ROOM,
 
-#pragma endregion
+	// 게임
 
 	S_C_GAME_SPAWN_ALL,
+
+	S_PlayerEntity_SPAWN,
+	C_S_MOVE_PLAYER,
+	S_C_MOVE_PLAYER
 
 }Ptype;
 
@@ -111,6 +117,20 @@ typedef struct PACKET_INT : PACKET
 #pragma pack(pop)
 
 #pragma pack(push,1)
+typedef struct PACKET_CHAT : PACKET
+{
+	char msg[CHAT_SIZE];
+
+	PACKET_CHAT()
+	{
+		Type = S_C_CHAT_LOBBY;
+		Length = sizeof(*this);
+		memset(msg, 0, sizeof(msg));
+	}
+}Packet_chat;
+#pragma pack(pop)
+
+#pragma pack(push,1)
 typedef struct PACKET_LOBBY_USERS_INFO
 {
 	int userId;
@@ -157,25 +177,6 @@ typedef struct PACKET_C_S_CREATE_ROOM : PACKET
 	}
 
 }Packet_c_s_create_room;
-#pragma pack(pop)
-
-typedef struct PACKET_S_C_CREATE_ROOM : PACKET
-{
-	int id;
-	int roomNo;
-	char roomName[ROOM_NAME_SIZE];
-	MatchType matchType;
-
-	PACKET_S_C_CREATE_ROOM() {	//패킷 초기화
-		Type = C_S_CREATE_ROOM;
-		Length = sizeof(*this);
-		id = 0;
-		roomNo = 0;
-		memset(roomName, 0, sizeof(roomName));
-		matchType = SOLO;
-	}
-
-}Packet_s_c_create_room;
 #pragma pack(pop)
 
 #pragma pack(push,1)

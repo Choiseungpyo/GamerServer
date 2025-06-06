@@ -40,6 +40,7 @@ using namespace std;
 #define BUFSIZE 1024
 constexpr int NAME_SIZE = 30;
 constexpr int ROOM_NAME_SIZE = 64;
+constexpr int CHAT_SIZE = 30;
 
 
 enum TeamType : int{
@@ -82,6 +83,7 @@ enum class PlayerState {
 #include "MTServerManager.h"
 #include "ClientSession.h"
 #include "SessionManager.h"
+#include "Chat.h"
 
 // ตฅภฬลอ
 #include "UserIcon.h"

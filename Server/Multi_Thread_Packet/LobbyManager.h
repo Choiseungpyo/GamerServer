@@ -11,11 +11,12 @@ class LobbyManager
 	static LobbyManager* instance;
 
 	static shared_mutex mutex;
+	static Chat chat;
 
 	static bool CanMakeRoom();
 
 	static Room* GetJoinableRandomRoom();
-	static void UpdateLobbyRoomInfo(const ClientSession* client, const Room* room);
+	static void UpdateLobbyRoomInfo(const Room* room);
 
 	static void UpdateInRoomInfo(const ClientSession* client, PTYPE type, Room* room, int roomNo);
 
@@ -50,6 +51,9 @@ public:
 
 	static void SendToAllLobbyUser(vector<char> buffer);
 	static void SendToAllLobbyUser(const Packet* pack);
+
+	static void SendLobbyUserProtile();
+	static void UpdateLobbyUserProfile(const ClientSession* client);
 	
 	static void ExitLobby(const ClientSession* client);
 
@@ -57,21 +61,44 @@ public:
 
 	static void DeleteRoom(int roomId);
 
-	static void RegisterNewGame(const ClientSession* client)
+	static void SendMsgToLobby(const Packet* packet)
 	{
+		auto pack = (PACKET_CHAT*)packet;
+		string msg = pack->msg;
+		chat.AddMsg(msg);
+
+		PACKET_CHAT* pack_chat = new PACKET_CHAT;
+		pack_chat->Type = S_C_CHAT_LOBBY;
+		pack_chat->Length = sizeof(PACKET_CHAT);
+		strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
+
+		SendToAllLobbyUser(pack_chat);
+	}
+
+	static void SendMsgToRoom(const Packet* packet, const ClientSession* client)
+	{
+		auto pack = (PACKET_CHAT*)packet;
+		string msg = pack->msg;
 		auto user = client->GetUser();
 		auto roomNo = user->GetRoomNo();
+		Room* room;
 
-		auto it = roomMap.find(roomNo);
 		
-		if(it == roomMap.end())
 		{
-			cout << "roomMap - Invalid roomNo : " << roomNo << endl;
-			return;
+			shared_lock<shared_mutex> lock(mutex);
+			room = roomMap[roomNo];
 		}
+		
+		chat.AddMsg(msg);
 
-		auto currRoom = it->second;
-		currRoom->CreateNewGame();
+		PACKET_CHAT* pack_chat = new PACKET_CHAT;
+		pack_chat->Type = S_C_CHAT_ROOM;
+		pack_chat->Length = sizeof(PACKET_CHAT);
+		strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
+
+		room->SendToAllUserInRoom(pack);
 	}
+
+	
 };
 

@@ -44,19 +44,6 @@ public class LobbyRoomItemUI : PoolableObject
     }
 
     /// <summary>
-    /// 방 생성시 호출하는 함수
-    /// </summary>
-    /// <param name="packet"></param>
-    public void InitRoomUIData(PACKET_S_C_CREATE_ROOM pack)
-    {
-        // 호출하는 쪽에서 작업 등록
-        roomTxtDict[RoomInfoType.NO].text = pack.RoomNo.ToString();
-        roomTxtDict[RoomInfoType.ROOMNAME].text = pack.RoomName.ToString();
-        roomTxtDict[RoomInfoType.PEOPLENUM].text = "1/" + ((int)pack.MatchType * 2).ToString();
-        roomTxtDict[RoomInfoType.STATE].text = RoomState.WAITING.ToString();
-    }
-
-    /// <summary>
     /// 방 정보를 변경시 호출하는 함수
     /// </summary>
     /// <param name="packet"></param>

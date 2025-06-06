@@ -4,6 +4,7 @@ unordered_map<int, Room*> LobbyManager::roomMap; // 모든 방 정보
 unordered_map<SOCKET, const ClientSession*> LobbyManager::lobbyUserMap; // 로비에 있는 유저 정보
 LobbyManager* LobbyManager::instance = GetInstance();
 shared_mutex LobbyManager::mutex;
+Chat LobbyManager::chat;
 
 bool LobbyManager::CanMakeRoom()
 {
@@ -48,6 +49,8 @@ LobbyManager::~LobbyManager()
 		delete room.second;
 	}
 	roomMap.clear();
+
+	delete instance;
 }
 
 LobbyManager* LobbyManager::GetInstance()
@@ -70,9 +73,10 @@ void  LobbyManager::CreateRoom(const Packet* packet, const ClientSession* client
 	const Packet_c_s_create_room* pack = (Packet_c_s_create_room*)packet;
 	string roomName = pack->roomName;
 	RoomOption roomOption(roomName, pack->matchType);
+	auto user = client->GetUser();
 
 	int roomNo = (int)roomMap.size();
-	Room* newRoom = new Room(roomNo, roomOption);
+	Room* newRoom = new Room(roomNo, roomOption, user->GetId());
 
 	{
 		unique_lock<shared_mutex> lock(mutex);
@@ -98,7 +102,7 @@ void  LobbyManager::CreateRoom(const Packet* packet, const ClientSession* client
 		
 	}
 
-	UpdateLobbyRoomInfo(client, newRoom);
+	UpdateLobbyRoomInfo(newRoom);
 }
 
 /// <summary>
@@ -122,7 +126,7 @@ void  LobbyManager::EntryRandomRoom(const ClientSession* client)
 		lobbyUserMap.erase(client->GetSocket());
 	}
 		
-	UpdateLobbyRoomInfo(client, randomRoom);	
+	UpdateLobbyRoomInfo(randomRoom);	
 }
 
 void LobbyManager::EntryRoom(const Packet* packet, const ClientSession* client)
@@ -157,7 +161,7 @@ void LobbyManager::EntryRoom(const Packet* packet, const ClientSession* client)
 		lobbyUserMap.erase(client->GetSocket());
 	}
 
-	UpdateLobbyRoomInfo(client, room);
+	UpdateLobbyRoomInfo(room);
 }
 
 void LobbyManager::UpdateInRoomInfo(const ClientSession* client, PTYPE type, Room* room, int roomNo)
@@ -193,26 +197,35 @@ void LobbyManager::UpdateInRoomInfo(const ClientSession* client, PTYPE type, Roo
 
 void LobbyManager::SetReadyState(const ClientSession* client)
 {
-	unique_lock<shared_mutex> lock(mutex);
-
-	
 	User* user = client->GetUser();
 	int roomNum = user->GetRoomNo();
-	Room* room = roomMap[roomNum];
+	Room* room;
+	{
+		shared_lock<shared_mutex> lock(mutex);
+		room = roomMap[roomNum];
+	}
 	int userId = user->GetId();
 	auto roomUserInfo = room->ChangeInRoomUserState(userId);
 
-	PACKET_S_C_CHANGE_INROOM_USERSTATE pack;
-	pack.orderOfTeam = roomUserInfo->userOrderOfTeam;
-	pack.inRoomUserState = roomUserInfo->inRoomUserState;
-	pack.teamType = roomUserInfo->teamType;
+	// 방장이 시작했을 경우
+	if (roomUserInfo->inRoomUserState == START)
+	{
+		room->CreateNewGame();
+		UpdateLobbyRoomInfo(room);
+	}
+	else
+	{
+		PACKET_S_C_CHANGE_INROOM_USERSTATE pack;
+		pack.orderOfTeam = roomUserInfo->userOrderOfTeam;
+		pack.inRoomUserState = roomUserInfo->inRoomUserState;
+		pack.teamType = roomUserInfo->teamType;
 
 
-	// 버튼 상태는 자기 자신한테만 보내기
-	client->Send(&pack);
-
-	// 유저 상태는 해당 방 전체에 보내기
-	UpdateInRoomInfo(client, S_C_INROOM_INFO, room, roomNum);
+		// 버튼 상태는 자기 자신한테만 보내기
+		client->Send(&pack);
+		// 유저 상태는 해당 방 전체에 보내기
+		UpdateInRoomInfo(client, S_C_INROOM_INFO, room, roomNum);
+	}
 }
 
 void LobbyManager::SetTeamType(const ClientSession* client)
@@ -251,7 +264,7 @@ void LobbyManager::SetRoomOption(const PACKET* packet, const ClientSession* clie
 
 	room->SendToAllUserInRoom(pack);
 
-	UpdateLobbyRoomInfo(client, room);
+	UpdateLobbyRoomInfo(room);
 }
 
 void LobbyManager::EntryLobby(const ClientSession* client)
@@ -261,9 +274,12 @@ void LobbyManager::EntryLobby(const ClientSession* client)
 		lobbyUserMap[client->GetSocket()] = client;
 	}
 	
-	User* currUser = client->GetUser();
-	currUser->SetState(LOBBY);
+	UpdateLobbyUserProfile(client);
+	UpdateLobbyAllRoomInfo();
+}
 
+void LobbyManager::SendLobbyUserProtile()
+{
 	vector<const ClientSession*> allClients = SessionManager::GetClientAll();
 
 	int userSize = (int)allClients.size();
@@ -276,7 +292,7 @@ void LobbyManager::EntryLobby(const ClientSession* client)
 	memcpy(buffer.data(), &header, sizeof(header));
 
 	size_t offset = sizeof(PACKET_INFO_HEADER);
-	
+
 	// 전체 유저만큼 데이터 붙이기
 	for (auto client : allClients)
 	{
@@ -291,28 +307,50 @@ void LobbyManager::EntryLobby(const ClientSession* client)
 
 	// 로비에 있는 유저들한테 전부 보내기
 	SendToAllLobbyUser(buffer);
+}
 
-	UpdateLobbyAllRoomInfo();
+void LobbyManager::UpdateLobbyUserProfile(const ClientSession* client)
+{
+	User* currUser = client->GetUser();
+	currUser->SetState(LOBBY);
+
+	SendLobbyUserProtile();
 }
 
 void LobbyManager::SendToAllLobbyUser(vector<char> buffer)
 {
-	for (auto item : lobbyUserMap)
+	vector<SOCKET> sockets;
+
 	{
-		send(item.first, buffer.data(), (int)buffer.size(), 0);
+		shared_lock<shared_mutex> lock(mutex);
+		for (auto item : lobbyUserMap)
+		{
+			sockets.push_back(item.first);
+		}
 	}
+
+	for (auto socket : sockets)
+		send(socket, buffer.data(), (int)buffer.size(), 0);
 }
 
 void LobbyManager::SendToAllLobbyUser(const Packet* pack)
 {
-	for (auto item : lobbyUserMap)
+	vector<const ClientSession*> clients;
+
 	{
-		item.second->Send(pack);
+		shared_lock<shared_mutex> lock(mutex);
+		for (auto item : lobbyUserMap)
+		{
+			clients.push_back(item.second);
+		}
 	}
+
+	for (auto client : clients)
+		client->Send(pack);
 }
 
 // 방정보 하나만을 수정했을 경우 - 현재 로비에 있는 모든 클라한테 로비 방 정보 UI 업데이트할 수 있도록 뿌림
-void LobbyManager::UpdateLobbyRoomInfo(const ClientSession* client, const Room* room)
+void LobbyManager::UpdateLobbyRoomInfo(const Room* room)
 {
 	vector<char> buffer;
 	PACKET_INFO_HEADER header(1);
@@ -375,7 +413,7 @@ void LobbyManager::ExitLobby(const ClientSession* client)
 		lobbyUserMap.erase(client->GetSocket());
 	}
 	
-	client->Send(S_C_EXIT_TITLE);
+	client->Send(S_C_EXIT_LOBBY);
 
 	PACKET pack;
 	pack.Type = S_C_EXIT_ROOM;
