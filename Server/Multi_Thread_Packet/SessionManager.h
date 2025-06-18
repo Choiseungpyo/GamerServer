@@ -13,10 +13,7 @@ class ClientSession;
 class SessionManager
 {
 public:
-	SessionManager()
-	{
-
-	}
+	SessionManager() {}
 	~SessionManager();
 
 	static SessionManager* GetInstance();

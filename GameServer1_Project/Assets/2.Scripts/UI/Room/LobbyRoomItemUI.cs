@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static LobbyRoomItemUI;
 
 /// <summary>
@@ -27,10 +29,11 @@ public class LobbyRoomItemUI : PoolableObject
     [SerializeField] List<RoomTxtData> roomTxtDatas;
     Dictionary<RoomInfoType, TMP_Text> roomTxtDict = new();
 
-
+    [SerializeField ]private Button btn;
 
     private void Awake()
     {
+        btn.onClick.AddListener(EntryRoom);
         InitRoomTxtDict();
     }
 
@@ -86,5 +89,19 @@ public class LobbyRoomItemUI : PoolableObject
         });
     }
 
+    private void EntryRoom()
+    {
+        string[] peopleNum = roomTxtDict[RoomInfoType.PEOPLENUM].text.Split('/');
 
+        // 인게임중일 경우
+        if ((RoomState)Enum.Parse(typeof(RoomState), roomTxtDict[RoomInfoType.STATE].text) == RoomState.INGAME)
+            return;
+
+        // 방이 전부 찼을 경우
+        if (int.Parse(peopleNum[0]) >= int.Parse(peopleNum[1]))
+            return;
+
+        int roomNo = int.Parse(roomTxtDict[RoomInfoType.NO].text);
+        TcpManager.Instance.SendToServer(PTYPE.C_S_ENTRY_ROOM, roomNo);
+    }
 }

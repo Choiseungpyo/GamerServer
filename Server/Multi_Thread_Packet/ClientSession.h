@@ -32,7 +32,7 @@ public:
 
 	// 클라로 전송
 	void Send_Id();
-	void Send(PTYPE ptype) const;
+	void Send(PTYPE pType) const;
 
 private:
 	SessionManager* sessionManager;

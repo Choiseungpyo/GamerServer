@@ -110,7 +110,7 @@ bool MTServerManager::PacketParsing(ClientSession* client, char* buf)
 			break;
 
 		case C_S_LOGOUT: // 게임 종료 버튼 누른 경우
-			SessionManager::DeleteClient(client->GetSocket(), client);
+			LobbyManager::ExitGame(client);
 			break;
 
 			// 방 생성 버튼을 누른 경우

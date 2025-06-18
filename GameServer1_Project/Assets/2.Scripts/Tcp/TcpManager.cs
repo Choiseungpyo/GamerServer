@@ -5,6 +5,7 @@ using System.Threading;
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text;
 
 public class TcpManager : Singleton<TcpManager>
 { 
@@ -534,11 +535,22 @@ public class TcpManager : Singleton<TcpManager>
     {
         base.OnApplicationQuit();
 
+
+        if (stream != null && stream.CanWrite)
+        {
+            var packet = new PACKET();
+
+            // 방 번호
+            packet.Length = (uint)Marshal.SizeOf<PACKET>();
+            packet.Type = PTYPE.C_S_LOGOUT;
+
+            Send(packet);
+        }
+
         if (receiveThread != null)
         {
             receiveThread.Join(); // 스레드가 끝날 때까지 기다림
         }
-        //if (receiveThread != null) receiveThread.Abort();
         if (stream != null) stream.Close();
         if (client != null) client.Close();
     }

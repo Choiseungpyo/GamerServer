@@ -409,3 +409,17 @@ void Room::ChangeRoomUserInfo(const PACKET_CHANGE_ROOM_OPTION* pack)
 }
 
 
+
+const unordered_map<int, RoomUserInfo*>& Room::GetRoomUserInfoMap() const
+{
+	shared_lock<shared_mutex> lock(mutex);
+
+	return roomUserInfoMap;
+}
+
+const unordered_map<int, const ClientSession*>& Room::GetClientMap() const
+{
+	shared_lock<shared_mutex> lock(mutex);
+
+	return clientMap;
+}

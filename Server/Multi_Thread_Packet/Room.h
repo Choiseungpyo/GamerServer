@@ -100,11 +100,6 @@ public:
 
 	void AddUser(const ClientSession* client);
 
-	/// <summary>
-	/// 유저 삭제
-	/// </summary>
-	/// <param name="userId"></param>
-	/// <returns>방에 남은 유저 수</returns>
 	int DeleteUser(int userId);
 
 	tuple<TeamType, int> JoinAvailableTeam(int clientId);
@@ -117,19 +112,8 @@ public:
 
 	void SendToAllUserInRoom(const Packet* pack) const;
 
-	const unordered_map<int, RoomUserInfo*>& GetRoomUserInfoMap() const
-	{
-		shared_lock<shared_mutex> lock(mutex);
+	const unordered_map<int, RoomUserInfo*>& GetRoomUserInfoMap() const;
 
-		return roomUserInfoMap;
-	}
-
-	const unordered_map<int, const ClientSession*>& GetClientMap() const
-	{
-		shared_lock<shared_mutex> lock(mutex);
-
-		return clientMap;
-	}
-
+	const unordered_map<int, const ClientSession*>& GetClientMap() const;
 };
 

@@ -56,3 +56,12 @@ void User::SetCurrRoomNum(int roomNum)
 	std::unique_lock<std::shared_mutex> lock(mutex);
 	this->currRoomNum = roomNum;
 }
+
+Game* User::GetGame() const
+{
+	return game;
+}
+void User::SetGame(Game* game)
+{
+	this->game = game;
+}

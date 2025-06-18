@@ -154,6 +154,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
+    - Class: 108
+      Script: {instanceID: 0}
     - Class: 114
       Script: {instanceID: 16632}
     - Class: 114
@@ -161,11 +163,11 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16736}
     - Class: 114
-      Script: {instanceID: 16800}
+      Script: {instanceID: 16798}
     - Class: 114
-      Script: {instanceID: 16850}
+      Script: {instanceID: 16848}
     - Class: 114
-      Script: {instanceID: 17260}
+      Script: {instanceID: 17258}
     - Class: 114
       Script: {instanceID: 17688}
     - Class: 114
@@ -375,13 +377,19 @@ ScriptsOnlyBuild:
     className: UnityOnBecameVisibleMessageListener
   - hash:
       serializedVersion: 2
+      Hash: 078a8e3bb078f4535e619f05adddef5d
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: ChatUI
+  - hash:
+      serializedVersion: 2
       Hash: e987953190eb4c12cf19df790566dc2c
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.EventSystems
     className: EventSystem
   - hash:
       serializedVersion: 2
-      Hash: b328f49cb99ea1d13df7940c988a66af
+      Hash: 4b2921ae8c559a98cfbb10bf01fef97e
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: LobbyRoomItemUI
@@ -1201,12 +1209,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: 078a8e3bb078f4535e619f05adddef5d
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: ChatUI
   platform: 19
   scenePathNames:
   - Assets/1.Scenes/Lobby.unity

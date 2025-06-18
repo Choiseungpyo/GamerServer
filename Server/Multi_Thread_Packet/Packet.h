@@ -57,7 +57,6 @@ typedef enum PTYPE
 	C_S_EXIT_ROOM,
 	S_C_EXIT_ROOM,
 
-	// ∞‘¿”
 
 	S_C_GAME_SPAWN_ALL,
 

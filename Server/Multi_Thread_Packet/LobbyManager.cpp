@@ -257,12 +257,15 @@ void LobbyManager::SetRoomOption(const PACKET* packet, const ClientSession* clie
 	Room* room = roomMap[roomNum];
 	room->ChangeRoomUserInfo(pack);
 
-	pack->Type = S_C_CHANGE_ROOM_OPTION;
-	strncpy_s(pack->roomName, sizeof(pack->roomName), room->GetName().c_str(), _TRUNCATE);
-	pack->matchType = room->GetMatchType();
-	pack->roomNo = room->GetNo();
 
-	room->SendToAllUserInRoom(pack);
+	PACKET_CHANGE_ROOM_OPTION newPack;
+	newPack.Type = S_C_CHANGE_ROOM_OPTION;
+	strncpy_s(newPack.roomName, sizeof(newPack.roomName), room->GetName().c_str(), _TRUNCATE);
+	newPack.matchType = room->GetMatchType();
+	newPack.roomNo = room->GetNo();
+	newPack.Length = sizeof(PACKET_CHANGE_ROOM_OPTION);
+
+	room->SendToAllUserInRoom(&newPack);
 
 	UpdateLobbyRoomInfo(room);
 }
@@ -485,4 +488,69 @@ void LobbyManager::DeleteRoom(int roomId)
 
 	delete it->second;
 	roomMap.erase(it);
+}
+
+void LobbyManager::SendMsgToLobby(const Packet* packet)
+{
+	auto pack = (PACKET_CHAT*)packet;
+	string msg = pack->msg;
+	chat.AddMsg(msg);
+
+	PACKET_CHAT* pack_chat = new PACKET_CHAT;
+	pack_chat->Type = S_C_CHAT_LOBBY;
+	pack_chat->Length = sizeof(PACKET_CHAT);
+	strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
+
+	SendToAllLobbyUser(pack_chat);
+}
+
+void LobbyManager::SendMsgToRoom(const Packet* packet, const ClientSession* client)
+{
+	auto pack = (PACKET_CHAT*)packet;
+	string msg = pack->msg;
+	auto user = client->GetUser();
+	auto roomNo = user->GetRoomNo();
+	Room* room;
+
+
+	{
+		shared_lock<shared_mutex> lock(mutex);
+		room = roomMap[roomNo];
+	}
+
+	chat.AddMsg(msg);
+
+	PACKET_CHAT* pack_chat = new PACKET_CHAT;
+	pack_chat->Type = S_C_CHAT_ROOM;
+	pack_chat->Length = sizeof(PACKET_CHAT);
+	strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
+
+	room->SendToAllUserInRoom(pack_chat);
+}
+
+void LobbyManager::ExitGame(ClientSession* client)
+{
+	SOCKET socket = client->GetSocket();
+	User* user = client->GetUser();
+	int roomNo = user->GetRoomNo();
+	int userId = user->GetId();
+
+	auto tmpClient = SessionManager::GetClient(socket);
+	// 이미 삭제된 클라이언트일 경우
+	if (!tmpClient)
+		return;
+
+	// 로비에서 유저 삭제
+	{
+		unique_lock<shared_mutex> lock(mutex);
+		lobbyUserMap.erase(socket);
+	}
+
+	// 방에 들어가있는 경우라면
+	if (roomNo != -1)
+		roomMap[roomNo]->DeleteUser(userId);
+
+	SessionManager::DeleteClient(socket, client);
+
+	SendLobbyUserProtile();
 }

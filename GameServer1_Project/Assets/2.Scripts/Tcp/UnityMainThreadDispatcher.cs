@@ -6,6 +6,7 @@ using System;
 public class UnityMainThreadDispatcher : MonoBehaviour
 {
     private static readonly Queue<Action> executionQueue = new Queue<Action>();
+    private static UnityMainThreadDispatcher instance = null;
 
     public void Update()
     {
@@ -23,7 +24,6 @@ public class UnityMainThreadDispatcher : MonoBehaviour
         }
     }
 
-    private static UnityMainThreadDispatcher instance = null;
 
     public static UnityMainThreadDispatcher Instance()
     {

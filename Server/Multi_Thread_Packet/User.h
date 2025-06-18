@@ -36,13 +36,7 @@ public:
 	int GetRoomNo() const;
 	void SetCurrRoomNum(int roomNum);
 
-	Game* GetGame() const
-	{
-		return game;
-	}
-	void SetGame(Game* game)
-	{
-		this->game = game;
-	}
+	Game* GetGame() const;
+	void SetGame(Game* game);
 };
 

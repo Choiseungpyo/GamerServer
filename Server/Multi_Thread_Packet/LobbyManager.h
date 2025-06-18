@@ -61,43 +61,11 @@ public:
 
 	static void DeleteRoom(int roomId);
 
-	static void SendMsgToLobby(const Packet* packet)
-	{
-		auto pack = (PACKET_CHAT*)packet;
-		string msg = pack->msg;
-		chat.AddMsg(msg);
+	static void SendMsgToLobby(const Packet* packet);
 
-		PACKET_CHAT* pack_chat = new PACKET_CHAT;
-		pack_chat->Type = S_C_CHAT_LOBBY;
-		pack_chat->Length = sizeof(PACKET_CHAT);
-		strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
+	static void SendMsgToRoom(const Packet* packet, const ClientSession* client);
 
-		SendToAllLobbyUser(pack_chat);
-	}
-
-	static void SendMsgToRoom(const Packet* packet, const ClientSession* client)
-	{
-		auto pack = (PACKET_CHAT*)packet;
-		string msg = pack->msg;
-		auto user = client->GetUser();
-		auto roomNo = user->GetRoomNo();
-		Room* room;
-
-		
-		{
-			shared_lock<shared_mutex> lock(mutex);
-			room = roomMap[roomNo];
-		}
-		
-		chat.AddMsg(msg);
-
-		PACKET_CHAT* pack_chat = new PACKET_CHAT;
-		pack_chat->Type = S_C_CHAT_ROOM;
-		pack_chat->Length = sizeof(PACKET_CHAT);
-		strncpy_s(pack_chat->msg, sizeof(pack_chat->msg), msg.c_str(), _TRUNCATE);
-
-		room->SendToAllUserInRoom(pack);
-	}
+	static void ExitGame(ClientSession* client);
 
 	
 };

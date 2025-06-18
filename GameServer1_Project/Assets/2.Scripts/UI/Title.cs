@@ -41,7 +41,8 @@ public class Title : MonoBehaviour
 
     private void Logout()
     {
-        TcpManager.Instance.SendToServer(PTYPE.C_S_LOGOUT);
+        Application.Quit();
+        //TcpManager.Instance.SendToServer(PTYPE.C_S_LOGOUT);
     }
 
 }

@@ -58,6 +58,9 @@ void SessionManager::DeleteClient(SOCKET sock, ClientSession* client)
 	client->Disconnect();
 	clientMap.erase(sock);
 	mClientCount--;
+
+	if (mClientCount < 0)
+		mClientCount = 0;
 }
 
 
