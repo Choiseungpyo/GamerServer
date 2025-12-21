@@ -7,7 +7,6 @@ public class Player : MonoBehaviour
 {
     [Header("Rig")]
     [SerializeField] private Transform body;
-    [SerializeField] private Transform cameraPivot;
 
     [Header("Model")]
     [SerializeField] private Transform modelRoot;
@@ -37,8 +36,6 @@ public class Player : MonoBehaviour
     [SerializeField] private string deadParamName = "IsDead";
     [SerializeField] private bool deadParamIsBool = true;
     [SerializeField] private float deathFallbackDisableDelay = 2.0f;
-
-
 
     private Transform muzzleFlashHomeParent;
 
@@ -78,6 +75,8 @@ public class Player : MonoBehaviour
     public int Hp { get; private set; }
     public int MaxHp { get; private set; }
 
+    public Transform CameraPivot;
+
 
     public Vector3 MuzzlePosition
     {
@@ -85,7 +84,7 @@ public class Player : MonoBehaviour
         {
             if (muzzle != null) return muzzle.position;
             if (muzzleFallback != null) return muzzleFallback.position;
-            if (cameraPivot != null) return cameraPivot.position;
+            if (CameraPivot != null) return CameraPivot.position;
             return transform.position;
         }
     }
@@ -94,7 +93,7 @@ public class Player : MonoBehaviour
     {
         get
         {
-            if (cameraPivot != null) return cameraPivot.forward;
+            if (CameraPivot != null) return CameraPivot.forward;
             return transform.forward;
         }
     }
@@ -125,11 +124,11 @@ public class Player : MonoBehaviour
         transform.position = pos;
 
 
-        if (cameraPivot != null)
+        if (CameraPivot != null)
         {
             float y = isLocal ? 0.89f : 1.5f;
-            cameraPivot.localPosition = new Vector3(0f, y, 0f);
-            cameraPivot.localRotation = Quaternion.identity;
+            CameraPivot.localPosition = new Vector3(0f, y, 0f);
+            CameraPivot.localRotation = Quaternion.identity;
         }
 
         if (muzzleFlash != null)
@@ -158,24 +157,13 @@ public class Player : MonoBehaviour
         SetMoveDirInternal(0);
     }
 
-    public void BindMainCamera(Camera cam)
-    {
-        if (cam == null) return;
-        if (cameraPivot == null) return;
-
-        Transform t = cam.transform;
-        t.SetParent(cameraPivot, false);
-        t.localPosition = Vector3.zero;
-        t.localRotation = Quaternion.identity;
-    }
-
     public void SetLook(float yaw, float pitch)
     {
         if (body != null)
             body.rotation = Quaternion.Euler(0f, yaw, 0f);
 
-        if (cameraPivot != null)
-            cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+        if (CameraPivot != null)
+            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
     public void ApplyServerState(Vector3 pos, float yaw, float pitch, int hp, int weaponId)
@@ -186,8 +174,8 @@ public class Player : MonoBehaviour
         if (body != null)
             body.rotation = Quaternion.Euler(0f, yaw, 0f);
 
-        if (cameraPivot != null)
-            cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+        if (CameraPivot != null)
+            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
 
         int prevWeapon = WeaponId;
 

@@ -12,16 +12,21 @@ public class TcpManagerMarshal : Singleton<TcpManagerMarshal>
     private volatile bool running;
 
     public Action<LoginResPacket> OnLoginRes;
+    public Action<LobbyProfilePacket> OnLobbyProfile;
+
+    public Action<CharacterListPacket> OnCharacterList;
+    public Action<WeaponListPacket> OnWeaponList;
+
+
     public Action<ServerMatchWaitPacket> OnMatchWait;
+
+    public Action<ServerSetCharacterPacket> OnSetCharacter;
+
     public Action<GameStartPacket> OnGameStart;
     public Action<ServerGameStatePacket> OnGameState;
     public Action<ServerShotResultPacket> OnShotResult;
     public Action<GameOverPacket> OnGameOver;
-    public Action<ServerSetCharacterPacket> OnSetCharacter;
 
-    public Action<LobbyProfilePacket> OnLobbyProfile;
-    public Action<CharacterListPacket> OnCharacterList;
-    public Action<WeaponListPacket> OnWeaponList;
 
     private string connectedIp = "";
     private int connectedPort = -1;
@@ -365,14 +370,13 @@ public class TcpManagerMarshal : Singleton<TcpManagerMarshal>
         SendRaw(MarshalNet.StructToBytes(pkt));
     }
 
-    public void SendFire(int gameId, int shotId, int clientTick, int weaponId)
+    public void SendFire(int gameId, int clientTick, int weaponId)
     {
         GameFirePacket pkt = new GameFirePacket();
         pkt.header.size = (ushort)Marshal.SizeOf(typeof(GameFirePacket));
         pkt.header.type = (ushort)PacketType.C_GAME_FIRE;
 
         pkt.gameId = gameId;
-        pkt.shotId = shotId;
         pkt.clientTick = clientTick;
         pkt.weaponId = weaponId;
 

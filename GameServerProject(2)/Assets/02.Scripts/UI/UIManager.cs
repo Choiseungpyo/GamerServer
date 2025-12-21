@@ -84,6 +84,7 @@ public class UIManager : Singleton<UIManager>, IEventListener<GameFlowStateEvent
                 break;
 
             case GameFlowState.MultiGame_Spectator:
+                screenTypes.Add(ScreenType.Hpbar);
                 break;
 
             case GameFlowState.ZombieGame_Playing:

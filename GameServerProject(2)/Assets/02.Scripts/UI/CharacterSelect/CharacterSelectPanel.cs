@@ -111,7 +111,6 @@ public class CharacterSelectPanel : MonoBehaviour
 
         GameSessionManager.Instance.SetSelectedCharacter(pkt.currentCharacterId);
         EventDispatcher.Dispatch(new GameFlowStateEvent { GameFlowState = GameFlowState.MultiGame_Playing });
-        GameSessionManager.Instance.StartPendingGame();
     }
 
     private void SetInteractable(bool on)

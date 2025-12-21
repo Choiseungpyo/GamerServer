@@ -100,7 +100,6 @@ public class LobbyPanel : MonoBehaviour
     {
         if (statusText != null) statusText.text = "game start";
 
-        GameSessionManager.Instance.SetPendingStart(pkt);
         EventDispatcher.Dispatch(new GameFlowStateEvent
         {
             GameFlowState = GameFlowState.MultiGame_Playing

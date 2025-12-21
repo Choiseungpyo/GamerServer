@@ -14804,7 +14804,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 5185254713904795739}
-  cameraPivot: {fileID: 2940301960975185284}
   modelRoot: {fileID: 9072388653201960964}
   muzzleFallback: {fileID: 5455146907799247061}
   gameController: {fileID: 9100000, guid: f7de5a52c15e82a4f8b81d93d1580ee5, type: 2}
@@ -14813,9 +14812,12 @@ MonoBehaviour:
   muzzleFlash: {fileID: 5630529928001986909}
   moveDirParam: MoveDir
   moveDeadZone: 0.1
+  shootParamName: Shoot
+  shootLockSeconds: 0.25
   deadParamName: IsDead
   deadParamIsBool: 1
   deathFallbackDisableDelay: 2
+  CameraPivot: {fileID: 2940301960975185284}
 --- !u!1 &7191988431933412548
 GameObject:
   m_ObjectHideFlags: 0

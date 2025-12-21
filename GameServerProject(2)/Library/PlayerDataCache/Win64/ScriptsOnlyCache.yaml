@@ -1,15 +1,16 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - CameraController
     - CharacterDatabaseSO
     - CharacterPreviewRig
     - CharacterSelectPanel
     - CharacterVisualDatabaseSO
     - DamageOverlayUI
     - DataManager
-    - GameManager
     - GameSessionManager
     - IconVisualDatabaseSO
+    - InputReader
     - LobbyPanel
     - LocalHpBarUI
     - LoginPanel
@@ -52,8 +53,6 @@ ScriptsOnlyBuild:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
     - UnityEditor.TestTools.TestRunner.TestRun.TestJobDataHolder
-    UnityEditor.UI.dll:
-    - UnityEditor.UI.ImageEditor
     UnityEngine.UI.dll:
     - UnityEngine.EventSystems.EventSystem
     - UnityEngine.EventSystems.StandaloneInputModule
@@ -71,11 +70,13 @@ ScriptsOnlyBuild:
   serializedClasses:
     Assembly-CSharp:
     - BgmData
+    - CharacterRuntimeData
     - CharacterVisualRow
     - IconRow
     - ScreenData
     - SfxData
     - WeaponRow
+    - WeaponRuntimeData
     Unity.TextMeshPro:
     - TMPro.FaceInfo_Legacy
     - TMPro.FontAssetCreationSettings
@@ -160,15 +161,15 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1582}
+      Script: {instanceID: 1558}
     - Class: 114
-      Script: {instanceID: 1630}
+      Script: {instanceID: 1584}
     - Class: 114
-      Script: {instanceID: 1714}
+      Script: {instanceID: 1632}
     - Class: 114
-      Script: {instanceID: 1770}
+      Script: {instanceID: 1716}
     - Class: 114
-      Script: {instanceID: 1802}
+      Script: {instanceID: 1772}
     - Class: 114
       Script: {instanceID: 2316}
     - Class: 114
@@ -198,51 +199,53 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 4598}
     - Class: 114
-      Script: {instanceID: 4896}
+      Script: {instanceID: 4642}
     - Class: 114
-      Script: {instanceID: 4946}
+      Script: {instanceID: 4898}
     - Class: 114
-      Script: {instanceID: 5246}
+      Script: {instanceID: 4948}
     - Class: 114
-      Script: {instanceID: 5288}
+      Script: {instanceID: 5248}
     - Class: 114
-      Script: {instanceID: 5308}
+      Script: {instanceID: 5290}
     - Class: 114
-      Script: {instanceID: 5524}
+      Script: {instanceID: 5310}
     - Class: 114
-      Script: {instanceID: 5646}
+      Script: {instanceID: 5526}
     - Class: 114
-      Script: {instanceID: 5654}
+      Script: {instanceID: 5596}
     - Class: 114
-      Script: {instanceID: 5664}
+      Script: {instanceID: 5650}
     - Class: 114
-      Script: {instanceID: 5674}
+      Script: {instanceID: 5666}
     - Class: 114
-      Script: {instanceID: 5756}
+      Script: {instanceID: 5676}
     - Class: 114
-      Script: {instanceID: 6376}
+      Script: {instanceID: 5758}
     - Class: 114
-      Script: {instanceID: 6414}
+      Script: {instanceID: 6378}
     - Class: 114
-      Script: {instanceID: 6582}
+      Script: {instanceID: 6416}
     - Class: 114
-      Script: {instanceID: 6604}
+      Script: {instanceID: 6584}
     - Class: 114
-      Script: {instanceID: 6784}
+      Script: {instanceID: 6606}
     - Class: 114
-      Script: {instanceID: 6992}
+      Script: {instanceID: 6786}
     - Class: 114
-      Script: {instanceID: 7206}
+      Script: {instanceID: 6994}
     - Class: 114
-      Script: {instanceID: 7482}
+      Script: {instanceID: 7208}
     - Class: 114
-      Script: {instanceID: 7958}
+      Script: {instanceID: 7484}
     - Class: 114
-      Script: {instanceID: 8158}
+      Script: {instanceID: 7960}
     - Class: 114
-      Script: {instanceID: 8384}
+      Script: {instanceID: 8160}
     - Class: 114
-      Script: {instanceID: 8880}
+      Script: {instanceID: 8386}
+    - Class: 114
+      Script: {instanceID: 8882}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -268,6 +271,12 @@ ScriptsOnlyBuild:
     - Class: 225
       Script: {instanceID: 0}
   scriptHashData:
+  - hash:
+      serializedVersion: 2
+      Hash: e818606506752539e0dc8b8f66d3ff3d
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: DataManager
   - hash:
       serializedVersion: 2
       Hash: d41ab9b5ea92474f9c0a6937a0607ce1
@@ -316,12 +325,6 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: LayoutElement
-  - hash:
-      serializedVersion: 2
-      Hash: e818606506752539e0dc8b8f66d3ff3d
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: DataManager
   - hash:
       serializedVersion: 2
       Hash: 00bbd9db8634496d079d17711b2ff7c4
@@ -888,6 +891,12 @@ ScriptsOnlyBuild:
     className: CameraController
   - hash:
       serializedVersion: 2
+      Hash: 40b46b2c0bb5f337869bf54feafcf472
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: CameraController
+  - hash:
+      serializedVersion: 2
       Hash: 9ebc0a3016506a0cbb7e0306dfcb9497
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -1086,6 +1095,12 @@ ScriptsOnlyBuild:
     className: ShaderPropAnimator
   - hash:
       serializedVersion: 2
+      Hash: bc50b6f75cf9fbfa39d04416fba36104
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: InputReader
+  - hash:
+      serializedVersion: 2
       Hash: 10c17b309bdca62b4d7fbaf113ed4ca0
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
@@ -1102,12 +1117,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: GlobalMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: 3204bd175ed5e8d0ccb79bc3c3ce992d
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: GameManager
   - hash:
       serializedVersion: 2
       Hash: 53e329840e6d03aebec76623c3b054db
@@ -1266,7 +1275,7 @@ ScriptsOnlyBuild:
     className: TextMeshProUGUI
   - hash:
       serializedVersion: 2
-      Hash: baeeb4b070f6af7cbc14190e214fb627
+      Hash: d17414619821a539375c75455d072378
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: GameSessionManager
@@ -1644,7 +1653,7 @@ ScriptsOnlyBuild:
     className: VertexZoom
   - hash:
       serializedVersion: 2
-      Hash: 0940fcf693d53a3a889916aed50d37fc
+      Hash: df2820cc601b35e3cc7c8ea88af02f85
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: Player
@@ -1705,4 +1714,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/01.Scenes/Main.unity
-  playerPath: "C:/Users/OWNER/Desktop/\uC11C\uBC842_\uD074\uB77C_\uC2E4\uD589/GameServerProject(2).exe"
+  playerPath: "C:/Users/OWNER/Desktop/\uC11C\uBC84\uC2E4\uD589\uD30C\uC77C/GameServerProject(2)_Data/GameServerProject(2).exe"

@@ -77,3 +77,519 @@
 2025-12-17 23:29:37.639 [INFO] [GAMECOUNT] [tid=30768] Game loop stop
 2025-12-17 23:29:37.642 [INFO] [SERVERSTOP] [tid=30768] DB connection closed
 2025-12-17 23:29:37.643 [INFO] [SERVERSTOP] [tid=30768] main 종료
+2025-12-21 20:19:32.046 [INFO] [SERVERSTART] [tid=50104] main 시작
+2025-12-21 20:19:32.052 [INFO] [SERVERSTART] [tid=50104] 서버 시작 시도
+2025-12-21 20:19:32.053 [INFO] [SERVERSTART] [tid=50104] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 20:19:32.059 [INFO] [SERVERSTART] [tid=50104] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 20:19:32.059 [INFO] [SERVERSTART] [tid=50104] map_obb.bin 로드 성공
+2025-12-21 20:19:32.061 [INFO] [GAMECOUNT] [tid=50104] Game loop start
+2025-12-21 20:19:32.080 [INFO] [SERVERSTART] [tid=50104] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 20:19:32.080 [INFO] [SERVERSTART] [tid=50104] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 20:19:32.080 [INFO] [SERVERSTART] [tid=50104] server.Start 성공
+2025-12-21 20:20:01.441 [INFO] [ACCEPT] [tid=46048] 세션 접속 sid=1
+2025-12-21 20:20:01.443 [INFO] [RECV] [tid=46048] 로그인 처리 시작 userId=PlaerA
+2025-12-21 20:20:01.477 [INFO] [RECV] [tid=46048] 로그인 실패 userId=PlaerA
+2025-12-21 20:20:01.479 [INFO] [RECV] [tid=46048] 로그인 실패 sid=1 uid=PlaerA
+2025-12-21 20:20:12.782 [INFO] [RECV] [tid=46048] 로그인 처리 시작 userId=PlayerA
+2025-12-21 20:20:12.784 [INFO] [RECV] [tid=46048] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 20:20:12.785 [INFO] [RECV] [tid=46048] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 20:20:12.788 [INFO] [RECV] [tid=46048] 로비 진입 sid=1 playerId=1
+2025-12-21 20:20:12.792 [DEBUG] [MATCH] [tid=46048] LoadCharacters ok count=3
+2025-12-21 20:20:12.795 [DEBUG] [MATCH] [tid=46048] LoadWeapons ok count=3
+2025-12-21 20:20:14.344 [INFO] [MATCHQUEUE] [tid=46048] 매칭 시작 요청 sid=1
+2025-12-21 20:20:14.346 [INFO] [MATCHQUEUE] [tid=46048] 매칭 대기열 추가 sid=1 queueSize=1
+2025-12-21 20:20:40.404 [INFO] [SESSIONCLOSE] [tid=33828] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 20:20:40.405 [INFO] [MATCHCANCEL] [tid=33828] 매칭 취소(대기열) sid=1 queueSize=0
+2025-12-21 20:32:44.656 [INFO] [SERVERSTART] [tid=33276] main 시작
+2025-12-21 20:32:44.658 [INFO] [SERVERSTART] [tid=33276] 서버 시작 시도
+2025-12-21 20:32:44.658 [INFO] [SERVERSTART] [tid=33276] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 20:32:44.658 [INFO] [SERVERSTART] [tid=33276] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 20:32:44.659 [INFO] [SERVERSTART] [tid=33276] map_obb.bin 로드 성공
+2025-12-21 20:32:44.661 [INFO] [GAMECOUNT] [tid=33276] Game loop start
+2025-12-21 20:32:44.672 [INFO] [SERVERSTART] [tid=33276] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 20:32:44.672 [INFO] [SERVERSTART] [tid=33276] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 20:32:44.672 [INFO] [SERVERSTART] [tid=33276] server.Start 성공
+2025-12-21 20:33:01.789 [INFO] [ACCEPT] [tid=47892] 세션 접속 sid=1
+2025-12-21 20:33:01.793 [INFO] [RECV] [tid=47892] 로그인 처리 시작 userId=PlayerA
+2025-12-21 20:33:01.796 [INFO] [RECV] [tid=47892] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 20:33:01.796 [INFO] [RECV] [tid=47892] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 20:33:01.804 [INFO] [RECV] [tid=44312] 로비 진입 sid=1 playerId=1
+2025-12-21 20:33:01.805 [DEBUG] [MATCH] [tid=44312] LoadCharacters ok count=3
+2025-12-21 20:33:01.805 [DEBUG] [MATCH] [tid=44312] LoadWeapons ok count=3
+2025-12-21 20:33:09.712 [INFO] [ACCEPT] [tid=47892] 세션 접속 sid=2
+2025-12-21 20:33:09.716 [INFO] [RECV] [tid=47892] 로그인 처리 시작 userId=PlayerB
+2025-12-21 20:33:09.717 [INFO] [RECV] [tid=47892] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 20:33:09.717 [INFO] [RECV] [tid=47892] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 20:33:09.720 [INFO] [RECV] [tid=47892] 로비 진입 sid=2 playerId=2
+2025-12-21 20:33:09.721 [DEBUG] [MATCH] [tid=47892] LoadCharacters ok count=3
+2025-12-21 20:33:09.721 [DEBUG] [MATCH] [tid=47892] LoadWeapons ok count=3
+2025-12-21 20:33:22.816 [INFO] [ACCEPT] [tid=47892] 세션 접속 sid=3
+2025-12-21 20:33:22.820 [INFO] [RECV] [tid=47892] 로그인 처리 시작 userId=PlayerC
+2025-12-21 20:33:22.820 [INFO] [RECV] [tid=47892] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 20:33:22.821 [INFO] [RECV] [tid=47892] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 20:33:22.825 [INFO] [RECV] [tid=47892] 로비 진입 sid=3 playerId=3
+2025-12-21 20:33:22.825 [DEBUG] [MATCH] [tid=47892] LoadCharacters ok count=3
+2025-12-21 20:33:22.826 [DEBUG] [MATCH] [tid=47892] LoadWeapons ok count=3
+2025-12-21 20:33:23.915 [INFO] [MATCHQUEUE] [tid=47892] 매칭 시작 요청 sid=2
+2025-12-21 20:33:23.916 [INFO] [MATCHQUEUE] [tid=47892] 매칭 대기열 추가 sid=2 queueSize=1
+2025-12-21 20:33:24.415 [INFO] [MATCHQUEUE] [tid=47892] 매칭 시작 요청 sid=3
+2025-12-21 20:33:24.416 [INFO] [MATCHQUEUE] [tid=47892] 매칭 대기열 추가 sid=3 queueSize=2
+2025-12-21 20:33:25.491 [INFO] [MATCHQUEUE] [tid=47892] 매칭 시작 요청 sid=1
+2025-12-21 20:33:25.492 [INFO] [MATCHQUEUE] [tid=47892] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 20:33:25.492 [INFO] [MATCH] [tid=47892] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 20:33:26.602 [INFO] [MATCH] [tid=47892] 캐릭터 선택 sid=1 characterId=1
+2025-12-21 20:33:26.608 [INFO] [MATCH] [tid=47892] 캐릭터 선택 완료 sid=1 roomId=1 characterId=1 weaponId=1
+2025-12-21 20:33:27.214 [INFO] [MATCH] [tid=47892] 캐릭터 선택 sid=2 characterId=2
+2025-12-21 20:33:27.215 [INFO] [MATCH] [tid=47892] 캐릭터 선택 완료 sid=2 roomId=1 characterId=2 weaponId=2
+2025-12-21 20:33:27.867 [INFO] [MATCH] [tid=47892] 캐릭터 선택 sid=3 characterId=1
+2025-12-21 20:33:27.868 [INFO] [MATCH] [tid=47892] 캐릭터 선택 완료 sid=3 roomId=1 characterId=1 weaponId=1
+2025-12-21 20:33:27.868 [INFO] [MATCH] [tid=47892] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 20:33:27.875 [INFO] [MATCH] [tid=47892] CreateMatch ok matchId=2
+2025-12-21 20:33:27.876 [DEBUG] [MATCH] [tid=47892] LoadWeapons ok count=3
+2025-12-21 20:33:27.876 [DEBUG] [GAMECREATE] [tid=47892] Weapon stats loaded gameId=1 count=3
+2025-12-21 20:33:27.876 [INFO] [GAMECREATE] [tid=47892] Game created gameId=1 matchId=2 sessions=3 p0(sid=2 pid=2 cid=2 wid=2) p1(sid=3 pid=3 cid=1 wid=1) p2(sid=1 pid=1 cid=1 wid=1)
+2025-12-21 20:33:27.876 [INFO] [GAMECREATE] [tid=47892] CreateGame gameId=1 matchId=2 playerCount=3 p0(sid=2 pid=2 cid=2 wid=2) p1(sid=3 pid=3 cid=1 wid=1) p2(sid=1 pid=1 cid=1 wid=1)
+2025-12-21 20:33:27.877 [INFO] [GAMECREATE] [tid=47892] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 20:33:46.683 [INFO] [SESSIONCLOSE] [tid=47892] 세션 종료 sid=3 authed=1 playerId=3
+2025-12-21 20:33:46.683 [WARN] [SESSIONCLOSE] [tid=47892] Disconnect gameId=1 sid=3 wasAlive=1
+2025-12-21 20:33:46.688 [INFO] [SESSIONCLOSE] [tid=47892] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 20:33:46.688 [WARN] [SESSIONCLOSE] [tid=47892] Disconnect gameId=1 sid=1 wasAlive=1
+2025-12-21 20:33:46.689 [INFO] [SESSIONCLOSE] [tid=44312] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 20:33:46.704 [INFO] [GAMEOVER] [tid=47892] FinalizeMatchRank3 ok matchId=2 rowCount=3 winnerPlayerId=2
+2025-12-21 20:33:46.706 [INFO] [GAMEOVER] [tid=47892] GameOver sent gameId=1 winnerPlayerId=2
+2025-12-21 20:33:46.707 [INFO] [GAMEOVER] [tid=47892] Game finished by disconnect gameId=1 rank0=2 rank1=1 rank2=3
+2025-12-21 20:33:46.707 [INFO] [GAMEREMOVE] [tid=24740] RemoveGame gameId=1 remain=0
+2025-12-21 20:53:47.226 [INFO] [SERVERSTART] [tid=7920] main 시작
+2025-12-21 20:53:47.228 [INFO] [SERVERSTART] [tid=7920] 서버 시작 시도
+2025-12-21 20:53:47.228 [INFO] [SERVERSTART] [tid=7920] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 20:53:47.228 [INFO] [SERVERSTART] [tid=7920] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 20:53:47.228 [INFO] [SERVERSTART] [tid=7920] map_obb.bin 로드 성공
+2025-12-21 20:53:47.231 [INFO] [GAMECOUNT] [tid=7920] Game loop start
+2025-12-21 20:53:47.239 [INFO] [SERVERSTART] [tid=7920] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 20:53:47.239 [INFO] [SERVERSTART] [tid=7920] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 20:53:47.239 [INFO] [SERVERSTART] [tid=7920] server.Start 성공
+2025-12-21 20:58:32.885 [INFO] [SERVERSTART] [tid=38456] main 시작
+2025-12-21 20:58:32.888 [INFO] [SERVERSTART] [tid=38456] 서버 시작 시도
+2025-12-21 20:58:32.888 [INFO] [SERVERSTART] [tid=38456] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 20:58:32.889 [INFO] [SERVERSTART] [tid=38456] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 20:58:32.889 [INFO] [SERVERSTART] [tid=38456] map_obb.bin 로드 성공
+2025-12-21 20:58:32.892 [INFO] [GAMECOUNT] [tid=38456] Game loop start
+2025-12-21 20:58:32.902 [INFO] [SERVERSTART] [tid=38456] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 20:58:32.903 [INFO] [SERVERSTART] [tid=38456] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 20:58:32.903 [INFO] [SERVERSTART] [tid=38456] server.Start 성공
+2025-12-21 20:58:50.135 [INFO] [ACCEPT] [tid=22576] 세션 접속 sid=1
+2025-12-21 20:58:50.138 [INFO] [RECV] [tid=22576] 로그인 처리 시작 userId=PlayerC
+2025-12-21 20:58:50.140 [INFO] [RECV] [tid=22576] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 20:58:50.140 [INFO] [RECV] [tid=22576] 로그인 성공 sid=1 uid=PlayerC playerId=3
+2025-12-21 20:58:50.148 [INFO] [RECV] [tid=65268] 로비 진입 sid=1 playerId=3
+2025-12-21 20:58:50.149 [DEBUG] [MATCH] [tid=65268] LoadCharacters ok count=3
+2025-12-21 20:58:50.150 [DEBUG] [MATCH] [tid=65268] LoadWeapons ok count=3
+2025-12-21 20:58:53.208 [INFO] [ACCEPT] [tid=22576] 세션 접속 sid=2
+2025-12-21 20:58:53.211 [INFO] [RECV] [tid=22576] 로그인 처리 시작 userId=PlayerB
+2025-12-21 20:58:53.212 [INFO] [RECV] [tid=22576] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 20:58:53.212 [INFO] [RECV] [tid=22576] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 20:58:53.218 [INFO] [RECV] [tid=22576] 로비 진입 sid=2 playerId=2
+2025-12-21 20:58:53.218 [DEBUG] [MATCH] [tid=22576] LoadCharacters ok count=3
+2025-12-21 20:58:53.219 [DEBUG] [MATCH] [tid=22576] LoadWeapons ok count=3
+2025-12-21 21:00:27.659 [INFO] [ACCEPT] [tid=22576] 세션 접속 sid=3
+2025-12-21 21:00:27.662 [INFO] [RECV] [tid=22576] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:00:27.663 [INFO] [RECV] [tid=22576] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:00:27.663 [INFO] [RECV] [tid=22576] 로그인 성공 sid=3 uid=PlayerA playerId=1
+2025-12-21 21:00:27.668 [INFO] [RECV] [tid=22576] 로비 진입 sid=3 playerId=1
+2025-12-21 21:00:27.668 [DEBUG] [MATCH] [tid=22576] LoadCharacters ok count=3
+2025-12-21 21:00:27.669 [DEBUG] [MATCH] [tid=22576] LoadWeapons ok count=3
+2025-12-21 21:00:28.774 [INFO] [MATCHQUEUE] [tid=22576] 매칭 시작 요청 sid=3
+2025-12-21 21:00:28.775 [INFO] [MATCHQUEUE] [tid=22576] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:00:31.822 [INFO] [MATCHQUEUE] [tid=22576] 매칭 시작 요청 sid=2
+2025-12-21 21:00:31.823 [INFO] [MATCHQUEUE] [tid=22576] 매칭 대기열 추가 sid=2 queueSize=2
+2025-12-21 21:00:35.135 [INFO] [MATCHQUEUE] [tid=22576] 매칭 시작 요청 sid=1
+2025-12-21 21:00:35.136 [INFO] [MATCHQUEUE] [tid=22576] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 21:00:35.136 [INFO] [MATCH] [tid=22576] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:00:36.818 [INFO] [MATCH] [tid=22576] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:00:36.819 [INFO] [MATCH] [tid=22576] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:00:39.461 [INFO] [MATCH] [tid=22576] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:00:39.463 [INFO] [MATCH] [tid=22576] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:00:41.871 [INFO] [MATCH] [tid=22576] 캐릭터 선택 sid=1 characterId=2
+2025-12-21 21:00:41.873 [INFO] [MATCH] [tid=22576] 캐릭터 선택 완료 sid=1 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:00:41.873 [INFO] [MATCH] [tid=22576] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:00:41.877 [INFO] [MATCH] [tid=22576] CreateMatch ok matchId=3
+2025-12-21 21:00:41.878 [DEBUG] [MATCH] [tid=22576] LoadWeapons ok count=3
+2025-12-21 21:00:41.878 [DEBUG] [GAMECREATE] [tid=22576] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:00:41.879 [INFO] [GAMECREATE] [tid=22576] Game created gameId=1 matchId=3 sessions=3 p0(sid=3 pid=1 cid=2 wid=2) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=3 cid=2 wid=2)
+2025-12-21 21:00:41.879 [INFO] [GAMECREATE] [tid=22576] CreateGame gameId=1 matchId=3 playerCount=3 p0(sid=3 pid=1 cid=2 wid=2) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=3 cid=2 wid=2)
+2025-12-21 21:00:41.879 [INFO] [GAMECREATE] [tid=22576] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:02:29.810 [INFO] [SESSIONCLOSE] [tid=22576] 세션 종료 sid=3 authed=1 playerId=1
+2025-12-21 21:02:29.811 [WARN] [SESSIONCLOSE] [tid=22576] Disconnect gameId=1 sid=3 wasAlive=1
+2025-12-21 21:02:40.785 [INFO] [SESSIONCLOSE] [tid=65268] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:02:40.787 [WARN] [SESSIONCLOSE] [tid=65268] Disconnect gameId=1 sid=2 wasAlive=1
+2025-12-21 21:02:40.793 [INFO] [SESSIONCLOSE] [tid=22576] 세션 종료 sid=1 authed=1 playerId=3
+2025-12-21 21:02:40.801 [INFO] [GAMEOVER] [tid=65268] FinalizeMatchRank3 ok matchId=3 rowCount=3 winnerPlayerId=3
+2025-12-21 21:02:40.802 [INFO] [GAMEOVER] [tid=65268] GameOver sent gameId=1 winnerPlayerId=3
+2025-12-21 21:02:40.803 [INFO] [GAMEOVER] [tid=65268] Game finished by disconnect gameId=1 rank0=1 rank1=2 rank2=3
+2025-12-21 21:02:40.808 [INFO] [GAMEREMOVE] [tid=30432] RemoveGame gameId=1 remain=0
+2025-12-21 21:02:49.661 [INFO] [SERVERSTART] [tid=60444] main 시작
+2025-12-21 21:02:49.662 [INFO] [SERVERSTART] [tid=60444] 서버 시작 시도
+2025-12-21 21:02:49.662 [INFO] [SERVERSTART] [tid=60444] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:02:49.663 [INFO] [SERVERSTART] [tid=60444] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:02:49.663 [INFO] [SERVERSTART] [tid=60444] map_obb.bin 로드 성공
+2025-12-21 21:02:49.665 [INFO] [GAMECOUNT] [tid=60444] Game loop start
+2025-12-21 21:02:49.673 [INFO] [SERVERSTART] [tid=60444] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:02:49.674 [INFO] [SERVERSTART] [tid=60444] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:02:49.674 [INFO] [SERVERSTART] [tid=60444] server.Start 성공
+2025-12-21 21:03:34.977 [INFO] [ACCEPT] [tid=43500] 세션 접속 sid=1
+2025-12-21 21:03:34.979 [INFO] [RECV] [tid=43500] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:03:34.980 [INFO] [RECV] [tid=43500] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:03:34.980 [INFO] [RECV] [tid=43500] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:03:34.985 [INFO] [RECV] [tid=43500] 로비 진입 sid=1 playerId=1
+2025-12-21 21:03:34.986 [DEBUG] [MATCH] [tid=43500] LoadCharacters ok count=3
+2025-12-21 21:03:34.986 [DEBUG] [MATCH] [tid=43500] LoadWeapons ok count=3
+2025-12-21 21:03:45.800 [INFO] [ACCEPT] [tid=43500] 세션 접속 sid=2
+2025-12-21 21:03:45.804 [INFO] [RECV] [tid=43500] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:03:45.806 [INFO] [RECV] [tid=43500] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:03:45.806 [INFO] [RECV] [tid=43500] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:03:45.809 [INFO] [RECV] [tid=43500] 로비 진입 sid=2 playerId=2
+2025-12-21 21:03:45.810 [DEBUG] [MATCH] [tid=43500] LoadCharacters ok count=3
+2025-12-21 21:03:45.810 [DEBUG] [MATCH] [tid=43500] LoadWeapons ok count=3
+2025-12-21 21:03:48.709 [INFO] [ACCEPT] [tid=43500] 세션 접속 sid=3
+2025-12-21 21:03:48.713 [INFO] [RECV] [tid=43500] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:03:48.714 [INFO] [RECV] [tid=43500] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:03:48.715 [INFO] [RECV] [tid=43500] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:03:48.719 [INFO] [RECV] [tid=43500] 로비 진입 sid=3 playerId=3
+2025-12-21 21:03:48.720 [DEBUG] [MATCH] [tid=43500] LoadCharacters ok count=3
+2025-12-21 21:03:48.721 [DEBUG] [MATCH] [tid=43500] LoadWeapons ok count=3
+2025-12-21 21:03:49.739 [INFO] [MATCHQUEUE] [tid=43500] 매칭 시작 요청 sid=3
+2025-12-21 21:03:49.740 [INFO] [MATCHQUEUE] [tid=43500] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:03:50.371 [INFO] [MATCHQUEUE] [tid=43500] 매칭 시작 요청 sid=2
+2025-12-21 21:03:50.372 [INFO] [MATCHQUEUE] [tid=43500] 매칭 대기열 추가 sid=2 queueSize=2
+2025-12-21 21:03:51.321 [INFO] [MATCHQUEUE] [tid=43500] 매칭 시작 요청 sid=1
+2025-12-21 21:03:51.322 [INFO] [MATCHQUEUE] [tid=43500] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 21:03:51.322 [INFO] [MATCH] [tid=43500] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:03:52.158 [INFO] [MATCH] [tid=43500] 캐릭터 선택 sid=1 characterId=2
+2025-12-21 21:03:52.159 [INFO] [MATCH] [tid=43500] 캐릭터 선택 완료 sid=1 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:03:53.628 [INFO] [MATCH] [tid=43500] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:03:53.630 [INFO] [MATCH] [tid=43500] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:03:55.184 [INFO] [MATCH] [tid=43500] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:03:55.185 [INFO] [MATCH] [tid=43500] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:03:55.186 [INFO] [MATCH] [tid=43500] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:03:55.189 [INFO] [MATCH] [tid=43500] CreateMatch ok matchId=4
+2025-12-21 21:03:55.189 [DEBUG] [MATCH] [tid=43500] LoadWeapons ok count=3
+2025-12-21 21:03:55.190 [DEBUG] [GAMECREATE] [tid=43500] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:03:55.190 [INFO] [GAMECREATE] [tid=43500] Game created gameId=1 matchId=4 sessions=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:03:55.191 [INFO] [GAMECREATE] [tid=43500] CreateGame gameId=1 matchId=4 playerCount=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:03:55.191 [INFO] [GAMECREATE] [tid=43500] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:05:16.505 [INFO] [SESSIONCLOSE] [tid=51084] 세션 종료 sid=3 authed=1 playerId=3
+2025-12-21 21:05:16.506 [WARN] [SESSIONCLOSE] [tid=51084] Disconnect gameId=1 sid=3 wasAlive=1
+2025-12-21 21:05:17.203 [INFO] [SESSIONCLOSE] [tid=51084] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:05:17.204 [WARN] [SESSIONCLOSE] [tid=51084] Disconnect gameId=1 sid=2 wasAlive=1
+2025-12-21 21:05:17.218 [INFO] [GAMEOVER] [tid=51084] FinalizeMatchRank3 ok matchId=4 rowCount=3 winnerPlayerId=1
+2025-12-21 21:05:17.218 [INFO] [GAMEOVER] [tid=51084] GameOver sent gameId=1 winnerPlayerId=1
+2025-12-21 21:05:17.218 [INFO] [GAMEOVER] [tid=51084] Game finished by disconnect gameId=1 rank0=1 rank1=2 rank2=3
+2025-12-21 21:05:17.219 [INFO] [GAMEREMOVE] [tid=50340] RemoveGame gameId=1 remain=0
+2025-12-21 21:16:06.573 [INFO] [SERVERSTART] [tid=44828] main 시작
+2025-12-21 21:16:06.575 [INFO] [SERVERSTART] [tid=44828] 서버 시작 시도
+2025-12-21 21:16:06.575 [INFO] [SERVERSTART] [tid=44828] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:16:06.575 [INFO] [SERVERSTART] [tid=44828] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:16:06.577 [INFO] [SERVERSTART] [tid=44828] map_obb.bin 로드 성공
+2025-12-21 21:16:06.579 [INFO] [GAMECOUNT] [tid=44828] Game loop start
+2025-12-21 21:16:06.587 [INFO] [SERVERSTART] [tid=44828] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:16:06.587 [INFO] [SERVERSTART] [tid=44828] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:16:06.587 [INFO] [SERVERSTART] [tid=44828] server.Start 성공
+2025-12-21 21:16:24.021 [INFO] [ACCEPT] [tid=61472] 세션 접속 sid=1
+2025-12-21 21:16:24.025 [INFO] [RECV] [tid=61472] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:16:24.027 [INFO] [RECV] [tid=61472] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:16:24.027 [INFO] [RECV] [tid=61472] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:16:24.033 [INFO] [RECV] [tid=61472] 로비 진입 sid=1 playerId=1
+2025-12-21 21:16:24.034 [DEBUG] [MATCH] [tid=61472] LoadCharacters ok count=3
+2025-12-21 21:16:24.036 [DEBUG] [MATCH] [tid=61472] LoadWeapons ok count=3
+2025-12-21 21:16:29.562 [INFO] [ACCEPT] [tid=61472] 세션 접속 sid=2
+2025-12-21 21:16:29.566 [INFO] [RECV] [tid=61472] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:16:29.567 [INFO] [RECV] [tid=61472] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:16:29.568 [INFO] [RECV] [tid=61472] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:16:29.575 [INFO] [RECV] [tid=51048] 로비 진입 sid=2 playerId=2
+2025-12-21 21:16:29.576 [DEBUG] [MATCH] [tid=51048] LoadCharacters ok count=3
+2025-12-21 21:16:29.576 [DEBUG] [MATCH] [tid=51048] LoadWeapons ok count=3
+2025-12-21 21:16:35.685 [INFO] [ACCEPT] [tid=61472] 세션 접속 sid=3
+2025-12-21 21:16:35.687 [INFO] [RECV] [tid=61472] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:16:35.688 [INFO] [RECV] [tid=61472] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:16:35.688 [INFO] [RECV] [tid=61472] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:16:35.693 [INFO] [RECV] [tid=61472] 로비 진입 sid=3 playerId=3
+2025-12-21 21:16:35.694 [DEBUG] [MATCH] [tid=61472] LoadCharacters ok count=3
+2025-12-21 21:16:35.694 [DEBUG] [MATCH] [tid=61472] LoadWeapons ok count=3
+2025-12-21 21:16:36.178 [INFO] [MATCHQUEUE] [tid=61472] 매칭 시작 요청 sid=3
+2025-12-21 21:16:36.179 [INFO] [MATCHQUEUE] [tid=61472] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:16:38.186 [INFO] [MATCHQUEUE] [tid=61472] 매칭 시작 요청 sid=2
+2025-12-21 21:16:38.187 [INFO] [MATCHQUEUE] [tid=61472] 매칭 대기열 추가 sid=2 queueSize=2
+2025-12-21 21:16:39.915 [INFO] [MATCHQUEUE] [tid=61472] 매칭 시작 요청 sid=1
+2025-12-21 21:16:39.916 [INFO] [MATCHQUEUE] [tid=61472] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 21:16:39.916 [INFO] [MATCH] [tid=61472] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:16:41.142 [INFO] [MATCH] [tid=61472] 캐릭터 선택 sid=3 characterId=1
+2025-12-21 21:16:41.144 [INFO] [MATCH] [tid=61472] 캐릭터 선택 완료 sid=3 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:16:51.824 [INFO] [MATCH] [tid=61472] 캐릭터 선택 sid=1 characterId=2
+2025-12-21 21:16:51.826 [INFO] [MATCH] [tid=61472] 캐릭터 선택 완료 sid=1 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:17:18.401 [INFO] [MATCH] [tid=61472] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:17:18.403 [INFO] [MATCH] [tid=61472] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:17:18.403 [INFO] [MATCH] [tid=61472] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:17:18.406 [INFO] [MATCH] [tid=61472] CreateMatch ok matchId=5
+2025-12-21 21:17:18.407 [DEBUG] [MATCH] [tid=61472] LoadWeapons ok count=3
+2025-12-21 21:17:18.407 [DEBUG] [GAMECREATE] [tid=61472] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:17:18.408 [INFO] [GAMECREATE] [tid=61472] Game created gameId=1 matchId=5 sessions=3 p0(sid=3 pid=3 cid=1 wid=1) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:17:18.408 [INFO] [GAMECREATE] [tid=61472] CreateGame gameId=1 matchId=5 playerCount=3 p0(sid=3 pid=3 cid=1 wid=1) p1(sid=2 pid=2 cid=1 wid=1) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:17:18.408 [INFO] [GAMECREATE] [tid=61472] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:17:48.397 [INFO] [SESSIONCLOSE] [tid=61472] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 21:17:48.397 [WARN] [SESSIONCLOSE] [tid=61472] Disconnect gameId=1 sid=1 wasAlive=1
+2025-12-21 21:17:48.398 [INFO] [SESSIONCLOSE] [tid=47904] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:17:48.398 [WARN] [SESSIONCLOSE] [tid=47904] Disconnect gameId=1 sid=2 wasAlive=1
+2025-12-21 21:17:48.415 [INFO] [GAMEOVER] [tid=47904] FinalizeMatchRank3 ok matchId=5 rowCount=3 winnerPlayerId=3
+2025-12-21 21:17:48.416 [INFO] [GAMEOVER] [tid=47904] GameOver sent gameId=1 winnerPlayerId=3
+2025-12-21 21:17:48.416 [INFO] [GAMEOVER] [tid=47904] Game finished by disconnect gameId=1 rank0=3 rank1=2 rank2=1
+2025-12-21 21:17:48.417 [INFO] [GAMEREMOVE] [tid=44480] RemoveGame gameId=1 remain=0
+2025-12-21 21:23:06.069 [INFO] [SERVERSTART] [tid=61452] main 시작
+2025-12-21 21:23:06.070 [INFO] [SERVERSTART] [tid=61452] 서버 시작 시도
+2025-12-21 21:23:06.070 [INFO] [SERVERSTART] [tid=61452] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:23:06.070 [INFO] [SERVERSTART] [tid=61452] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:23:06.071 [INFO] [SERVERSTART] [tid=61452] map_obb.bin 로드 성공
+2025-12-21 21:23:06.073 [INFO] [GAMECOUNT] [tid=61452] Game loop start
+2025-12-21 21:23:06.082 [INFO] [SERVERSTART] [tid=61452] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:23:06.082 [INFO] [SERVERSTART] [tid=61452] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:23:06.082 [INFO] [SERVERSTART] [tid=61452] server.Start 성공
+2025-12-21 21:23:19.745 [INFO] [ACCEPT] [tid=37500] 세션 접속 sid=1
+2025-12-21 21:23:19.749 [INFO] [RECV] [tid=37500] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:23:19.750 [INFO] [RECV] [tid=37500] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:23:19.751 [INFO] [RECV] [tid=37500] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:23:19.756 [INFO] [RECV] [tid=54552] 로비 진입 sid=1 playerId=1
+2025-12-21 21:23:19.757 [DEBUG] [MATCH] [tid=54552] LoadCharacters ok count=3
+2025-12-21 21:23:19.757 [DEBUG] [MATCH] [tid=54552] LoadWeapons ok count=3
+2025-12-21 21:23:22.594 [INFO] [ACCEPT] [tid=37500] 세션 접속 sid=2
+2025-12-21 21:23:22.598 [INFO] [RECV] [tid=37500] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:23:22.599 [INFO] [RECV] [tid=37500] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:23:22.599 [INFO] [RECV] [tid=37500] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:23:22.603 [INFO] [RECV] [tid=54552] 로비 진입 sid=2 playerId=2
+2025-12-21 21:23:22.604 [DEBUG] [MATCH] [tid=54552] LoadCharacters ok count=3
+2025-12-21 21:23:22.604 [DEBUG] [MATCH] [tid=54552] LoadWeapons ok count=3
+2025-12-21 21:23:29.460 [INFO] [ACCEPT] [tid=37500] 세션 접속 sid=3
+2025-12-21 21:23:29.463 [INFO] [RECV] [tid=37500] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:23:29.464 [INFO] [RECV] [tid=37500] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:23:29.465 [INFO] [RECV] [tid=37500] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:23:29.469 [INFO] [RECV] [tid=37500] 로비 진입 sid=3 playerId=3
+2025-12-21 21:23:29.470 [DEBUG] [MATCH] [tid=37500] LoadCharacters ok count=3
+2025-12-21 21:23:29.470 [DEBUG] [MATCH] [tid=37500] LoadWeapons ok count=3
+2025-12-21 21:23:29.937 [INFO] [MATCHQUEUE] [tid=54552] 매칭 시작 요청 sid=3
+2025-12-21 21:23:29.938 [INFO] [MATCHQUEUE] [tid=54552] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:23:32.082 [INFO] [MATCHQUEUE] [tid=54552] 매칭 시작 요청 sid=1
+2025-12-21 21:23:32.083 [INFO] [MATCHQUEUE] [tid=54552] 매칭 대기열 추가 sid=1 queueSize=2
+2025-12-21 21:23:33.728 [INFO] [MATCHQUEUE] [tid=54552] 매칭 시작 요청 sid=2
+2025-12-21 21:23:33.729 [INFO] [MATCHQUEUE] [tid=54552] 매칭 대기열 추가 sid=2 queueSize=3
+2025-12-21 21:23:33.729 [INFO] [MATCH] [tid=54552] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:23:34.617 [INFO] [MATCH] [tid=54552] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:23:34.619 [INFO] [MATCH] [tid=54552] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:23:35.159 [INFO] [MATCH] [tid=54552] 캐릭터 선택 sid=1 characterId=1
+2025-12-21 21:23:35.160 [INFO] [MATCH] [tid=54552] 캐릭터 선택 완료 sid=1 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:23:35.936 [INFO] [MATCH] [tid=54552] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:23:35.938 [INFO] [MATCH] [tid=54552] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:23:35.938 [INFO] [MATCH] [tid=54552] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:23:35.942 [INFO] [MATCH] [tid=54552] CreateMatch ok matchId=6
+2025-12-21 21:23:35.942 [DEBUG] [MATCH] [tid=54552] LoadWeapons ok count=3
+2025-12-21 21:23:35.942 [DEBUG] [GAMECREATE] [tid=54552] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:23:35.943 [INFO] [GAMECREATE] [tid=54552] Game created gameId=1 matchId=6 sessions=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=1 pid=1 cid=1 wid=1) p2(sid=2 pid=2 cid=1 wid=1)
+2025-12-21 21:23:35.943 [INFO] [GAMECREATE] [tid=54552] CreateGame gameId=1 matchId=6 playerCount=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=1 pid=1 cid=1 wid=1) p2(sid=2 pid=2 cid=1 wid=1)
+2025-12-21 21:23:35.944 [INFO] [GAMECREATE] [tid=54552] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:24:08.367 [INFO] [PLAYERSHOOT] [tid=51480] Kill gameId=1 shooterSid=2 victimSid=3 shotId=0 weaponId=1 damage=20
+2025-12-21 21:27:29.343 [INFO] [SESSIONCLOSE] [tid=51480] 세션 종료 sid=3 authed=1 playerId=3
+2025-12-21 21:27:29.344 [WARN] [SESSIONCLOSE] [tid=51480] Disconnect gameId=1 sid=3 wasAlive=0
+2025-12-21 21:32:22.628 [INFO] [SESSIONCLOSE] [tid=41592] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 21:32:22.629 [WARN] [SESSIONCLOSE] [tid=41592] Disconnect gameId=1 sid=1 wasAlive=1
+2025-12-21 21:32:22.637 [INFO] [SESSIONCLOSE] [tid=37500] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:32:22.643 [INFO] [GAMEOVER] [tid=41592] FinalizeMatchRank3 ok matchId=6 rowCount=3 winnerPlayerId=2
+2025-12-21 21:32:22.644 [INFO] [GAMEOVER] [tid=41592] GameOver sent gameId=1 winnerPlayerId=2
+2025-12-21 21:32:22.646 [INFO] [GAMEOVER] [tid=41592] Game finished by disconnect gameId=1 rank0=2 rank1=1 rank2=3
+2025-12-21 21:32:22.653 [INFO] [GAMEREMOVE] [tid=35860] RemoveGame gameId=1 remain=0
+2025-12-21 21:32:31.091 [INFO] [SERVERSTART] [tid=38260] main 시작
+2025-12-21 21:32:31.092 [INFO] [SERVERSTART] [tid=38260] 서버 시작 시도
+2025-12-21 21:32:31.093 [INFO] [SERVERSTART] [tid=38260] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:32:31.093 [INFO] [SERVERSTART] [tid=38260] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:32:31.093 [INFO] [SERVERSTART] [tid=38260] map_obb.bin 로드 성공
+2025-12-21 21:32:31.095 [INFO] [GAMECOUNT] [tid=38260] Game loop start
+2025-12-21 21:32:31.103 [INFO] [SERVERSTART] [tid=38260] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:32:31.104 [INFO] [SERVERSTART] [tid=38260] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:32:31.104 [INFO] [SERVERSTART] [tid=38260] server.Start 성공
+2025-12-21 21:33:07.646 [INFO] [ACCEPT] [tid=65368] 세션 접속 sid=1
+2025-12-21 21:33:07.650 [INFO] [RECV] [tid=65368] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:33:07.651 [INFO] [RECV] [tid=65368] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:33:07.651 [INFO] [RECV] [tid=65368] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:33:07.654 [INFO] [RECV] [tid=65368] 로비 진입 sid=1 playerId=1
+2025-12-21 21:33:07.654 [DEBUG] [MATCH] [tid=65368] LoadCharacters ok count=3
+2025-12-21 21:33:07.655 [DEBUG] [MATCH] [tid=65368] LoadWeapons ok count=3
+2025-12-21 21:33:11.161 [INFO] [ACCEPT] [tid=65368] 세션 접속 sid=2
+2025-12-21 21:33:11.165 [INFO] [RECV] [tid=65368] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:33:11.166 [INFO] [RECV] [tid=65368] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:33:11.166 [INFO] [RECV] [tid=65368] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:33:11.174 [INFO] [RECV] [tid=65368] 로비 진입 sid=2 playerId=2
+2025-12-21 21:33:11.175 [DEBUG] [MATCH] [tid=65368] LoadCharacters ok count=3
+2025-12-21 21:33:11.175 [DEBUG] [MATCH] [tid=65368] LoadWeapons ok count=3
+2025-12-21 21:33:17.120 [INFO] [ACCEPT] [tid=65368] 세션 접속 sid=3
+2025-12-21 21:33:17.122 [INFO] [RECV] [tid=65368] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:33:17.123 [INFO] [RECV] [tid=65368] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:33:17.123 [INFO] [RECV] [tid=65368] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:33:17.128 [INFO] [RECV] [tid=65368] 로비 진입 sid=3 playerId=3
+2025-12-21 21:33:17.129 [DEBUG] [MATCH] [tid=65368] LoadCharacters ok count=3
+2025-12-21 21:33:17.129 [DEBUG] [MATCH] [tid=65368] LoadWeapons ok count=3
+2025-12-21 21:33:17.555 [INFO] [MATCHQUEUE] [tid=65368] 매칭 시작 요청 sid=3
+2025-12-21 21:33:17.556 [INFO] [MATCHQUEUE] [tid=65368] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:33:19.278 [INFO] [MATCHQUEUE] [tid=65368] 매칭 시작 요청 sid=1
+2025-12-21 21:33:19.279 [INFO] [MATCHQUEUE] [tid=65368] 매칭 대기열 추가 sid=1 queueSize=2
+2025-12-21 21:33:20.827 [INFO] [MATCHQUEUE] [tid=65368] 매칭 시작 요청 sid=2
+2025-12-21 21:33:20.828 [INFO] [MATCHQUEUE] [tid=65368] 매칭 대기열 추가 sid=2 queueSize=3
+2025-12-21 21:33:20.829 [INFO] [MATCH] [tid=65368] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:33:21.641 [INFO] [MATCH] [tid=65368] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:33:21.643 [INFO] [MATCH] [tid=65368] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:33:23.556 [INFO] [MATCH] [tid=65368] 캐릭터 선택 sid=1 characterId=1
+2025-12-21 21:33:23.558 [INFO] [MATCH] [tid=65368] 캐릭터 선택 완료 sid=1 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:33:25.133 [INFO] [MATCH] [tid=65368] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:33:25.134 [INFO] [MATCH] [tid=65368] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:33:25.134 [INFO] [MATCH] [tid=65368] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:33:25.137 [INFO] [MATCH] [tid=65368] CreateMatch ok matchId=7
+2025-12-21 21:33:25.138 [DEBUG] [MATCH] [tid=65368] LoadWeapons ok count=3
+2025-12-21 21:33:25.138 [DEBUG] [GAMECREATE] [tid=65368] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:33:25.138 [INFO] [GAMECREATE] [tid=65368] Game created gameId=1 matchId=7 sessions=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=1 pid=1 cid=1 wid=1) p2(sid=2 pid=2 cid=1 wid=1)
+2025-12-21 21:33:25.139 [INFO] [GAMECREATE] [tid=65368] CreateGame gameId=1 matchId=7 playerCount=3 p0(sid=3 pid=3 cid=2 wid=2) p1(sid=1 pid=1 cid=1 wid=1) p2(sid=2 pid=2 cid=1 wid=1)
+2025-12-21 21:33:25.139 [INFO] [GAMECREATE] [tid=65368] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:33:29.507 [INFO] [PLAYERSHOOT] [tid=48676] Kill gameId=1 shooterSid=2 victimSid=3 shotId=0 weaponId=1 damage=20
+2025-12-21 21:33:44.125 [INFO] [PLAYERSHOOT] [tid=41096] Kill gameId=1 shooterSid=1 victimSid=2 shotId=0 weaponId=1 damage=20
+2025-12-21 21:33:44.135 [INFO] [GAMEOVER] [tid=41096] FinalizeMatchRank3 ok matchId=7 rowCount=3 winnerPlayerId=1
+2025-12-21 21:33:44.135 [INFO] [GAMEOVER] [tid=41096] GameOver sent gameId=1 winnerPlayerId=1
+2025-12-21 21:33:44.135 [INFO] [GAMEOVER] [tid=41096] Game finished by combat gameId=1 rank0=1 rank1=2 rank2=3
+2025-12-21 21:33:44.138 [INFO] [GAMEREMOVE] [tid=45848] RemoveGame gameId=1 remain=0
+2025-12-21 21:33:48.556 [INFO] [RECV] [tid=41096] 로비 진입 sid=2 playerId=2
+2025-12-21 21:33:48.557 [DEBUG] [MATCH] [tid=41096] LoadCharacters ok count=3
+2025-12-21 21:33:48.558 [DEBUG] [MATCH] [tid=41096] LoadWeapons ok count=3
+2025-12-21 21:33:49.522 [INFO] [RECV] [tid=41096] 로비 진입 sid=1 playerId=1
+2025-12-21 21:33:49.523 [DEBUG] [MATCH] [tid=41096] LoadCharacters ok count=3
+2025-12-21 21:33:49.524 [DEBUG] [MATCH] [tid=41096] LoadWeapons ok count=3
+2025-12-21 21:33:50.364 [INFO] [RECV] [tid=41096] 로비 진입 sid=3 playerId=3
+2025-12-21 21:33:50.366 [DEBUG] [MATCH] [tid=41096] LoadCharacters ok count=3
+2025-12-21 21:33:50.366 [DEBUG] [MATCH] [tid=41096] LoadWeapons ok count=3
+2025-12-21 21:33:52.256 [INFO] [MATCHQUEUE] [tid=41096] 매칭 시작 요청 sid=3
+2025-12-21 21:33:52.256 [INFO] [MATCHQUEUE] [tid=41096] 매칭 대기열 추가 sid=3 queueSize=1
+2025-12-21 21:35:06.452 [INFO] [SESSIONCLOSE] [tid=41096] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 21:35:06.456 [INFO] [SESSIONCLOSE] [tid=41096] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:35:12.346 [INFO] [SERVERSTART] [tid=3128] main 시작
+2025-12-21 21:35:12.348 [INFO] [SERVERSTART] [tid=3128] 서버 시작 시도
+2025-12-21 21:35:12.348 [INFO] [SERVERSTART] [tid=3128] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:35:12.348 [INFO] [SERVERSTART] [tid=3128] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:35:12.348 [INFO] [SERVERSTART] [tid=3128] map_obb.bin 로드 성공
+2025-12-21 21:35:12.351 [INFO] [GAMECOUNT] [tid=3128] Game loop start
+2025-12-21 21:35:12.358 [INFO] [SERVERSTART] [tid=3128] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:35:12.359 [INFO] [SERVERSTART] [tid=3128] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:35:12.359 [INFO] [SERVERSTART] [tid=3128] server.Start 성공
+2025-12-21 21:35:21.621 [INFO] [ACCEPT] [tid=62804] 세션 접속 sid=1
+2025-12-21 21:35:21.623 [INFO] [RECV] [tid=62804] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:35:21.624 [INFO] [RECV] [tid=62804] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:35:21.624 [INFO] [RECV] [tid=62804] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:35:21.628 [INFO] [RECV] [tid=62804] 로비 진입 sid=1 playerId=1
+2025-12-21 21:35:21.629 [DEBUG] [MATCH] [tid=62804] LoadCharacters ok count=3
+2025-12-21 21:35:21.629 [DEBUG] [MATCH] [tid=62804] LoadWeapons ok count=3
+2025-12-21 21:35:33.530 [INFO] [ACCEPT] [tid=62804] 세션 접속 sid=2
+2025-12-21 21:35:33.534 [INFO] [RECV] [tid=62804] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:35:33.535 [INFO] [RECV] [tid=62804] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:35:33.535 [INFO] [RECV] [tid=62804] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:35:33.544 [INFO] [RECV] [tid=62804] 로비 진입 sid=2 playerId=2
+2025-12-21 21:35:33.545 [DEBUG] [MATCH] [tid=62804] LoadCharacters ok count=3
+2025-12-21 21:35:33.545 [DEBUG] [MATCH] [tid=62804] LoadWeapons ok count=3
+2025-12-21 21:35:36.550 [INFO] [ACCEPT] [tid=62804] 세션 접속 sid=3
+2025-12-21 21:35:36.554 [INFO] [RECV] [tid=62804] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:35:36.555 [INFO] [RECV] [tid=62804] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:35:36.555 [INFO] [RECV] [tid=62804] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:35:36.564 [INFO] [RECV] [tid=62804] 로비 진입 sid=3 playerId=3
+2025-12-21 21:35:36.565 [DEBUG] [MATCH] [tid=62804] LoadCharacters ok count=3
+2025-12-21 21:35:36.566 [DEBUG] [MATCH] [tid=62804] LoadWeapons ok count=3
+2025-12-21 21:35:37.695 [INFO] [MATCHQUEUE] [tid=62804] 매칭 시작 요청 sid=2
+2025-12-21 21:35:37.696 [INFO] [MATCHQUEUE] [tid=62804] 매칭 대기열 추가 sid=2 queueSize=1
+2025-12-21 21:35:38.209 [INFO] [MATCHQUEUE] [tid=42952] 매칭 시작 요청 sid=3
+2025-12-21 21:35:38.211 [INFO] [MATCHQUEUE] [tid=42952] 매칭 대기열 추가 sid=3 queueSize=2
+2025-12-21 21:35:38.784 [INFO] [MATCHQUEUE] [tid=42952] 매칭 시작 요청 sid=1
+2025-12-21 21:35:38.785 [INFO] [MATCHQUEUE] [tid=42952] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 21:35:38.786 [INFO] [MATCH] [tid=42952] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:35:39.845 [INFO] [MATCH] [tid=42952] 캐릭터 선택 sid=1 characterId=1
+2025-12-21 21:35:39.846 [INFO] [MATCH] [tid=42952] 캐릭터 선택 완료 sid=1 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:35:41.542 [INFO] [MATCH] [tid=42952] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:35:41.544 [INFO] [MATCH] [tid=42952] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:35:43.682 [INFO] [MATCH] [tid=62804] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:35:43.684 [INFO] [MATCH] [tid=62804] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:35:43.684 [INFO] [MATCH] [tid=62804] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:35:43.687 [INFO] [MATCH] [tid=62804] CreateMatch ok matchId=8
+2025-12-21 21:35:43.688 [DEBUG] [MATCH] [tid=62804] LoadWeapons ok count=3
+2025-12-21 21:35:43.688 [DEBUG] [GAMECREATE] [tid=62804] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:35:43.689 [INFO] [GAMECREATE] [tid=62804] Game created gameId=1 matchId=8 sessions=3 p0(sid=2 pid=2 cid=1 wid=1) p1(sid=3 pid=3 cid=2 wid=2) p2(sid=1 pid=1 cid=1 wid=1)
+2025-12-21 21:35:43.689 [INFO] [GAMECREATE] [tid=62804] CreateGame gameId=1 matchId=8 playerCount=3 p0(sid=2 pid=2 cid=1 wid=1) p1(sid=3 pid=3 cid=2 wid=2) p2(sid=1 pid=1 cid=1 wid=1)
+2025-12-21 21:35:43.690 [INFO] [GAMECREATE] [tid=62804] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:35:59.299 [INFO] [PLAYERSHOOT] [tid=40888] Kill gameId=1 shooterSid=2 victimSid=1 shotId=0 weaponId=1 damage=20
+2025-12-21 21:37:31.208 [INFO] [SESSIONCLOSE] [tid=42952] 세션 종료 sid=1 authed=1 playerId=1
+2025-12-21 21:37:31.210 [WARN] [SESSIONCLOSE] [tid=42952] Disconnect gameId=1 sid=1 wasAlive=0
+2025-12-21 21:40:06.077 [INFO] [SESSIONCLOSE] [tid=42952] 세션 종료 sid=2 authed=1 playerId=2
+2025-12-21 21:40:06.080 [INFO] [SESSIONCLOSE] [tid=40888] 세션 종료 sid=3 authed=1 playerId=3
+2025-12-21 21:40:06.080 [WARN] [SESSIONCLOSE] [tid=42952] Disconnect gameId=1 sid=2 wasAlive=1
+2025-12-21 21:40:06.099 [INFO] [GAMEOVER] [tid=42952] FinalizeMatchRank3 ok matchId=8 rowCount=3 winnerPlayerId=3
+2025-12-21 21:40:06.100 [INFO] [GAMEOVER] [tid=42952] GameOver sent gameId=1 winnerPlayerId=3
+2025-12-21 21:40:06.100 [INFO] [GAMEOVER] [tid=42952] Game finished by disconnect gameId=1 rank0=3 rank1=2 rank2=1
+2025-12-21 21:40:06.109 [INFO] [GAMEREMOVE] [tid=52004] RemoveGame gameId=1 remain=0
+2025-12-21 21:40:36.049 [INFO] [SERVERSTART] [tid=53416] main 시작
+2025-12-21 21:40:36.051 [INFO] [SERVERSTART] [tid=53416] 서버 시작 시도
+2025-12-21 21:40:36.051 [INFO] [SERVERSTART] [tid=53416] 월드 바운드 설정 width=20.36 depth=30.36
+2025-12-21 21:40:36.052 [INFO] [SERVERSTART] [tid=53416] OBB 로드 성공 path=./map_obb.bin count=75 thinY=16 tallY=38 maxHalf=(5,2.625,2.66279)
+2025-12-21 21:40:36.052 [INFO] [SERVERSTART] [tid=53416] map_obb.bin 로드 성공
+2025-12-21 21:40:36.055 [INFO] [GAMECOUNT] [tid=53416] Game loop start
+2025-12-21 21:40:36.066 [INFO] [SERVERSTART] [tid=53416] DB connect ok host=127.0.0.1 port=3307 db=GameServerDB
+2025-12-21 21:40:36.067 [INFO] [SERVERSTART] [tid=53416] 서버 시작 완료 port=9000 worker=24 accept=8
+2025-12-21 21:40:36.067 [INFO] [SERVERSTART] [tid=53416] server.Start 성공
+2025-12-21 21:40:47.626 [INFO] [ACCEPT] [tid=17044] 세션 접속 sid=1
+2025-12-21 21:40:47.628 [INFO] [RECV] [tid=17044] 로그인 처리 시작 userId=PlayerA
+2025-12-21 21:40:47.629 [INFO] [RECV] [tid=17044] 로그인 성공 userId=PlayerA playerId=1 iconId=0
+2025-12-21 21:40:47.629 [INFO] [RECV] [tid=17044] 로그인 성공 sid=1 uid=PlayerA playerId=1
+2025-12-21 21:40:47.634 [INFO] [RECV] [tid=17044] 로비 진입 sid=1 playerId=1
+2025-12-21 21:40:47.634 [DEBUG] [MATCH] [tid=17044] LoadCharacters ok count=3
+2025-12-21 21:40:47.635 [DEBUG] [MATCH] [tid=17044] LoadWeapons ok count=3
+2025-12-21 21:41:06.736 [INFO] [ACCEPT] [tid=17044] 세션 접속 sid=2
+2025-12-21 21:41:06.741 [INFO] [RECV] [tid=17044] 로그인 처리 시작 userId=PlayerB
+2025-12-21 21:41:06.742 [INFO] [RECV] [tid=17044] 로그인 성공 userId=PlayerB playerId=2 iconId=1
+2025-12-21 21:41:06.742 [INFO] [RECV] [tid=17044] 로그인 성공 sid=2 uid=PlayerB playerId=2
+2025-12-21 21:41:06.745 [INFO] [RECV] [tid=17044] 로비 진입 sid=2 playerId=2
+2025-12-21 21:41:06.746 [DEBUG] [MATCH] [tid=17044] LoadCharacters ok count=3
+2025-12-21 21:41:06.746 [DEBUG] [MATCH] [tid=17044] LoadWeapons ok count=3
+2025-12-21 21:41:09.538 [INFO] [ACCEPT] [tid=17044] 세션 접속 sid=3
+2025-12-21 21:41:09.542 [INFO] [RECV] [tid=17044] 로그인 처리 시작 userId=PlayerC
+2025-12-21 21:41:09.542 [INFO] [RECV] [tid=17044] 로그인 성공 userId=PlayerC playerId=3 iconId=2
+2025-12-21 21:41:09.543 [INFO] [RECV] [tid=17044] 로그인 성공 sid=3 uid=PlayerC playerId=3
+2025-12-21 21:41:09.551 [INFO] [RECV] [tid=40296] 로비 진입 sid=3 playerId=3
+2025-12-21 21:41:09.552 [DEBUG] [MATCH] [tid=40296] LoadCharacters ok count=3
+2025-12-21 21:41:09.553 [DEBUG] [MATCH] [tid=40296] LoadWeapons ok count=3
+2025-12-21 21:41:10.890 [INFO] [MATCHQUEUE] [tid=40296] 매칭 시작 요청 sid=2
+2025-12-21 21:41:10.892 [INFO] [MATCHQUEUE] [tid=40296] 매칭 대기열 추가 sid=2 queueSize=1
+2025-12-21 21:41:11.545 [INFO] [MATCHQUEUE] [tid=40296] 매칭 시작 요청 sid=3
+2025-12-21 21:41:11.546 [INFO] [MATCHQUEUE] [tid=40296] 매칭 대기열 추가 sid=3 queueSize=2
+2025-12-21 21:41:12.206 [INFO] [MATCHQUEUE] [tid=40296] 매칭 시작 요청 sid=1
+2025-12-21 21:41:12.207 [INFO] [MATCHQUEUE] [tid=40296] 매칭 대기열 추가 sid=1 queueSize=3
+2025-12-21 21:41:12.207 [INFO] [MATCH] [tid=40296] 대기룸 생성 roomId=1 memberCount=3
+2025-12-21 21:41:13.462 [INFO] [MATCH] [tid=40296] 캐릭터 선택 sid=1 characterId=2
+2025-12-21 21:41:13.463 [INFO] [MATCH] [tid=40296] 캐릭터 선택 완료 sid=1 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:41:15.203 [INFO] [MATCH] [tid=40296] 캐릭터 선택 sid=3 characterId=2
+2025-12-21 21:41:15.205 [INFO] [MATCH] [tid=40296] 캐릭터 선택 완료 sid=3 roomId=1 characterId=2 weaponId=2
+2025-12-21 21:41:16.960 [INFO] [MATCH] [tid=40296] 캐릭터 선택 sid=2 characterId=1
+2025-12-21 21:41:16.962 [INFO] [MATCH] [tid=40296] 캐릭터 선택 완료 sid=2 roomId=1 characterId=1 weaponId=1
+2025-12-21 21:41:16.962 [INFO] [MATCH] [tid=40296] 매칭 성립 roomId=1 memberCount=3
+2025-12-21 21:41:16.965 [INFO] [MATCH] [tid=40296] CreateMatch ok matchId=9
+2025-12-21 21:41:16.966 [DEBUG] [MATCH] [tid=40296] LoadWeapons ok count=3
+2025-12-21 21:41:16.966 [DEBUG] [GAMECREATE] [tid=40296] Weapon stats loaded gameId=1 count=3
+2025-12-21 21:41:16.966 [INFO] [GAMECREATE] [tid=40296] Game created gameId=1 matchId=9 sessions=3 p0(sid=2 pid=2 cid=1 wid=1) p1(sid=3 pid=3 cid=2 wid=2) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:41:16.967 [INFO] [GAMECREATE] [tid=40296] CreateGame gameId=1 matchId=9 playerCount=3 p0(sid=2 pid=2 cid=1 wid=1) p1(sid=3 pid=3 cid=2 wid=2) p2(sid=1 pid=1 cid=2 wid=2)
+2025-12-21 21:41:16.967 [INFO] [GAMECREATE] [tid=40296] 게임 생성 요청 완료 roomId=1 gameId=1
+2025-12-21 21:41:26.584 [INFO] [PLAYERSHOOT] [tid=31780] Kill gameId=1 shooterSid=2 victimSid=1 shotId=0 weaponId=1 damage=20
+2025-12-21 21:41:39.348 [INFO] [PLAYERSHOOT] [tid=54804] Kill gameId=1 shooterSid=2 victimSid=3 shotId=0 weaponId=1 damage=20
+2025-12-21 21:41:39.367 [INFO] [GAMEOVER] [tid=54804] FinalizeMatchRank3 ok matchId=9 rowCount=3 winnerPlayerId=2
+2025-12-21 21:41:39.367 [INFO] [GAMEOVER] [tid=54804] GameOver sent gameId=1 winnerPlayerId=2
+2025-12-21 21:41:39.367 [INFO] [GAMEOVER] [tid=54804] Game finished by combat gameId=1 rank0=2 rank1=3 rank2=1
+2025-12-21 21:41:39.368 [INFO] [GAMEREMOVE] [tid=35928] RemoveGame gameId=1 remain=0
+2025-12-21 21:41:45.289 [INFO] [RECV] [tid=54804] 로비 진입 sid=1 playerId=1
+2025-12-21 21:41:45.290 [DEBUG] [MATCH] [tid=54804] LoadCharacters ok count=3
+2025-12-21 21:41:45.290 [DEBUG] [MATCH] [tid=54804] LoadWeapons ok count=3
+2025-12-21 21:41:47.611 [INFO] [SESSIONCLOSE] [tid=40296] 세션 종료 sid=3 authed=1 playerId=3
+2025-12-21 21:41:47.613 [INFO] [SESSIONCLOSE] [tid=54804] 세션 종료 sid=2 authed=1 playerId=2

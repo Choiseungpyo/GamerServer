@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class DataManager : Singleton<DataManager>
+public class DataManager : Singleton<DataManager>, IEventListener<GameFlowStateEvent>
 {
     [Header("Runtime DB (from server)")]
     [SerializeField] private CharacterDatabaseSO characterStatDb;
@@ -124,4 +124,35 @@ public class DataManager : Singleton<DataManager>
         return iconDb.GetOrDefault(iconId);
     }
 
+    public bool TryApplyPlayerVisual(Player p, int characterId, int weaponIdFromServer)
+    {
+        if (p == null) return false;
+
+        if (characterVisualDb != null) characterVisualDb.Build();
+        if (weaponVisualDb != null) weaponVisualDb.Build();
+
+        if (characterVisualDb == null) return false;
+
+        CharacterVisualRow row;
+        if (!characterVisualDb.TryGet(characterId, out row)) return false;
+        if (row == null || row.modelPrefab == null) return false;
+
+        p.SetCharacterModel(characterId, row.modelPrefab);
+
+        int wid = weaponIdFromServer;
+        if (wid < 0) wid = row.defaultWeaponId;
+
+        p.SetDefaultWeapon(wid);
+        return true;
+    }
+
+    public void OnEvent(GameFlowStateEvent gameFlowStateEvent)
+    {
+        switch(gameFlowStateEvent.GameFlowState)
+        {
+            case GameFlowState.MultiGame_Playing:
+                characterVisualDb.Build();
+                break;
+        }
+    }
 }

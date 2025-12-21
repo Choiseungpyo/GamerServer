@@ -216,4 +216,38 @@ public class VictoryPodiumManager : MonoBehaviour
         if (DataManager.Instance != null)
             DataManager.Instance.RequestLobbyData();
     }
+
+    public void ShowFromGameOverPacket(GameOverPacket pkt)
+    {
+        int count = pkt.rankCount;
+        if (count < 0) count = 0;
+        if (count > NetConst.MAX_PLAYERS) count = NetConst.MAX_PLAYERS;
+
+        PodiumRankData r1 = new PodiumRankData();
+        PodiumRankData r2 = new PodiumRankData();
+        PodiumRankData r3 = new PodiumRankData();
+
+        if (count > 0)
+        {
+            r1.characterId = pkt.rankCharacterIds[0];
+            r1.iconId = pkt.rankIconIds[0];
+            r1.nickname = PacketUtil.ReadRankNickname(pkt, 0);
+        }
+
+        if (count > 1)
+        {
+            r2.characterId = pkt.rankCharacterIds[1];
+            r2.iconId = pkt.rankIconIds[1];
+            r2.nickname = PacketUtil.ReadRankNickname(pkt, 1);
+        }
+
+        if (count > 2)
+        {
+            r3.characterId = pkt.rankCharacterIds[2];
+            r3.iconId = pkt.rankIconIds[2];
+            r3.nickname = PacketUtil.ReadRankNickname(pkt, 2);
+        }
+
+        Show(r1, r2, r3);
+    }
 }
