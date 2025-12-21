@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44aa437878f548049b1af8b61880ce8a, type: 3}
+  m_Name: CharacterVisualDatabase
+  m_EditorClassIdentifier: 
+  list:
+  - characterId: 1
+    modelPrefab: {fileID: 4402954096144093497, guid: 846460c3a7acaaa40ae2ceb253d23bf7, type: 3}
+    defaultWeaponId: 1
+  - characterId: 2
+    modelPrefab: {fileID: 6008901960357154150, guid: 7ebbd3eada08df3479ea41000bd5190c, type: 3}
+    defaultWeaponId: 2
