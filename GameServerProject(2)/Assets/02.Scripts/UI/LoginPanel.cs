@@ -123,16 +123,7 @@ public class LoginPanel : MonoBehaviour
             return;
         }
 
-        ClientContext.LoggedIn = true;
-        ClientContext.PlayerId = pkt.playerId;
-        ClientContext.IconId = pkt.iconId;
-        ClientContext.Nickname = MarshalNet.ReadFixedAscii(pkt.nickname);
-        ClientContext.Total = pkt.totalGameCount;
-        ClientContext.Win = pkt.winCount;
-
-        var dm = DataManager.Instance;
-        if (dm != null)
-            dm.RequestLobbyData();
+        TcpManagerMarshal.Instance.SendLobbyEnter();
 
         statusText.text = "Login Ok : Lodding";
     }

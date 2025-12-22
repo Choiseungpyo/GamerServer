@@ -1190,7 +1190,39 @@ Transform:
   - {fileID: 8330055318588239483}
   - {fileID: 9016223367923210853}
   - {fileID: 5468705234796145822}
+  - {fileID: 7635854833082917716}
   m_Father: {fileID: 4312944673877152347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4002058003887785706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7635854833082917716}
+  m_Layer: 0
+  m_Name: WorldWeaponSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7635854833082917716
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4002058003887785706}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000014901158, y: -0.00000010430811, z: 0.00000017881389, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3879891218158741227}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4210951435079068194
 GameObject:
@@ -1264,6 +1296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2980996276201461717}
   - component: {fileID: 6435484774923776391}
+  - component: {fileID: -6564650912606647827}
   m_Layer: 0
   m_Name: Male
   m_TagString: Untagged
@@ -1312,6 +1345,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6564650912606647827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4402954096144093497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410eb9371ec29bf40bbfd0f55bd78d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldWeaponSocket: {fileID: 7635854833082917716}
 --- !u!1 &4485759967293829181
 GameObject:
   m_ObjectHideFlags: 0

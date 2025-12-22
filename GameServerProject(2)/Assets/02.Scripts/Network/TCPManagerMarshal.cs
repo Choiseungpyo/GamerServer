@@ -205,7 +205,7 @@ public class TcpManagerMarshal : Singleton<TcpManagerMarshal>
                     UnityMainThread(() =>
                     {
                         if (pkt.characters == null || pkt.characters.Length != NetConst.MAX_CHARACTERS)
-                            pkt.characters = new CharacterRow[NetConst.MAX_CHARACTERS];
+                            pkt.characters = new CharacterInfo[NetConst.MAX_CHARACTERS];
 
                         OnCharacterList?.Invoke(pkt);
                     });

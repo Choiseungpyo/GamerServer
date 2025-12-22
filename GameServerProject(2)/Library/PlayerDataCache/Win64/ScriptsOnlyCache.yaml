@@ -2,7 +2,6 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - CameraController
-    - CharacterDatabaseSO
     - CharacterPreviewRig
     - CharacterSelectPanel
     - CharacterVisualDatabaseSO
@@ -14,16 +13,13 @@ ScriptsOnlyBuild:
     - LobbyPanel
     - LocalHpBarUI
     - LoginPanel
-    - Player
-    - PlayerPoolComponent
     - PodiumRankUI
     - SoundManager
     - TcpManagerMarshal
     - UIManager
     - UnityMainThreadDispatcher
     - VictoryPodiumManager
-    - WeaponDatabaseSO
-    - WeaponRuntimeDatabaseSO
+    - WeaponVisualDatabaseSO
     Unity.InputSystem.dll:
     - UnityEngine.InputSystem.InputSettings
     - UnityEngine.InputSystem.InputSystemObject
@@ -70,13 +66,13 @@ ScriptsOnlyBuild:
   serializedClasses:
     Assembly-CSharp:
     - BgmData
-    - CharacterRuntimeData
-    - CharacterVisualRow
+    - CharacterDatabase
+    - CharacterVisualData
     - IconRow
     - ScreenData
     - SfxData
-    - WeaponRow
-    - WeaponRuntimeData
+    - WeaponData
+    - WeaponDatabase
     Unity.TextMeshPro:
     - TMPro.FaceInfo_Legacy
     - TMPro.FontAssetCreationSettings
@@ -161,15 +157,15 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1558}
+      Script: {instanceID: 1582}
     - Class: 114
-      Script: {instanceID: 1584}
+      Script: {instanceID: 1630}
     - Class: 114
-      Script: {instanceID: 1632}
+      Script: {instanceID: 1714}
     - Class: 114
-      Script: {instanceID: 1716}
+      Script: {instanceID: 1770}
     - Class: 114
-      Script: {instanceID: 1772}
+      Script: {instanceID: 1802}
     - Class: 114
       Script: {instanceID: 2316}
     - Class: 114
@@ -185,15 +181,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 3850}
     - Class: 114
-      Script: {instanceID: 4006}
-    - Class: 114
-      Script: {instanceID: 4206}
-    - Class: 114
       Script: {instanceID: 4298}
     - Class: 114
       Script: {instanceID: 4474}
-    - Class: 114
-      Script: {instanceID: 4496}
     - Class: 114
       Script: {instanceID: 4584}
     - Class: 114
@@ -202,8 +192,6 @@ ScriptsOnlyBuild:
       Script: {instanceID: 4642}
     - Class: 114
       Script: {instanceID: 4898}
-    - Class: 114
-      Script: {instanceID: 4948}
     - Class: 114
       Script: {instanceID: 5248}
     - Class: 114
@@ -245,7 +233,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 8386}
     - Class: 114
-      Script: {instanceID: 8882}
+      Script: {instanceID: 30712}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -255,10 +243,6 @@ ScriptsOnlyBuild:
     - Class: 157
       Script: {instanceID: 0}
     - Class: 196
-      Script: {instanceID: 0}
-    - Class: 198
-      Script: {instanceID: 0}
-    - Class: 199
       Script: {instanceID: 0}
     - Class: 213
       Script: {instanceID: 0}
@@ -271,12 +255,6 @@ ScriptsOnlyBuild:
     - Class: 225
       Script: {instanceID: 0}
   scriptHashData:
-  - hash:
-      serializedVersion: 2
-      Hash: e818606506752539e0dc8b8f66d3ff3d
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: DataManager
   - hash:
       serializedVersion: 2
       Hash: d41ab9b5ea92474f9c0a6937a0607ce1
@@ -325,6 +303,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: LayoutElement
+  - hash:
+      serializedVersion: 2
+      Hash: f95da22287f3ea56861d7aba1d004aa3
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: DataManager
   - hash:
       serializedVersion: 2
       Hash: 00bbd9db8634496d079d17711b2ff7c4
@@ -723,12 +707,6 @@ ScriptsOnlyBuild:
     className: UnityOnCollisionExit2DMessageListener
   - hash:
       serializedVersion: 2
-      Hash: afaded4b7804cecac5abfd4530070643
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: WeaponDatabaseSO
-  - hash:
-      serializedVersion: 2
       Hash: 0a3f328f3ea906bbbcf794f4c27ee59d
     assemblyName: Unity.VisualScripting.Flow
     namespaceName: Unity.VisualScripting
@@ -751,12 +729,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
     className: ActivationTrack
-  - hash:
-      serializedVersion: 2
-      Hash: 7cd8b8345f9adcc757abf78b23fecc18
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: WeaponRuntimeDatabaseSO
   - hash:
       serializedVersion: 2
       Hash: 552dca338f20933ce362ebbe559a6aa6
@@ -841,12 +813,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline
     namespaceName: UnityEngine.Timeline
     className: SignalReceiver
-  - hash:
-      serializedVersion: 2
-      Hash: f2cb1dde61df22a0841283ceb113c470
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: CharacterDatabaseSO
   - hash:
       serializedVersion: 2
       Hash: c78ed13f6b5a632d70d4f73f56ad81f2
@@ -939,12 +905,6 @@ ScriptsOnlyBuild:
     className: CFX_AutoDestructShuriken
   - hash:
       serializedVersion: 2
-      Hash: fc734984f281239ad0634feba636b960
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: PlayerPoolComponent
-  - hash:
-      serializedVersion: 2
       Hash: a75a568ce902366f4e82fc98ca6108f5
     assemblyName: Assembly-CSharp
     namespaceName: TMPro.Examples
@@ -993,13 +953,13 @@ ScriptsOnlyBuild:
     className: SoundManager
   - hash:
       serializedVersion: 2
-      Hash: 154a3f78199e42da1ef3161b9ed9cba3
+      Hash: f8e3bd33afd9c32c80228a785135c520
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: VictoryPodiumManager
   - hash:
       serializedVersion: 2
-      Hash: a9716a6249f383b79a16c9e0c6ceaf51
+      Hash: 155a83a876ecaea9af5760f7d58a1ff3
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: CharacterSelectPanel
@@ -1107,7 +1067,7 @@ ScriptsOnlyBuild:
     className: Toggle
   - hash:
       serializedVersion: 2
-      Hash: 8e90bd432cf169db04cc650ac231949c
+      Hash: 7efb68f9ba0194127cccf0bce432f6bf
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: CharacterVisualDatabaseSO
@@ -1263,7 +1223,7 @@ ScriptsOnlyBuild:
     className: AspectRatioFitter
   - hash:
       serializedVersion: 2
-      Hash: bfbb0b7d92f60757ea56e427173bd87e
+      Hash: 99866c96d6f7382113048b7d24819279
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: CharacterPreviewRig
@@ -1275,7 +1235,7 @@ ScriptsOnlyBuild:
     className: TextMeshProUGUI
   - hash:
       serializedVersion: 2
-      Hash: d17414619821a539375c75455d072378
+      Hash: fe304650d71b2e6628fbf2b7717af2ac
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: GameSessionManager
@@ -1653,7 +1613,7 @@ ScriptsOnlyBuild:
     className: VertexZoom
   - hash:
       serializedVersion: 2
-      Hash: df2820cc601b35e3cc7c8ea88af02f85
+      Hash: b8aa6ac7595f850b1a6b5c9c6443ce45
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: Player
@@ -1711,7 +1671,25 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 79e68905b3b6bfc6b4b0ab0c3862a1a4
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: Weapon
+  - hash:
+      serializedVersion: 2
+      Hash: 06eeb1e38fc4c1e80882551bc23a390a
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: Character
+  - hash:
+      serializedVersion: 2
+      Hash: d0db31bd38ed6f82dae1461fbc6c2612
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: WeaponVisualDatabaseSO
   platform: 19
   scenePathNames:
   - Assets/01.Scenes/Main.unity
-  playerPath: "C:/Users/OWNER/Desktop/\uC11C\uBC84\uC2E4\uD589\uD30C\uC77C/GameServerProject(2)_Data/GameServerProject(2).exe"
+  playerPath: "C:/Users/OWNER/Desktop/\uC11C\uBC84\uC2E4\uD589\uD30C\uC77C/GameServerProject(2).exe"

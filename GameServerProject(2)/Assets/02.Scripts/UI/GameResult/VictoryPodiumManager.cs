@@ -8,6 +8,8 @@ public class PodiumRankData
     public int characterId;
     public string nickname;
     public int iconId;
+
+    public int weaponId; // 없으면 0으로 두면 무기 안 붙음
 }
 
 public class VictoryPodiumManager : MonoBehaviour
@@ -17,10 +19,6 @@ public class VictoryPodiumManager : MonoBehaviour
 
     [Header("UI Rows 0=1st, 1=2nd, 2=3rd")]
     [SerializeField] private PodiumRankUI[] rankUis = new PodiumRankUI[3];
-
-    [Header("Optional Overrides (can be null)")]
-    [SerializeField] private CharacterVisualDatabaseSO visualDbOverride;
-    [SerializeField] private WeaponDatabaseSO weaponDbOverride;
 
     [Header("Animator")]
     [SerializeField] private RuntimeAnimatorController resultController;
@@ -39,45 +37,22 @@ public class VictoryPodiumManager : MonoBehaviour
     [SerializeField] private RawImage podiumImage;
     [SerializeField] private RenderTexture podiumRT;
 
-    private readonly GameObject[] spawned = new GameObject[3];
-    private readonly GameObject[] spawnedWeapons = new GameObject[3];
+    private readonly Character[] spawnedCharacters = new Character[3];
+    private readonly CharacterType[] spawnedCharacterTypes = new CharacterType[3];
 
     private void Awake()
     {
         if (backButton != null)
             backButton.onClick.AddListener(OnClickBack);
 
-        BuildLocalDbsIfNeeded();
         SetupPodiumCamera(false);
-    }
-
-    private void BuildLocalDbsIfNeeded()
-    {
-        var vdb = GetCharactertVisualDb();
-        if (vdb != null) vdb.Build();
-
-        var wdb = GetWeaponDb();
-        if (wdb != null) wdb.Build();
-    }
-
-    private CharacterVisualDatabaseSO GetCharactertVisualDb()
-    {
-        if (visualDbOverride != null) return visualDbOverride;
-        var dm = DataManager.Instance;
-        return (dm != null) ? dm.CharacterVisualDb : null;
-    }
-
-    private WeaponDatabaseSO GetWeaponDb()
-    {
-        if (weaponDbOverride != null) return weaponDbOverride;
-        var dm = DataManager.Instance;
-        return (dm != null) ? dm.WeaponVisualDb : null;
     }
 
     private Sprite GetIconSprite(int iconId)
     {
         var dm = DataManager.Instance;
-        return (dm != null) ? dm.GetIconSprite(iconId) : null;
+        if (dm == null) return null;
+        return dm.GetIconSprite(iconId);
     }
 
     private void SetupPodiumCamera(bool on)
@@ -92,38 +67,52 @@ public class VictoryPodiumManager : MonoBehaviour
             podiumImage.texture = on ? podiumRT : null;
     }
 
-    private void ApplyRank(int rankIndex, PodiumRankData data)
+    private void ApplyRank(int rankIndex, PodiumRankData rankData)
     {
         if (rankIndex < 0 || rankIndex > 2) return;
         if (rankAnchors == null || rankAnchors.Length < 3) return;
-        if (data == null) return;
+        if (rankData == null) return;
 
         Transform anchor = rankAnchors[rankIndex];
         if (anchor == null) return;
 
-        var visualDb = GetCharactertVisualDb();
-        if (visualDb == null) return;
+        var dm = DataManager.Instance;
+        if (dm == null) return;
 
-        CharacterVisualRow row;
-        if (!visualDb.TryGet(data.characterId, out row)) return;
-        if (row == null || row.modelPrefab == null) return;
+        if (dm.CharacterDb == null) return;
+        if (!dm.CharacterDb.TryGetVisual(rankData.characterId, out var visual)) return;
+        if (visual == null || visual.modelPrefab == null) return;
 
-        GameObject go = Instantiate(row.modelPrefab, anchor);
-        go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
-        go.transform.localScale = Vector3.one;
+        CharacterType ctype = (CharacterType)rankData.characterId;
 
-        spawned[rankIndex] = go;
+        Character c = dm.CharacterPool.Get(ctype);
+        if (c == null) return;
+
+        spawnedCharacters[rankIndex] = c;
+        spawnedCharacterTypes[rankIndex] = ctype;
+
+        c.transform.SetParent(anchor, false);
+        c.transform.localPosition = Vector3.zero;
+        c.transform.localRotation = Quaternion.identity;
+        c.transform.localScale = Vector3.one;
 
         if (rankUis != null && rankUis.Length >= 3 && rankUis[rankIndex] != null)
         {
-            Sprite icon = GetIconSprite(data.iconId);
-            rankUis[rankIndex].Set(icon, data.nickname);
+            Sprite icon = GetIconSprite(rankData.iconId);
+            rankUis[rankIndex].Set(icon, rankData.nickname);
         }
 
-        AttachWorldWeapon(rankIndex, go.transform, row.defaultWeaponId);
+        if (rankData.weaponId > 0 && dm.Equipment != null)
+        {
+            dm.Equipment.Equip(c, (WeaponType)rankData.weaponId, WeaponViewMode.World, c.GetWorldWeaponSocket());
+        }
+        else
+        {
+            if (dm.Equipment != null)
+                dm.Equipment.Unequip(c);
+        }
 
-        Animator anim = go.GetComponentInChildren<Animator>(true);
+        Animator anim = c.GetComponentInChildren<Animator>(true);
         if (anim != null)
         {
             anim.applyRootMotion = false;
@@ -143,33 +132,6 @@ public class VictoryPodiumManager : MonoBehaviour
         }
     }
 
-    private void AttachWorldWeapon(int rankIndex, Transform modelRoot, int weaponId)
-    {
-        if (rankIndex < 0 || rankIndex > 2) return;
-
-        if (spawnedWeapons[rankIndex] != null)
-        {
-            Destroy(spawnedWeapons[rankIndex]);
-            spawnedWeapons[rankIndex] = null;
-        }
-
-        var weaponDb = GetWeaponDb();
-        if (weaponDb == null) return;
-
-        WeaponRow wrow;
-        if (!weaponDb.TryGet(weaponId, out wrow)) return;
-        if (wrow == null || wrow.worldPrefab == null) return;
-
-        Transform hand = WeaponAttachUtil.GetRightHand(modelRoot);
-        if (hand == null) hand = modelRoot;
-
-        GameObject w = Instantiate(wrow.worldPrefab, hand);
-        spawnedWeapons[rankIndex] = w;
-
-        w.transform.localPosition = wrow.worldLocalPos;
-        w.transform.localRotation = Quaternion.Euler(wrow.worldLocalEuler);
-    }
-
     private string GetTriggerByRank(int rankIndex)
     {
         if (rankIndex == 0) return firstTrigger;
@@ -181,7 +143,6 @@ public class VictoryPodiumManager : MonoBehaviour
     {
         Clear();
 
-        BuildLocalDbsIfNeeded();
         SetupPodiumCamera(true);
 
         ApplyRank(0, first);
@@ -191,19 +152,21 @@ public class VictoryPodiumManager : MonoBehaviour
 
     public void Clear()
     {
+        var dm = DataManager.Instance;
+
         for (int i = 0; i < 3; i++)
         {
-            if (spawnedWeapons[i] != null)
-            {
-                Destroy(spawnedWeapons[i]);
-                spawnedWeapons[i] = null;
-            }
+            var c = spawnedCharacters[i];
+            if (c == null) continue;
 
-            if (spawned[i] != null)
-            {
-                Destroy(spawned[i]);
-                spawned[i] = null;
-            }
+            if (dm != null && dm.Equipment != null)
+                dm.Equipment.Unequip(c);
+
+            if (dm != null && dm.CharacterPool != null)
+                dm.CharacterPool.Release(spawnedCharacterTypes[i], c);
+
+            spawnedCharacters[i] = null;
+            spawnedCharacterTypes[i] = default;
         }
 
         SetupPodiumCamera(false);
@@ -212,9 +175,7 @@ public class VictoryPodiumManager : MonoBehaviour
     private void OnClickBack()
     {
         Clear();
-
-        if (DataManager.Instance != null)
-            DataManager.Instance.RequestLobbyData();
+        TcpManagerMarshal.Instance.SendLobbyEnter();
     }
 
     public void ShowFromGameOverPacket(GameOverPacket pkt)
@@ -232,6 +193,7 @@ public class VictoryPodiumManager : MonoBehaviour
             r1.characterId = pkt.rankCharacterIds[0];
             r1.iconId = pkt.rankIconIds[0];
             r1.nickname = PacketUtil.ReadRankNickname(pkt, 0);
+            r1.weaponId = 0;
         }
 
         if (count > 1)
@@ -239,6 +201,7 @@ public class VictoryPodiumManager : MonoBehaviour
             r2.characterId = pkt.rankCharacterIds[1];
             r2.iconId = pkt.rankIconIds[1];
             r2.nickname = PacketUtil.ReadRankNickname(pkt, 1);
+            r2.weaponId = 0;
         }
 
         if (count > 2)
@@ -246,6 +209,7 @@ public class VictoryPodiumManager : MonoBehaviour
             r3.characterId = pkt.rankCharacterIds[2];
             r3.iconId = pkt.rankIconIds[2];
             r3.nickname = PacketUtil.ReadRankNickname(pkt, 2);
+            r3.weaponId = 0;
         }
 
         Show(r1, r2, r3);

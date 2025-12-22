@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public enum GameFlowState
 {
@@ -15,15 +14,10 @@ public enum GameFlowState
     GameResult
 }
 
-
 public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<GameFlowStateEvent>
 {
     [Header("Scene Refs")]
-    [SerializeField] private PlayerPoolComponent playerPool;
-
-    [Header("Runtime DB (from server)")]
-    [SerializeField] private CharacterDatabaseSO characterStatDb;
-    [SerializeField] private WeaponRuntimeDatabaseSO weaponStatDb;
+    [SerializeField] private PlayerPool playerPool;
 
     [Header("UI")]
     [SerializeField] private LocalHpBarUI localHpBar;
@@ -33,20 +27,20 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
 
     private ulong spectateTargetSid;
 
-    private readonly Dictionary<ulong, int> sidToCharacterId = new Dictionary<ulong, int>(NetConst.MAX_CHARACTERS);
+    private readonly Dictionary<ulong, int> sidToCharacterId = new Dictionary<ulong, int>(NetConst.MAX_PLAYERS);
     private readonly Dictionary<ulong, Player> players = new Dictionary<ulong, Player>(NetConst.MAX_PLAYERS);
 
     private int selectedCharacterId = -1;
-
 
     private int selfIndex;
     private int playerCount;
 
     public int GameId { get; private set; }
-
     public ulong MySessionId { get; private set; }
-
     public GameFlowState GameFlowState { get; private set; }
+
+    private TcpManagerMarshal tcp;
+    private bool tcpBound;
 
     protected override void Awake()
     {
@@ -54,8 +48,17 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
 
         EventDispatcher.RegisterListener(this);
         selectedCharacterId = -1;
-
         spectateTargetSid = 0;
+    }
+
+    private void OnEnable()
+    {
+        TryBindTcp();
+    }
+
+    private void OnDisable()
+    {
+        UnbindTcp();
     }
 
     private void Start()
@@ -64,10 +67,22 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         EventDispatcher.Dispatch(new GameFlowStateEvent { GameFlowState = this.GameFlowState });
     }
 
-    private void OnEnable()
+    protected override void OnDestroy()
     {
-        var tcp = TcpManagerMarshal.Instance;
+        base.OnDestroy();
+
+        UnbindTcp();
+        EventDispatcher.UnregisterListener(this);
+    }
+
+    private void TryBindTcp()
+    {
+        if (tcpBound) return;
+
+        tcp = TcpManagerMarshal.Instance;
         if (tcp == null) return;
+
+        tcpBound = true;
 
         tcp.OnGameStart += HandleGameStart;
         tcp.OnGameState += HandleGameState;
@@ -75,23 +90,30 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         tcp.OnGameOver += HandleGameOver;
     }
 
-    private void OnDisable()
+    private void UnbindTcp()
     {
-        var tcp = TcpManagerMarshal.Instance;
-        if (tcp == null) return;
+        if (!tcpBound) return;
 
-        tcp.OnGameStart -= HandleGameStart;
-        tcp.OnGameState -= HandleGameState;
-        tcp.OnShotResult -= HandleShotResult;
-        tcp.OnGameOver -= HandleGameOver;
+        if (tcp == null)
+            tcp = TcpManagerMarshal.Instance;
+
+        if (tcp != null)
+        {
+            tcp.OnGameStart -= HandleGameStart;
+            tcp.OnGameState -= HandleGameState;
+            tcp.OnShotResult -= HandleShotResult;
+            tcp.OnGameOver -= HandleGameOver;
+        }
+
+        tcpBound = false;
+        tcp = null;
     }
 
-    protected override void OnDestroy()
+    private void UnbindLocalUi()
     {
-        base.OnDestroy();
-        EventDispatcher.UnregisterListener(this);
+        if (localHpBar != null) localHpBar.Bind(null);
+        if (damageOverlay != null) damageOverlay.Bind(null);
     }
-
 
     private void HandleGameStart(GameStartPacket pkt)
     {
@@ -100,7 +122,6 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         if (selectedCharacterId >= 0)
             EnterGame(pkt);
     }
-
 
     public void SetSelectedCharacter(int characterId)
     {
@@ -116,44 +137,48 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         GameId = pkt.gameId;
         selfIndex = pkt.selfIndex;
         playerCount = pkt.playerCount;
-
         MySessionId = pkt.sessionIds[selfIndex];
 
         sidToCharacterId.Clear();
+
+        var dm = DataManager.Instance;
+        if (dm == null) return;
+
+        var characterDb = dm.CharacterDb;
 
         for (int i = 0; i < playerCount; i++)
         {
             ulong sid = pkt.sessionIds[i];
             Vector3 pos = new Vector3(pkt.spawnX[i], pkt.spawnY[i], pkt.spawnZ[i]);
 
-            // 플레이어 세팅
             Player player = playerPool.Get();
+            if (player == null) continue;
+
             player.OnDespawnRequested = OnPlayerDespawnRequested;
 
             bool isMe = (sid == MySessionId);
             player.Spawn(sid, isMe, pos);
+            player.SetObservedByLocalCamera(isMe);
 
-            // 캐릭터 세팅
             int characterId = 0;
             if (pkt.characterIds != null && pkt.characterIds.Length >= playerCount)
                 characterId = pkt.characterIds[i];
 
-            sidToCharacterId[sid] = characterId;
-
-            var characterVisualDB = DataManager.Instance.CharacterVisualDb;
-            GameObject characterPrefab;
-
-            characterVisualDB.TryGetPrefab(characterId, out characterPrefab);
-
-            player.SetCharacterModel(characterId, characterPrefab);
             int wid = 0;
             if (pkt.weaponIds != null && pkt.weaponIds.Length >= playerCount)
                 wid = pkt.weaponIds[i];
 
-            // 무기 세팅
-            player.SetDefaultWeapon(wid);
+            sidToCharacterId[sid] = characterId;
 
-            // 카메라 세팅
+            if (characterDb != null && characterDb.TryGetVisual(characterId, out var v) && v != null && v.modelPrefab != null)
+            {
+                player.ApplyVisual(characterId, wid);
+            }
+            else
+            {
+                player.ClearVisual();
+            }
+
             if (isMe)
             {
                 BindCameraToLocalPlayer(player);
@@ -176,6 +201,7 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         ClearPlayers();
 
         CameraController.Instance.SetCameraPos(null, true);
+        UnbindLocalUi();
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -208,8 +234,6 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         playerPool.Release(player);
     }
 
-
-
     private void HandleGameState(ServerGameStatePacket pkt)
     {
         if (pkt.gameId != GameId) return;
@@ -218,8 +242,7 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         {
             PlayerState3D ps = pkt.players[i];
 
-            Player p;
-            if (!players.TryGetValue(ps.sessionId, out p))
+            if (!players.TryGetValue(ps.sessionId, out var p))
                 continue;
 
             Vector3 pos = new Vector3(ps.x, ps.y, ps.z);
@@ -231,23 +254,18 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
     {
         if (pkt.gameId != GameId) return;
 
-        // 1) 누가 쐈는지 찾고, 다른 사람에게만 발사 연출 재생
         if (pkt.shooterSessionId != 0 && pkt.shooterSessionId != MySessionId)
         {
-            Player shooter;
-            if (players.TryGetValue(pkt.shooterSessionId, out shooter))
+            if (players.TryGetValue(pkt.shooterSessionId, out var shooter))
             {
                 shooter.PlayShoot();
                 shooter.PlayMuzzleFlash();
             }
         }
 
-
-        // 2) 피격 처리 + 죽음 처리
         if (pkt.hit == 1)
         {
-            Player victim;
-            if (players.TryGetValue(pkt.victimSessionId, out victim))
+            if (players.TryGetValue(pkt.victimSessionId, out var victim))
             {
                 victim.SetHp(pkt.victimHp);
 
@@ -274,6 +292,7 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
             r1.characterId = pkt.rankCharacterIds[0];
             r1.iconId = pkt.rankIconIds[0];
             r1.nickname = PacketUtil.ReadRankNickname(pkt, 0);
+            r1.weaponId = 0;
         }
 
         if (count > 1)
@@ -281,6 +300,7 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
             r2.characterId = pkt.rankCharacterIds[1];
             r2.iconId = pkt.rankIconIds[1];
             r2.nickname = PacketUtil.ReadRankNickname(pkt, 1);
+            r2.weaponId = 0;
         }
 
         if (count > 2)
@@ -288,6 +308,7 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
             r3.characterId = pkt.rankCharacterIds[2];
             r3.iconId = pkt.rankIconIds[2];
             r3.nickname = PacketUtil.ReadRankNickname(pkt, 2);
+            r3.weaponId = 0;
         }
 
         LeaveGame();
@@ -301,6 +322,10 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
     {
         EventDispatcher.Dispatch(new GameFlowStateEvent { GameFlowState = GameFlowState.MultiGame_Spectator });
 
+        if (players.TryGetValue(MySessionId, out var me) && me != null)
+            me.SetObservedByLocalCamera(false);
+
+        spectateTargetSid = 0;
         SetSpectateTarget();
     }
 
@@ -312,20 +337,18 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         return true;
     }
 
-
     public void OnEvent(GameFlowStateEvent gameFlowStateEvent)
     {
         GameFlowState = gameFlowStateEvent.GameFlowState;
     }
 
-    /// <summary>
-    /// 관전 대상 변경
-    /// </summary>
     public void SetSpectateTarget()
     {
         if (players.Count == 0)
         {
             spectateTargetSid = 0;
+            CameraController.Instance.SetCameraPos(null, true);
+            UnbindLocalUi();
             return;
         }
 
@@ -345,32 +368,36 @@ public class GameSessionManager : Singleton<GameSessionManager>, IEventListener<
         if (alive.Count == 0)
         {
             spectateTargetSid = 0;
+            CameraController.Instance.SetCameraPos(null, true);
+            UnbindLocalUi();
             return;
         }
+
+        ulong prevSid = spectateTargetSid;
 
         int idx = alive.IndexOf(spectateTargetSid);
         idx = (idx + 1) % alive.Count;
         spectateTargetSid = alive[idx];
 
+        if (prevSid != 0 && players.TryGetValue(prevSid, out var prevTarget) && prevTarget != null)
+            prevTarget.SetObservedByLocalCamera(false);
 
-        var spectateTarget = players[spectateTargetSid];
+        if (!players.TryGetValue(spectateTargetSid, out var target) || target == null)
+            return;
 
-        // 관전 대상 변경시 플레이어 FP, TP에 따른 비활성화 모습 변경해야함
+        target.SetObservedByLocalCamera(true);
 
-        CameraController.Instance.SetCameraPos(spectateTarget.CameraPivot, false);
-        localHpBar.Bind(spectateTarget);
+        CameraController.Instance.SetCameraPos(target.CameraPivot, false);
+        if (localHpBar != null) localHpBar.Bind(target);
+        if (damageOverlay != null) damageOverlay.Bind(target);
     }
 
     public Player GetLocalPlayer()
     {
-        Player me = null;
-        if (players.TryGetValue(MySessionId, out me))
-        {
+        if (players.TryGetValue(MySessionId, out var me))
             return me;
-        }
 
-        Debug.LogWarning($"Local Player ID : {MySessionId}");
-        Debug.LogWarning($"Player Ids : {players.Keys}");
+        Debug.LogWarning("Local Player not found");
         return null;
     }
 }

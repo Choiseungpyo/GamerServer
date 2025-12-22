@@ -18,19 +18,17 @@ public class CharacterSelectPanel : MonoBehaviour
     [SerializeField] private LayerMask leftMask;
     [SerializeField] private LayerMask rightMask;
 
-    [SerializeField] private CharacterVisualDatabaseSO visualDb;
-
     private int leftCharacterId = -1;
     private int rightCharacterId = -1;
     private bool waitingAck;
 
     private void Awake()
     {
-        leftButton.onClick.AddListener(OnClickLeft);
-        rightButton.onClick.AddListener(OnClickRight);
+        if (leftButton != null) leftButton.onClick.AddListener(OnClickLeft);
+        if (rightButton != null) rightButton.onClick.AddListener(OnClickRight);
 
-        leftPreview.Setup(leftRT, leftMask);
-        rightPreview.Setup(rightRT, rightMask);
+        if (leftPreview != null) leftPreview.Setup(leftRT, leftMask);
+        if (rightPreview != null) rightPreview.Setup(rightRT, rightMask);
 
         if (leftRaw != null)
         {
@@ -47,7 +45,8 @@ public class CharacterSelectPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        TcpManagerMarshal.Instance.OnSetCharacter += HandleSetCharacter;
+        var tcp = TcpManagerMarshal.Instance;
+        if (tcp != null) tcp.OnSetCharacter += HandleSetCharacter;
 
         waitingAck = false;
         SetInteractable(true);
@@ -57,8 +56,8 @@ public class CharacterSelectPanel : MonoBehaviour
 
     private void OnDisable()
     {
-        if (TcpManagerMarshal.Instance == null) return;
-        TcpManagerMarshal.Instance.OnSetCharacter -= HandleSetCharacter;
+        var tcp = TcpManagerMarshal.Instance;
+        if (tcp != null) tcp.OnSetCharacter -= HandleSetCharacter;
     }
 
     private void BindTwoCharacters()
@@ -66,15 +65,11 @@ public class CharacterSelectPanel : MonoBehaviour
         leftCharacterId = 1;
         rightCharacterId = 2;
 
-        if (visualDb != null && visualDb.TryGet(leftCharacterId, out var leftEntry))
-            leftPreview.SetCharacter(leftEntry.modelPrefab, leftEntry.defaultWeaponId);
-        else
-            leftPreview.SetCharacter(null, 0);
+        if (leftPreview != null)
+            leftPreview.SetCharacter(leftCharacterId, 0);
 
-        if (visualDb != null && visualDb.TryGet(rightCharacterId, out var rightEntry))
-            rightPreview.SetCharacter(rightEntry.modelPrefab, rightEntry.defaultWeaponId);
-        else
-            rightPreview.SetCharacter(null, 0);
+        if (rightPreview != null)
+            rightPreview.SetCharacter(rightCharacterId, 0);
     }
 
     private void OnClickLeft()
@@ -92,10 +87,13 @@ public class CharacterSelectPanel : MonoBehaviour
         if (waitingAck) return;
         if (characterId < 0) return;
 
+        var tcp = TcpManagerMarshal.Instance;
+        if (tcp == null) return;
+
         waitingAck = true;
         SetInteractable(false);
 
-        TcpManagerMarshal.Instance.SendSetCharacter(characterId);
+        tcp.SendSetCharacter(characterId);
     }
 
     private void HandleSetCharacter(ServerSetCharacterPacket pkt)
@@ -110,7 +108,6 @@ public class CharacterSelectPanel : MonoBehaviour
         }
 
         GameSessionManager.Instance.SetSelectedCharacter(pkt.currentCharacterId);
-        EventDispatcher.Dispatch(new GameFlowStateEvent { GameFlowState = GameFlowState.MultiGame_Playing });
     }
 
     private void SetInteractable(bool on)

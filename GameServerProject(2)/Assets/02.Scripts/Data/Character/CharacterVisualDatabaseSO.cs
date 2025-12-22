@@ -2,57 +2,36 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class CharacterVisualRow
-{
-    public int characterId;
-    public GameObject modelPrefab;
-
-    [Header("Default Weapon")]
-    public int defaultWeaponId;
-}
 
 [CreateAssetMenu(menuName = "Game/CharacterVisualDatabase")]
 public class CharacterVisualDatabaseSO : ScriptableObject
 {
-    [SerializeField] private List<CharacterVisualRow> list = new List<CharacterVisualRow>();
+    [SerializeField] private List<CharacterVisualData> list = new List<CharacterVisualData>();
 
-    private readonly Dictionary<int, CharacterVisualRow> byId = new Dictionary<int, CharacterVisualRow>();
-
-    private void OnEnable()
-    {
-        Build();
-    }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        Build();
-    }
-#endif
+    private readonly Dictionary<int, CharacterVisualData> dict = new Dictionary<int, CharacterVisualData>();
 
     public void Build()
     {
-        byId.Clear();
+        dict.Clear();
         for (int i = 0; i < list.Count; i++)
         {
             var r = list[i];
             if (r == null) continue;
             if (r.modelPrefab == null) continue;
-            byId[r.characterId] = r;
+            dict[r.characterId] = r;
         }
     }
 
-    public bool TryGet(int characterId, out CharacterVisualRow row)
+    public bool TryGet(int characterId, out CharacterVisualData data)
     {
-        return byId.TryGetValue(characterId, out row);
+        return dict.TryGetValue(characterId, out data);
     }
 
     public bool TryGetPrefab(int characterId, out GameObject prefab)
     {
         prefab = null;
-        if (!TryGet(characterId, out var row)) return false;
-        prefab = row.modelPrefab;
+        if (!TryGet(characterId, out var data)) return false;
+        prefab = data.modelPrefab;
         return prefab != null;
     }
 }

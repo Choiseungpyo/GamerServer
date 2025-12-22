@@ -288,6 +288,7 @@ Transform:
   - {fileID: 8305059285823741924}
   - {fileID: 1280692053467949312}
   - {fileID: 171806598005422279}
+  - {fileID: 3346944228682465178}
   m_Father: {fileID: 91366267256145522}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1060670276819027536
@@ -670,6 +671,37 @@ Transform:
   m_Children:
   - {fileID: 992056052354702282}
   m_Father: {fileID: 3217804906983773124}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3688647695428926717
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3346944228682465178}
+  m_Layer: 0
+  m_Name: WorldWeaponSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3346944228682465178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688647695428926717}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2223993528658383339}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3986673289857713657
 GameObject:
@@ -1261,6 +1293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8224094142660706447}
   - component: {fileID: 8666516081699144614}
+  - component: {fileID: 660000134437394418}
   m_Layer: 0
   m_Name: Female
   m_TagString: Untagged
@@ -1309,6 +1342,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &660000134437394418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6008901960357154150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410eb9371ec29bf40bbfd0f55bd78d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldWeaponSocket: {fileID: 3346944228682465178}
 --- !u!1 &6174704744452653048
 GameObject:
   m_ObjectHideFlags: 0

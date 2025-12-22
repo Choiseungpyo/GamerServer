@@ -13,7 +13,7 @@ public class CharacterSelectItem : MonoBehaviour
     private int id;
     private Action<int> onClick;
 
-    public void Bind(CharacterRuntimeData data, bool selected, Action<int> onClick)
+    public void Bind(CharacterStat data, bool selected, Action<int> onClick)
     {
         this.id = data.id;
         this.onClick = onClick;

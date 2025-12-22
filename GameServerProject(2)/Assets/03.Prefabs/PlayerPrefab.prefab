@@ -14805,10 +14805,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 5185254713904795739}
   modelRoot: {fileID: 9072388653201960964}
-  muzzleFallback: {fileID: 5455146907799247061}
+  fpWeaponRoot: {fileID: 6377340932150663165}
   gameController: {fileID: 9100000, guid: f7de5a52c15e82a4f8b81d93d1580ee5, type: 2}
-  weaponDb: {fileID: 11400000, guid: 38e75e3874328264f84b0bd816191bf1, type: 2}
-  weaponRoot: {fileID: 6377340932150663165}
   muzzleFlash: {fileID: 5630529928001986909}
   moveDirParam: MoveDir
   moveDeadZone: 0.1

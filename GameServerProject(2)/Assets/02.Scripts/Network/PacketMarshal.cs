@@ -114,7 +114,7 @@ public struct LobbyProfilePacket
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct CharacterRow
+public struct CharacterInfo
 {
     public int characterId;
 
@@ -133,7 +133,7 @@ public struct CharacterListPacket
     public int characterCount;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = NetConst.MAX_CHARACTERS)]
-    public CharacterRow[] characters;
+    public CharacterInfo[] characters;
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]

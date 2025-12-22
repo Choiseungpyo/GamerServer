@@ -60,14 +60,16 @@ public class LobbyPanel : MonoBehaviour
 
     private void RefreshProfileUI()
     {
-        if (nicknameText != null) nicknameText.text = ClientContext.Nickname;
-        if (totalGameCountText != null) totalGameCountText.text = "Total: " + ClientContext.Total;
-        if (winCountText != null) winCountText.text = "Win : " + ClientContext.Win;
+        var profileData = DataManager.Instance.ProfileData;
+
+        if (nicknameText != null) nicknameText.text = profileData.Nickname;
+        if (totalGameCountText != null) totalGameCountText.text = "Total: " + profileData.TotalGameCount;
+        if (winCountText != null) winCountText.text = "Win : " + profileData.WinCount;
    
         if (iconImage != null)
         {
             var dm = DataManager.Instance;
-            iconImage.sprite = (dm != null) ? dm.GetIconSprite(ClientContext.IconId) : null;
+            iconImage.sprite = (dm != null) ? dm.GetIconSprite(profileData.IconId) : null;
         }
     }
 

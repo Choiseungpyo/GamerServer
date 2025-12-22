@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f229b4029c8a494aac8ff643549bd8d, type: 3}
+  m_Name: WeaponVisualDatabase
+  m_EditorClassIdentifier: 
+  list:
+  - weaponId: 1
+    prefab: {fileID: 4830539715663049968, guid: fe7e54521f411b241bcb1062430c0791, type: 3}
+    worldLocalPos: {x: 0.062, y: -0.036, z: 0.014}
+    worldLocalEuler: {x: 0.15828, y: 89.7949, z: 89.79}
+    fpLocalPos: {x: 0.2392, y: -0.238, z: 0.296}
+    fpLocalEuler: {x: 0, y: 0, z: 0}
+  - weaponId: 2
+    prefab: {fileID: 5627426761764137074, guid: c700d93ce90a83b41bd967905183efd3, type: 3}
+    worldLocalPos: {x: 0.516, y: -0.037, z: 0.084}
+    worldLocalEuler: {x: 0.153, y: 89.795, z: 89.79}
+    fpLocalPos: {x: 0.2392, y: -0.238, z: 0.949}
+    fpLocalEuler: {x: 0, y: 0, z: 0}
+  - weaponId: 3
+    prefab: {fileID: 3960285680089009186, guid: 3318400a8ae883c44bc2822e36bd9993, type: 3}
+    worldLocalPos: {x: -0.205, y: -0.035, z: 0.083}
+    worldLocalEuler: {x: 0.1528, y: 89.7949, z: 89.79}
+    fpLocalPos: {x: 0.2392, y: -0.238, z: 0.296}
+    fpLocalEuler: {x: 0, y: 0, z: 0}

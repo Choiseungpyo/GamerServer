@@ -3,6 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerViewMode
+{
+    World,
+    FirstPerson
+}
+
 public class Player : MonoBehaviour
 {
     [Header("Rig")]
@@ -10,16 +16,12 @@ public class Player : MonoBehaviour
 
     [Header("Model")]
     [SerializeField] private Transform modelRoot;
-    [SerializeField] private Transform muzzleFallback;
+
+    [Header("FP Weapon Root")]
+    [SerializeField] private Transform fpWeaponRoot;
 
     [Header("Controllers")]
     [SerializeField] private RuntimeAnimatorController gameController;
-
-    [Header("Weapon DB")]
-    [SerializeField] private WeaponDatabaseSO weaponDb;
-
-    [Header("Weapon First Person Root")]
-    [SerializeField] private Transform weaponRoot;
 
     [Header("Muzzle")]
     [SerializeField] private ParticleSystem muzzleFlash;
@@ -43,32 +45,23 @@ public class Player : MonoBehaviour
     public Action<int, int> OnHpChanged;
     public Action<int> OnDamaged;
 
-    private readonly Dictionary<int, GameObject> modelCache = new Dictionary<int, GameObject>(NetConst.MAX_CHARACTERS);
-    private readonly Dictionary<int, GameObject> weaponWorldCache = new Dictionary<int, GameObject>(NetConst.MAX_CHARACTERS);
-    private readonly Dictionary<int, GameObject> weaponFpCache = new Dictionary<int, GameObject>(NetConst.MAX_WEAPONS);
-
-    private GameObject activeModel;
-    private Animator activeAnimator;
-
-    private GameObject activeWorldWeapon;
-    private GameObject activeFpWeapon;
-
-    private Transform muzzle;
-
     private ulong sessionId;
-    private bool isLocal;
+
+    private bool isLocalOwner;
     private bool isDead;
-    private Coroutine deathCo;
+
+    private PlayerViewMode viewMode;
 
     private int moveDir;
 
     private bool shootLocked;
     private Coroutine shootLockCo;
+    private Coroutine deathCo;
 
     public bool CanMove => !isDead && !shootLocked;
 
     public ulong SessionId => sessionId;
-    public bool IsLocal => isLocal;
+    public bool IsLocal => isLocalOwner;
     public bool IsDead => isDead;
 
     public int WeaponId { get; private set; }
@@ -77,13 +70,17 @@ public class Player : MonoBehaviour
 
     public Transform CameraPivot;
 
+    private Transform muzzle;
+    private Animator activeAnimator;
+
+    private Character activeCharacter;
+    private CharacterType activeCharacterType;
 
     public Vector3 MuzzlePosition
     {
         get
         {
             if (muzzle != null) return muzzle.position;
-            if (muzzleFallback != null) return muzzleFallback.position;
             if (CameraPivot != null) return CameraPivot.position;
             return transform.position;
         }
@@ -110,148 +107,100 @@ public class Player : MonoBehaviour
 
     private void NotifyHpChanged()
     {
-        OnHpChanged?.Invoke(Hp, MaxHp);
+        if (OnHpChanged != null)
+            OnHpChanged.Invoke(Hp, MaxHp);
     }
 
-    public void Spawn(ulong sid, bool local, Vector3 pos)
+    public void Spawn(ulong sid, bool localOwner, Vector3 pos)
     {
         sessionId = sid;
-        isLocal = local;
+        isLocalOwner = localOwner;
+
         isDead = false;
         shootLocked = false;
 
         gameObject.SetActive(true);
         transform.position = pos;
 
-
-        if (CameraPivot != null)
-        {
-            float y = isLocal ? 0.89f : 1.5f;
-            CameraPivot.localPosition = new Vector3(0f, y, 0f);
-            CameraPivot.localRotation = Quaternion.identity;
-        }
-
-        if (muzzleFlash != null)
-        {
-            muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            muzzleFlash.gameObject.SetActive(false);
-            if (muzzleFlashHomeParent != null)
-                muzzleFlash.transform.SetParent(muzzleFlashHomeParent, false);
-        }
+        ResetMuzzleFlashHome();
 
         MaxHp = 100;
         Hp = 100;
         NotifyHpChanged();
 
         WeaponId = 0;
-
-        DisableActiveWeapons();
+        muzzle = null;
 
         if (deathCo != null) { StopCoroutine(deathCo); deathCo = null; }
         if (shootLockCo != null) { StopCoroutine(shootLockCo); shootLockCo = null; }
-        
+
         if (activeAnimator != null && !string.IsNullOrEmpty(deadParamName) && deadParamIsBool)
             activeAnimator.SetBool(deadParamName, false);
 
-
         SetMoveDirInternal(0);
+
+        SetObservedByLocalCamera(localOwner);
     }
 
-    public void SetLook(float yaw, float pitch)
+    public void SetObservedByLocalCamera(bool observed)
     {
-        if (body != null)
-            body.rotation = Quaternion.Euler(0f, yaw, 0f);
+        viewMode = observed ? PlayerViewMode.FirstPerson : PlayerViewMode.World;
 
-        if (CameraPivot != null)
-            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-    }
-
-    public void ApplyServerState(Vector3 pos, float yaw, float pitch, int hp, int weaponId)
-    {
-        Vector3 prev = transform.position;
-        transform.position = pos;
-
-        if (body != null)
-            body.rotation = Quaternion.Euler(0f, yaw, 0f);
-
-        if (CameraPivot != null)
-            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-
-        int prevWeapon = WeaponId;
-
-        if (weaponId > 0)
+        if (activeCharacter != null)
         {
-            WeaponId = weaponId;
-            if (prevWeapon != WeaponId)
-                ApplyWeaponVisualById(WeaponId);
+            ApplyViewModeToRenderers();
+            ReapplyWeaponForViewMode();
+        }
+    }
+
+    private WeaponViewMode GetWeaponViewMode()
+    {
+        return (viewMode == PlayerViewMode.FirstPerson) ? WeaponViewMode.FirstPerson : WeaponViewMode.World;
+    }
+
+    private Transform GetWeaponSocketByMode(WeaponViewMode mode)
+    {
+        if (activeCharacter == null) return null;
+
+        if (mode == WeaponViewMode.FirstPerson)
+        {
+            if (fpWeaponRoot != null) return fpWeaponRoot;
+            if (CameraPivot != null) return CameraPivot;
+            return transform;
         }
 
-        int prevHp = Hp;
-        Hp = hp;
-
-        if (Hp < prevHp)
-            OnDamaged?.Invoke(prevHp - Hp);
-
-        if (Hp != prevHp)
-            NotifyHpChanged();
-
-        if (!isDead && prevHp > 0 && Hp <= 0)
-            StartDeath();
-
-        UpdateMoveFromDeltaWorld(pos - prev);
+        return activeCharacter.GetWorldWeaponSocket();
     }
 
-    // GameSessionManager/ShotResult에서 쓰는 용도
-    public void SetHp(int hp)
+    private void ReapplyWeaponForViewMode()
     {
-        int prevHp = Hp;
-        Hp = hp;
-
-        if (Hp < prevHp)
-            OnDamaged?.Invoke(prevHp - Hp);
-
-        if (Hp != prevHp)
-            NotifyHpChanged();
-
-        if (!isDead && prevHp > 0 && Hp <= 0)
-            StartDeath();
+        int wid = WeaponId;
+        if (wid <= 0) return;
+        SetWeapon(wid);
     }
 
-    // GameSessionManager에서 기본무기 적용하려고 부르는 함수
-    public void SetDefaultWeapon(int weaponId)
+    public void ApplyVisual(int characterId, int weaponId)
     {
-        WeaponId = weaponId;
-        ApplyWeaponVisualById(WeaponId);
-    }
+        if (characterId <= 0)
+        {
+            ClearVisual();
+            return;
+        }
 
-    public void SetCharacterModel(int characterId, GameObject modelPrefab)
-    {
+        ReleaseVisual();
+
+        var dm = DataManager.Instance;
+        if (dm == null) return;
+
+        activeCharacterType = (CharacterType)characterId;
+        activeCharacter = dm.CharacterPool.Get(activeCharacterType);
+        if (activeCharacter == null) return;
+
         if (modelRoot == null) modelRoot = body;
-        if (modelRoot == null) return;
+        if (modelRoot != null)
+            activeCharacter.AttachTo(modelRoot);
 
-        if (activeModel != null)
-            activeModel.SetActive(false);
-
-        muzzle = null;
-        activeAnimator = null;
-
-        if (modelPrefab == null) return;
-
-        if (!modelCache.TryGetValue(characterId, out var m) || m == null)
-        {
-            m = Instantiate(modelPrefab, modelRoot);
-            m.transform.localPosition = Vector3.zero;
-            m.transform.localRotation = Quaternion.identity;
-            m.transform.localScale = Vector3.one;
-            modelCache[characterId] = m;
-        }
-
-        activeModel = m;
-        activeModel.SetActive(true);
-
-        EnableAllRenderers(activeModel, true);
-
-        activeAnimator = activeModel.GetComponentInChildren<Animator>(true);
+        activeAnimator = activeCharacter.GetComponentInChildren<Animator>(true);
         if (activeAnimator != null)
         {
             activeAnimator.applyRootMotion = false;
@@ -262,90 +211,64 @@ public class Player : MonoBehaviour
                 activeAnimator.SetBool(deadParamName, isDead);
         }
 
-        if (isLocal)
-            HideLocalBodyRenderers();
-
-        ApplyWeaponVisualById(WeaponId);
+        ApplyViewModeToRenderers();
+        SetWeapon(weaponId);
     }
 
-    private void ApplyWeaponVisualById(int weaponId)
+    private void SetWeapon(int weaponId)
     {
-        if (weaponDb == null) return;
-        if (!weaponDb.TryGet(weaponId, out var row)) return;
-        EquipWeapon(row);
+        var dm = DataManager.Instance;
+        if (dm == null) return;
+        if (activeCharacter == null) return;
+        if (dm.Equipment == null) return;
+
+        WeaponId = weaponId;
+
+        dm.Equipment.Unequip(activeCharacter);
+        muzzle = null;
+
+        ResetMuzzleFlashHome();
+
+        if (weaponId <= 0)
+            return;
+
+        WeaponViewMode mode = GetWeaponViewMode();
+        Transform socket = GetWeaponSocketByMode(mode);
+
+        Weapon w = dm.Equipment.Equip(activeCharacter, (WeaponType)weaponId, mode, socket);
+
+        if (w != null)
+            muzzle = w.Muzzle;
+
+        AttachMuzzleFlashIfPossible();
+
+        ApplyViewModeToRenderers();
     }
 
-    private void EquipWeapon(WeaponRow row)
+    private void ApplyViewModeToRenderers()
     {
-        if (row == null) return;
+        if (activeCharacter == null) return;
 
-        DisableActiveWeapons();
+        bool bodyVisible = (viewMode == PlayerViewMode.World);
 
-        if (isLocal)
+        var rs = activeCharacter.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < rs.Length; i++)
         {
-            if (weaponRoot == null) return;
-
-            GameObject prefab = row.fpPrefab != null ? row.fpPrefab : row.worldPrefab;
-            if (prefab == null) return;
-
-            int id = row.weaponId;
-
-            if (!weaponFpCache.TryGetValue(id, out var w) || w == null)
-            {
-                w = Instantiate(prefab, weaponRoot);
-                weaponFpCache[id] = w;
-            }
-
-            activeFpWeapon = w;
-            activeFpWeapon.SetActive(true);
-
-            activeFpWeapon.transform.SetParent(weaponRoot, false);
-            activeFpWeapon.transform.localPosition = row.fpLocalPos;
-            activeFpWeapon.transform.localRotation = Quaternion.Euler(row.fpLocalEuler);
-
-            muzzle = WeaponAttachUtil.GetMuzzle(activeFpWeapon.transform, row.muzzleName);
-            if (muzzle == null) muzzle = muzzleFallback;
-
-            AttachMuzzleFlashIfPossible();
+            var r = rs[i];
+            if (r == null) continue;
+            r.enabled = bodyVisible;
         }
-        else
-        {
-            if (activeModel == null) return;
-            if (row.worldPrefab == null) return;
-
-            Transform hand = WeaponAttachUtil.GetRightHand(activeModel.transform);
-            if (hand == null) hand = activeModel.transform;
-
-            int id = row.weaponId;
-
-            if (!weaponWorldCache.TryGetValue(id, out var w) || w == null)
-            {
-                w = Instantiate(row.worldPrefab, hand);
-                weaponWorldCache[id] = w;
-            }
-
-            activeWorldWeapon = w;
-            activeWorldWeapon.SetActive(true);
-
-            activeWorldWeapon.transform.SetParent(hand, false);
-            activeWorldWeapon.transform.localPosition = row.worldLocalPos;
-            activeWorldWeapon.transform.localRotation = Quaternion.Euler(row.worldLocalEuler);
-
-            muzzle = WeaponAttachUtil.GetMuzzle(activeWorldWeapon.transform, row.muzzleName);
-            if (muzzle == null) muzzle = muzzleFallback;
-
-            AttachMuzzleFlashIfPossible();
-        }
-
-        WeaponId = row.weaponId;
     }
 
-    private void DisableActiveWeapons()
+    private void ResetMuzzleFlashHome()
     {
-        if (activeWorldWeapon != null) activeWorldWeapon.SetActive(false);
-        if (activeFpWeapon != null) activeFpWeapon.SetActive(false);
-        activeWorldWeapon = null;
-        activeFpWeapon = null;
+        if (muzzleFlash == null) return;
+
+        muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        muzzleFlash.gameObject.SetActive(false);
+
+        if (muzzleFlashHomeParent != null)
+            muzzleFlash.transform.SetParent(muzzleFlashHomeParent, false);
     }
 
     private void AttachMuzzleFlashIfPossible()
@@ -362,34 +285,168 @@ public class Player : MonoBehaviour
         muzzleFlash.gameObject.SetActive(false);
     }
 
-    private static void EnableAllRenderers(GameObject root, bool on)
+    private void ReleaseVisual()
     {
-        if (root == null) return;
-        var rs = root.GetComponentsInChildren<Renderer>(true);
+        var dm = DataManager.Instance;
+
+        Character c = activeCharacter;
+        CharacterType ct = activeCharacterType;
+
+        activeCharacter = null;
+        activeCharacterType = default;
+
+        activeAnimator = null;
+        muzzle = null;
+
+        ResetMuzzleFlashHome();
+
+        if (c == null) return;
+
+        var rs = c.GetComponentsInChildren<Renderer>(true);
         for (int i = 0; i < rs.Length; i++)
-            if (rs[i] != null) rs[i].enabled = on;
+            if (rs[i] != null) rs[i].enabled = true;
+
+        if (dm != null && dm.Equipment != null)
+            dm.Equipment.Unequip(c);
+
+        if (dm != null && dm.CharacterPool != null)
+        {
+            dm.CharacterPool.Release(ct, c);
+        }
+        else
+        {
+            c.gameObject.SetActive(false);
+            c.transform.SetParent(null, false);
+        }
     }
 
-    private void HideLocalBodyRenderers()
+    public void ClearVisual()
     {
-        if (activeModel == null) return;
+        ReleaseVisual();
+        WeaponId = 0;
+    }
 
-        var renderers = activeModel.GetComponentsInChildren<Renderer>(true);
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            var r = renderers[i];
-            if (r == null) continue;
-            r.enabled = false;
-        }
+    public void ApplyServerState(Vector3 pos, float yaw, float pitch, int hp, int weaponId)
+    {
+        Vector3 prev = transform.position;
+        transform.position = pos;
+
+        if (body != null)
+            body.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+        if (CameraPivot != null)
+            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+
+        int prevWeapon = WeaponId;
+        if (weaponId != prevWeapon)
+            SetWeapon(weaponId);
+
+        int prevHp = Hp;
+        Hp = hp;
+
+        if (Hp < prevHp && OnDamaged != null)
+            OnDamaged.Invoke(prevHp - Hp);
+
+        if (Hp != prevHp)
+            NotifyHpChanged();
+
+        if (!isDead && prevHp > 0 && Hp <= 0)
+            StartDeath();
+
+        UpdateMoveFromDeltaWorld(pos - prev);
     }
 
     public void PlayMuzzleFlash()
     {
         if (muzzleFlash == null) return;
+        if (muzzle == null) return;
 
         muzzleFlash.gameObject.SetActive(true);
         muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         muzzleFlash.Play(true);
+    }
+
+    private void StartDeath()
+    {
+        isDead = true;
+        SetMoveDirInternal(0);
+
+        if (deathCo != null)
+        {
+            StopCoroutine(deathCo);
+            deathCo = null;
+        }
+
+        if (activeAnimator != null && !string.IsNullOrEmpty(deadParamName))
+        {
+            if (deadParamIsBool)
+                activeAnimator.SetBool(deadParamName, true);
+            else
+                activeAnimator.SetTrigger(deadParamName);
+        }
+
+        deathCo = StartCoroutine(DeathFallbackCoroutine());
+    }
+
+    private IEnumerator DeathFallbackCoroutine()
+    {
+        yield return new WaitForSeconds(deathFallbackDisableDelay);
+        RequestDespawn();
+    }
+
+    private void RequestDespawn()
+    {
+        if (OnDespawnRequested != null)
+            OnDespawnRequested(this);
+        else
+            gameObject.SetActive(false);
+    }
+
+    public void ResetForPool()
+    {
+        isDead = false;
+        shootLocked = false;
+
+        if (shootLockCo != null) { StopCoroutine(shootLockCo); shootLockCo = null; }
+        if (deathCo != null) { StopCoroutine(deathCo); deathCo = null; }
+
+        ClearVisual();
+
+        sessionId = 0;
+        isLocalOwner = false;
+
+        MaxHp = 0;
+        Hp = 0;
+        WeaponId = 0;
+
+        OnDespawnRequested = null;
+        OnHpChanged = null;
+        OnDamaged = null;
+
+        SetMoveDirInternal(0);
+
+        viewMode = PlayerViewMode.World;
+    }
+
+    public void Despawn()
+    {
+        ResetForPool();
+        gameObject.SetActive(false);
+    }
+
+    public void SetHp(int hp)
+    {
+        int prevHp = Hp;
+        Hp = hp;
+
+        if (Hp < prevHp && OnDamaged != null)
+            OnDamaged.Invoke(prevHp - Hp);
+
+        if (Hp != prevHp)
+            NotifyHpChanged();
+
+        if (!isDead && prevHp > 0 && Hp <= 0)
+            StartDeath();
     }
 
     public void SetMoveInput(float moveX, float moveZ)
@@ -453,90 +510,6 @@ public class Player : MonoBehaviour
         SetMoveInput(local.x, local.z);
     }
 
-    private void StartDeath()
-    {
-        isDead = true;
-        SetMoveDirInternal(0);
-
-        if (deathCo != null)
-        {
-            StopCoroutine(deathCo);
-            deathCo = null;
-        }
-
-        if (activeAnimator != null && !string.IsNullOrEmpty(deadParamName))
-        {
-            if (deadParamIsBool)
-                activeAnimator.SetBool(deadParamName, true);
-            else
-                activeAnimator.SetTrigger(deadParamName);
-        }
-
-        deathCo = StartCoroutine(DeathFallbackCoroutine());
-    }
-
-    private IEnumerator DeathFallbackCoroutine()
-    {
-        yield return new WaitForSeconds(deathFallbackDisableDelay);
-        RequestDespawn();
-    }
-
-    private void RequestDespawn()
-    {
-        if (OnDespawnRequested != null)
-            OnDespawnRequested(this);
-        else
-            gameObject.SetActive(false);
-    }
-
-    public void ResetForPool()
-    {
-        isDead = false;
-        shootLocked = false;
-
-        if (shootLockCo != null) { StopCoroutine(shootLockCo); shootLockCo = null; }
-        if (deathCo != null) { StopCoroutine(deathCo); deathCo = null; }
-
-        if (activeAnimator != null && !string.IsNullOrEmpty(deadParamName) && deadParamIsBool)
-            activeAnimator.SetBool(deadParamName, false);
-
-        DisableActiveWeapons();
-
-        if (muzzleFlash != null)
-        {
-            muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            muzzleFlash.gameObject.SetActive(false);
-            if (muzzleFlashHomeParent != null)
-                muzzleFlash.transform.SetParent(muzzleFlashHomeParent, false);
-        }
-
-        foreach (var kv in modelCache)
-        {
-            if (kv.Value != null)
-            {
-                EnableAllRenderers(kv.Value, true);
-                kv.Value.SetActive(false);
-            }
-        }
-
-        activeModel = null;
-        activeAnimator = null;
-        muzzle = null;
-
-        sessionId = 0;
-        isLocal = false;
-
-        MaxHp = 0;
-        Hp = 0;
-        WeaponId = 0;
-
-        OnDespawnRequested = null;
-        OnHpChanged = null;
-        OnDamaged = null;
-
-        SetMoveDirInternal(0);
-    }
-
     public void PlayShoot()
     {
         if (activeAnimator != null && !string.IsNullOrEmpty(shootParamName))
@@ -568,5 +541,14 @@ public class Player : MonoBehaviour
 
         shootLocked = false;
         shootLockCo = null;
+    }
+
+    public void SetLook(float yaw, float pitch)
+    {
+        if (body != null)
+            body.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+        if (CameraPivot != null)
+            CameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 }

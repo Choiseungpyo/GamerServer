@@ -1,56 +1,72 @@
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 
-public class DataManager : Singleton<DataManager>, IEventListener<GameFlowStateEvent>
+public class DataManager : Singleton<DataManager>
 {
-    [Header("Runtime DB (from server)")]
-    [SerializeField] private CharacterDatabaseSO characterStatDb;
-    [SerializeField] private WeaponRuntimeDatabaseSO weaponStatDb;
-
-    [Header("Visual DB (local asset)")]
-    [SerializeField] private CharacterVisualDatabaseSO characterVisualDb;
-    [SerializeField] private WeaponDatabaseSO weaponVisualDb;
+    [Header("DB")]
+    [SerializeField] private CharacterDatabase characterDb;
+    [SerializeField] private WeaponDatabase weaponDb;
     [SerializeField] private IconVisualDatabaseSO iconDb;
+    private ProfileData profileData = new();
 
-    private bool gotProfile;
-    private bool gotChars;
-    private bool gotWeapons;
-    private bool firedLobbyReady;
+    [Header("Pool Settings")]
+    [SerializeField] private int characterDefaultCapacity = 10;
+    [SerializeField] private int characterMaxSize = 64;
+    [SerializeField] private int weaponDefaultCapacity = 10;
+    [SerializeField] private int weaponMaxSize = 64;
 
-    public bool IsLobbyDataReady => gotProfile && gotChars && gotWeapons;
+    [SerializeField] private Transform characterPoolRoot;
+    [SerializeField] private Transform weaponPoolRoot;
 
-    public event Action OnLobbyDataReady;
     public event Action OnProfileUpdated;
     public event Action OnCharacterListUpdated;
     public event Action OnWeaponListUpdated;
 
-    public CharacterVisualDatabaseSO CharacterVisualDb => characterVisualDb;
-    public WeaponDatabaseSO WeaponVisualDb => weaponVisualDb;
-    public CharacterDatabaseSO CharacterStatDb => characterStatDb;
-    public WeaponRuntimeDatabaseSO WeaponStatDb => weaponStatDb;
+    public CharacterDatabase CharacterDb => characterDb;
+    public WeaponDatabase WeaponDb => weaponDb;
+    public ProfileData ProfileData => profileData;
+    public CharacterPool CharacterPool { get; private set; }
+    public WeaponPool WeaponPool { get; private set; }
+    public Equipment Equipment { get; private set; }
 
 
     protected override void Awake()
     {
         base.Awake();
 
-        if (characterVisualDb != null) characterVisualDb.Build();
-        if (weaponVisualDb != null) weaponVisualDb.Build();
+        if (characterDb != null) characterDb.Init();
+        if (weaponDb != null) weaponDb.Init();
         if (iconDb != null) iconDb.Build();
-    }
 
-    private void OnEnable()
-    {
         var tcp = TcpManagerMarshal.Instance;
-        if (tcp == null) return;
+        if (tcp != null)
+        {
+            tcp.OnLobbyProfile += HandleLobbyProfile;
+            tcp.OnCharacterList += HandleCharacterList;
+            tcp.OnWeaponList += HandleWeaponList;
 
-        tcp.OnLobbyProfile += HandleLobbyProfile;
-        tcp.OnCharacterList += HandleCharacterList;
-        tcp.OnWeaponList += HandleWeaponList;
+        }
+
+        InitPools();
+        InitServices();
     }
 
-    private void OnDisable()
+    private void Start()
     {
+        CharacterPool.Prewarm(CharacterType.Male, 8);
+        CharacterPool.Prewarm(CharacterType.Female, 8);
+
+        WeaponPool.Prewarm(WeaponType.Rifle_Default, 8);
+        WeaponPool.Prewarm(WeaponType.Rifle_Dessert, 8);
+        WeaponPool.Prewarm(WeaponType.Rifle_Forest, 8);
+    }
+
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
         var tcp = TcpManagerMarshal.Instance;
         if (tcp == null) return;
 
@@ -59,61 +75,36 @@ public class DataManager : Singleton<DataManager>, IEventListener<GameFlowStateE
         tcp.OnWeaponList -= HandleWeaponList;
     }
 
-    public void RequestLobbyData()
+    private void InitPools()
     {
-        ResetLobbyBootstrap();
-        TcpManagerMarshal.Instance.SendLobbyEnter();
+        bool check = Debug.isDebugBuild;
+
+        CharacterPool = new CharacterPool(characterDb, characterPoolRoot, characterDefaultCapacity, characterMaxSize, check);
+        WeaponPool = new WeaponPool(weaponDb, weaponPoolRoot, weaponDefaultCapacity, weaponMaxSize, check);
     }
 
-    public void ResetLobbyBootstrap()
+    private void InitServices()
     {
-        gotProfile = false;
-        gotChars = false;
-        gotWeapons = false;
-        firedLobbyReady = false;
+        Equipment = new Equipment(weaponDb, WeaponPool);
     }
 
     private void HandleLobbyProfile(LobbyProfilePacket pkt)
     {
-        ClientContext.PlayerId = pkt.playerId;
-        ClientContext.IconId = pkt.iconId;
-        ClientContext.Nickname = MarshalNet.ReadFixedAscii(pkt.nickname);
-        ClientContext.Total = pkt.totalGameCount;
-        ClientContext.Win = pkt.winCount;
-
-        gotProfile = true;
-        TryFireLobbyReady();
+        profileData.SetProfileData(pkt);
+        OnProfileUpdated?.Invoke();
 
         EventDispatcher.Dispatch(new GameFlowStateEvent { GameFlowState = GameFlowState.Lobby });
     }
 
     private void HandleCharacterList(CharacterListPacket pkt)
     {
-        if (characterStatDb != null)
-            characterStatDb.BuildFromCharacterList(pkt);
-
-        gotChars = true;
+        characterDb.SetServerStats(pkt.characters);
         OnCharacterListUpdated?.Invoke();
-        TryFireLobbyReady();
     }
 
     private void HandleWeaponList(WeaponListPacket pkt)
     {
-        if (weaponStatDb != null)
-            weaponStatDb.BuildFromWeaponList(pkt);
-
-        gotWeapons = true;
         OnWeaponListUpdated?.Invoke();
-        TryFireLobbyReady();
-    }
-
-    private void TryFireLobbyReady()
-    {
-        if (firedLobbyReady) return;
-        if (!IsLobbyDataReady) return;
-
-        firedLobbyReady = true;
-        OnLobbyDataReady?.Invoke();
     }
 
     public Sprite GetIconSprite(int iconId)
@@ -128,31 +119,10 @@ public class DataManager : Singleton<DataManager>, IEventListener<GameFlowStateE
     {
         if (p == null) return false;
 
-        if (characterVisualDb != null) characterVisualDb.Build();
-        if (weaponVisualDb != null) weaponVisualDb.Build();
+        if (!characterDb.TryGetVisual(characterId, out var visual)) return false;
+        if (visual == null || visual.modelPrefab == null) return false;
 
-        if (characterVisualDb == null) return false;
-
-        CharacterVisualRow row;
-        if (!characterVisualDb.TryGet(characterId, out row)) return false;
-        if (row == null || row.modelPrefab == null) return false;
-
-        p.SetCharacterModel(characterId, row.modelPrefab);
-
-        int wid = weaponIdFromServer;
-        if (wid < 0) wid = row.defaultWeaponId;
-
-        p.SetDefaultWeapon(wid);
+        p.ApplyVisual(characterId, weaponIdFromServer);
         return true;
-    }
-
-    public void OnEvent(GameFlowStateEvent gameFlowStateEvent)
-    {
-        switch(gameFlowStateEvent.GameFlowState)
-        {
-            case GameFlowState.MultiGame_Playing:
-                characterVisualDb.Build();
-                break;
-        }
     }
 }
